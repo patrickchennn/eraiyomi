@@ -1,5 +1,4 @@
-import {BiCalendar} from "react-icons/bi"
-import {CiClock1} from "react-icons/ci"
+import {BiCalendar,BiTimeFive} from "react-icons/bi"
 
 interface TitleProps{
   titlePage: string,
@@ -13,15 +12,30 @@ interface TitleProps{
 const Title = ({titlePage, miscInfo}: TitleProps) => {
   return (
     <div>
-      <h1 className='font-black font-cinzel text-center'>
+      <h1 className='font-roboto text-center'>
         {titlePage}
       </h1>
-      <span className='text-gray-400 text-sm flex items-center	tracking-[-0.9px]'>
-        <BiCalendar className="inline"/> {miscInfo.date} • {miscInfo.wordCount} words written by {miscInfo.author} • <CiClock1 className="inline-block"/> {miscInfo.readingTime}
+      <span className='text-gray-400 text-sm flex items-center tracking-[-0.9px]'>
+        <PublishedDate/> {miscInfo.date} • {miscInfo.wordCount} words written by {miscInfo.author} • <EstimatedReadTime/> {miscInfo.readingTime}
       </span>
       <hr />
-      <br />
     </div>
+  )
+}
+
+const PublishedDate = () => {
+  return (
+    <dfn title="published on">
+      <BiCalendar className="inline-block"/>
+    </dfn>
+  )
+}
+
+const EstimatedReadTime = () => {
+  return (
+    <dfn title="estimated read time">
+      <BiTimeFive className="inline-block"/>
+    </dfn>
   )
 }
 

@@ -82,9 +82,12 @@ const TableOfContents = ({TOCRef, TOCData}: TableOfContentsProps) => {
   }
 
 
+
+
+
   return (
     <div className=''>
-      <div className='border border-zinc-100 rounded-2xl p-5 h-fit bg-white sticky top-5 dark:bg-zinc-900 dark:border-[#363636]' style={{boxShadow:"inset 2px 2px 10px 0px rgba(0, 0, 0, 0.05)"}}>
+      <div className='border border-zinc-300 rounded-xl p-5 h-fit bg-[#F7F9FA] shadow-inner sticky top-5 dark:bg-zinc-900 dark:border-[#363636]'>
         <h3 className='mb-3 font-bold text-center'>
           <span className='cursor-pointer' onClick={() => setISTOCHide(prev=>!prev)}>☰</span>
           <span className='sketch-highlight dark:before:border-sky-200 dark:after:border-sky-200'>

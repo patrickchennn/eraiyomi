@@ -1,0 +1,69 @@
+;  The sketch for comment database schema. 
+a. The replies is structured linearlly from the earliest to the latest reply.
+
+b. The replies is an array of object. The reason why it is an array is for fulfilling "point a". The reason why I need an object inside it is because basic information for each commentary is needed. It is needed because such things like "number of like" is important and it is also a basic property for comment function. Basically, I want the comment information to be verbose or clear for the user. This is also satisfy the requirement for UX satisfication.
+
+The comment is by default sorted by the earliest commentary. There will be four sort behavior which are sort by (ealiest, latest, largest like, littlest like)
+
+c. Account is needed to be able to comment. In this case I will use google account API to help the implementation
+
+typeof = Object of object
+{
+  unique_accountId: {
+    name: string
+    commentDate: DD/MM/YY
+    numberOfReplies: number
+    numberOfLikes: number
+    numberOfDislikes: number
+    commentary: string
+    replies: {
+      unique_accountId:{
+        name:
+        commentDate:
+        numberOfReplies:
+        numberOfLikes:
+        numberOfDislikes:
+        commentary: string
+      },
+      ...
+    }
+  }
+  ...
+}
+
+
+;  The sketch for article database schema.
+
+I assume such things like "the number of visited", I can get it from google analytics. However, for now I have no idea how to use it.
+
+{
+  "path": "/article1",
+  "titleArticle": "article 1",
+  "shortDescription": "this is an article",
+  "publishedDate": "{{dd_mm_yy}}",
+  "publishedDateVerbose": "1 December 2020",
+  "author":"qwerty",
+  "keywords": ["a","b"],
+  "comments":{
+    "unique_accountId":{
+      "name": "",
+      "commentDate": null,
+      "numberOfReplies": 0,
+      "numberOfLikes": 0,
+      "numberOfDislikes": 0,
+      "commentary": "",
+      "replies":{
+        "unique_accountId":{
+          "name": "",[
+          "commentDate": null,
+          "numberOfReplies": 0,
+          "numberOfLikes": 0,
+          "numberOfDislikes": 0,
+          "commentary": ""]
+        },
+        ...
+      }
+    },
+    ...
+  }
+}

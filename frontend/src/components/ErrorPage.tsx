@@ -5,13 +5,19 @@ export default function ErrorPage() {
   console.error(error);
 
   return (
-    <div id="error-page" className="">
-      <h1>Oops!</h1>
-      <p>Sorry, an unexpected error has occurred.</p>
-      <p>Error details:</p>
-      <p>{error.data}</p>
-      <p>{error.status}</p>
-      <p>{error.statusText}</p>
+    <div className="h-screen">
+      <div>
+        <h1 className="font-black">{error.status}: {error.statusText}</h1>
+        <details>
+          <summary className="cursor-pointer">
+            {error.data}
+          </summary>
+          <pre>
+            {error.error.stack}
+          </pre>
+        </details>
+
+      </div>
     </div>
   );
 }

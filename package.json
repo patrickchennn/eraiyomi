@@ -1,0 +1,24 @@
+{
+  "name": "eraiyomi",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "server": "npm run server --prefix backend",
+    "client": "npm run client --prefix frontend",
+    "dev": "concurrently npm:server npm:client"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/patrickchennn/eraiyomi.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/patrickchennn/eraiyomi/issues"
+  },
+  "homepage": "https://github.com/patrickchennn/eraiyomi#readme",
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
+}

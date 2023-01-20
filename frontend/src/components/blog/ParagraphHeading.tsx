@@ -15,7 +15,7 @@ const ParagraphHeading = ({headingName,headingType,setTOCRef}: ParagraphHeadingP
       }}
     >
       {headingName}
-      <FiHash className="text-sky-500 self-center invisible"/>
+      <FiHash className="text-sky-400 self-center invisible"/>
     </a>
   ;
 
@@ -23,7 +23,7 @@ const ParagraphHeading = ({headingName,headingType,setTOCRef}: ParagraphHeadingP
   switch(headingType){
     case "h2":
       final = 
-        <h2 ref={setTOCRef} className=''>
+        <h2 ref={setTOCRef} className='font-black'>
           {child}
         </h2>
       break
@@ -31,7 +31,7 @@ const ParagraphHeading = ({headingName,headingType,setTOCRef}: ParagraphHeadingP
 
     case "h3":
       final = 
-        <h3 ref={setTOCRef} className=''>
+        <h3 ref={setTOCRef} className='font-black'>
           {child}
         </h3>
       break
@@ -39,7 +39,7 @@ const ParagraphHeading = ({headingName,headingType,setTOCRef}: ParagraphHeadingP
 
     case "h4":
       final = 
-        <h4 ref={setTOCRef} className=''>
+        <h4 ref={setTOCRef} className='font-black'>
           {child}
         </h4>
       break

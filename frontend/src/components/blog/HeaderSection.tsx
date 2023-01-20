@@ -1,4 +1,3 @@
-import React from 'react'
 interface HeaderSectionProps{
   pict?: string,
   caption?: string,
@@ -6,7 +5,7 @@ interface HeaderSectionProps{
 const HeaderSection = ({pict,caption}: HeaderSectionProps) => {
   return (
     <div 
-      className={`border-b rounded-t-3xl border-neutral-100 w-full h-70vh bg-center bg-cover grayscale relative dark:grayscale-0`} 
+      className={` rounded-t-xl w-full h-70vh bg-center bg-cover grayscale relative dark:grayscale-0`} 
       style={{
         backgroundImage: `url(${pict})`
       }}

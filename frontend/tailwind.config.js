@@ -18,7 +18,7 @@ module.exports = {
     },
     fontFamily: {
       sans: ["Montserrat",'Sono', 'sans-serif'],
-      cinzel: ['Cinzel','serif']
+      roboto:["Roboto","sans-serif"]
     },
   },
   plugins: [
