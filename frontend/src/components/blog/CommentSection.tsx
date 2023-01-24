@@ -30,9 +30,10 @@ import {
 
 interface CommentSectionProps {
   articleId: string,
-  initComments: Comments
+  initComments: Comments,
+  style:string,
 }
-const CommentSection = ({articleId,initComments}: CommentSectionProps) => {
+const CommentSection = ({articleId,initComments,style}: CommentSectionProps) => {
   const [comments, setComments] = React.useState<Comments>(initComments)
 
   const [msg,setMsg] = React.useState("")
@@ -247,10 +248,8 @@ const CommentSection = ({articleId,initComments}: CommentSectionProps) => {
 
 
 
-
-
   return (
-    <div className='mb-5 px-16 py-8 border border-zinc-300 rounded-3xl h-fit col-start-2 col-span-3 bg-white dark:bg-zinc-900'>
+    <div className={style}>
       <h1 className='font-black text-2xl'>Comments</h1>
       <hr />
 
@@ -260,7 +259,7 @@ const CommentSection = ({articleId,initComments}: CommentSectionProps) => {
       <form onSubmit={handleCommentSubmit} className='my-2.5 flex gap-x-3' method="post">
         <label htmlFor="comment-input">
           <img 
-            className='w-[50px]' 
+            className='w-[50px] max-[576px]:w-[40px]' 
             src={accountInfo.isLoggedIn ? accountInfo.picture : defaultProfile} alt="no profile" 
           />
         </label>
@@ -284,16 +283,14 @@ const CommentSection = ({articleId,initComments}: CommentSectionProps) => {
           const comment = comments[uniqueCommentId];
           return (
             <div className='mb-6 flex gap-x-4' key={uniqueCommentId}>
-              <img className='w-[50px] h-[50px]' src={comment.profilePict} alt="profile picture" />
+              <div>
+
+              <img className='w-[50px] h-[50px] max-[576px]:w-[40px] max-[576px]:h-[40px]' src={comment.profilePict} alt="profile picture" />
+              </div>
               <div className='w-full'>
                 {/* start: name, reply date, edit & delete a comment */}
                 <div className='flex justify-between'>
-                  <div>
-                    <span className='text-xl font-semibold mr-3'>{comment.name}</span>
-                    <dfn title='dd/mm/yyyy'>
-                      <span className='text-gray-400'>{comment.commentDate}</span>
-                    </dfn>
-                  </div>
+                  <NameDate name={comment.name} date={comment.commentDate}/>
 
                   <div className='relative' style={{display: comment.id===accountInfo.id ? "block":"none"}}>
                     <button onClick={e=>{
@@ -378,16 +375,15 @@ const CommentSection = ({articleId,initComments}: CommentSectionProps) => {
                     const reply = (comment.replies as Replies)[uniqueReplyId]
                     return (
                       <div className='mt-6 flex gap-x-4' key={uniqueReplyId}>
-                        <img className='w-[50px] h-[50px]' src={reply.profilePict} alt="" />
+                        <div>
+
+                        <img className='w-[50px] h-[50px] max-[576px]:w-[40px] max-[576px]:h-[40px]' src={reply.profilePict} alt="" />
+                        </div>
                         <div className='w-full'>
                           {/* start: name, reply date, edit & delete a reply */}
                           <div className='flex justify-between'>
-                            <div>
-                              <span className='text-xl font-semibold mr-3'>{reply.name}</span>
-                              <dfn title='dd/mm/yyyy'>
-                                <span className='text-gray-400'>{reply.replyDate}</span>
-                              </dfn>
-                            </div>
+                          <NameDate name={reply.name} date={reply.replyDate}/>
+
 
                             <div className='relative' style={{display: reply.id===accountInfo.id ? "block":"none"}}>
                               <button onClick={e=>{
@@ -471,6 +467,21 @@ const CommentSection = ({articleId,initComments}: CommentSectionProps) => {
           )
         })
       }
+    </div>
+  )
+}
+
+interface NameDateProps{
+  name: string,
+  date: string
+}
+const NameDate = ({name,date}: NameDateProps) => {
+  return (
+    <div>
+      <span className='text-xl font-semibold mr-3'>{name}</span>
+      <dfn title='dd/mm/yyyy'>
+        <span className='text-gray-400'>{date}</span>
+      </dfn>
     </div>
   )
 }

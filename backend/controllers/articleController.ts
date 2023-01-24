@@ -17,7 +17,7 @@ import etag from "etag"
 export const getArticles = async (req: Request, res:Response) => {
   console.log(chalk.yellow(`[API] GET /api/articles`))
 
-  console.log(req.headers);
+  // console.log(req.headers);
   
   const articleDatas = await articleModel.find()
   if(articleDatas===null){
@@ -29,12 +29,12 @@ export const getArticles = async (req: Request, res:Response) => {
 
   var reqHeaders = { 'if-none-match': req.headers["if-none-match"] }
   var resHeaders = { 'etag': myETagMod }
-  console.log(reqHeaders,resHeaders,fresh(reqHeaders, resHeaders))
+  // console.log(reqHeaders,resHeaders,fresh(reqHeaders, resHeaders))
   if(fresh(reqHeaders, resHeaders)){
     return res.status(304).send("Not modifiedd")
   }
 
-  console.log(myETagMod)
+  // console.log(myETagMod)
   res.setHeader('ETag', myETagMod)
 
 

@@ -100,11 +100,11 @@ const Home = ({rootElement}: {rootElement: HTMLDivElement}) => {
                   {article.publishedDate}
                 </dfn>
                 <div>
-                  <BsEye />
+                  <BsEye className='mx-auto'/>
                   123
                 </div>
                 <div>
-                  <BiLike />
+                  <BiLike className='mx-auto'/>
                   123
                 </div>
               </div>
@@ -113,8 +113,8 @@ const Home = ({rootElement}: {rootElement: HTMLDivElement}) => {
               {
                 article.keywords.map((keyword: string,idx: number) => {
                   return (
-                    <span key={idx} className="px-2 hover:rounded-full hover:font-black">
-                      <span>■</span>{keyword}
+                    <span key={idx} className="px-2">
+                      <span>#</span>{keyword}
                     </span>
                   )
                 })
@@ -136,7 +136,7 @@ const Home = ({rootElement}: {rootElement: HTMLDivElement}) => {
   if(articlesState.isSuccess){
     return (
       <div className='flex justify-center'>
-        <div className='my-3 rounded-xl w-1/2 flex flex-col gap-y-3 [&>*]:border [&>*]:rounded-xl [&>*]:bg-white dark:[&>div]:bg-zinc-900 '>
+        <div className='my-3 rounded-xl w-1/2 flex flex-col gap-y-3 [&>*]:border [&>*]:rounded-xl [&>*]:bg-white dark:[&>div]:bg-zinc-900 max-[576px]:w-3/4 max-[768px]:w-2/3'>
           <div>
             <div className='w-fit relative'>
               <div className='relative'>
@@ -154,11 +154,9 @@ const Home = ({rootElement}: {rootElement: HTMLDivElement}) => {
               </ul>
             </div>
           </div>
-          <>
-            {
-              showArticles()
-            }
-          </>
+          {
+            showArticles()
+          }
         </div>
       </div>
     )

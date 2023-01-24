@@ -5,7 +5,7 @@ interface HeaderSectionProps{
 const HeaderSection = ({pict,caption}: HeaderSectionProps) => {
   return (
     <div 
-      className={` rounded-t-xl w-full h-70vh bg-center bg-cover grayscale relative dark:grayscale-0`} 
+      className="rounded-t-xl w-full h-70vh bg-center bg-cover grayscale relative dark:grayscale-0 max-[576px]:h-[50vh]"
       style={{
         backgroundImage: `url(${pict})`
       }}

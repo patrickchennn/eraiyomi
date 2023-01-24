@@ -4,15 +4,18 @@ import { Link } from 'react-router-dom'
 import { ArticlesState } from '../../../types/Article'
 import { Article } from '../../../types/Article'
 
-const OtherPosts = () => {
+interface OtherPostsProps{
+  style: string,
+}
+const OtherPosts = ({style}: OtherPostsProps) => {
   const {articlesState}: {articlesState: ArticlesState} = React.useContext(AppContext)
 
 
 
   if(articlesState.isSuccess){
     return (
-      <div className='border border-zinc-300 rounded-xl p-5 h-fit bg-[#F7F9FA] shadow-inner dark:bg-zinc-900 dark:border-[#363636]'>
-        <h3 className='font-bold text-2xl'>Other Posts</h3>
+      <div className={style}>
+        <h3 className='font-bold text-center'>Other Posts</h3>
         <hr className='mb-5'/>
         <div className=''>
           {

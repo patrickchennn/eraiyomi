@@ -45,29 +45,32 @@ const TopNav = ({rootElement,mainContainerRef}: TopNavProps) => {
   }
 
   const handleSearchInputChange = (e: React.SyntheticEvent) => {
+    // set the "... search is unavailable" to true by default
     searchIsUnavailable.current = true
+
     const target = e.target as HTMLInputElement
     const inputValue: string = target.value
     const searchResultContainer = searchResultContainerRef.current as HTMLUListElement
     setKeySearch(inputValue)
     console.log("\tSearching for: ",inputValue)
     mainContainerRef.current.bgSearch.style.display = "block"
+
+    // if the input value is null (empty string including "space")
     if(inputValue===" " || inputValue===""){
-      console.log("nothing to search, just return you shit")
+      // console.log("nothing to search, just return")
       searchResultContainer.style.display = "none"
       mainContainerRef.current.bgSearch.style.display = "none"
       return
     }else{
       searchResultContainer.style.display = "block"
-
     }
+
     // foreach articles
     (articlesState.message as Article[]).forEach((article) => {
 
       // (some string).toUpperCase(), is needed because I want it to be not case sensitive. This make the search process easier
       
-      // get the title article from data.json
-      // type TitleArticle = keyof typeof articleSearchResultRef;
+      // get the title article from the fresly fetched API data 
       const titleArticle: string = article.titleArticle
 
 
@@ -86,22 +89,17 @@ const TopNav = ({rootElement,mainContainerRef}: TopNavProps) => {
         searchResult.style.display="none"
       }else{
         searchIsUnavailable.current = false
-        console.log(searchIsUnavailable)
+        // console.log(searchIsUnavailable)
         searchResult.style.display="block";
         articleSearchResultRef.current[titleArticle].articleTitle.innerHTML = `${titleArticle.slice(0,first_idx)}<mark>${titleArticle.slice(first_idx,last_idx)}</mark>${titleArticle.slice(last_idx)}`
       }
     });
     if(searchIsUnavailable.current){
       (searchResultContainer.children[0] as HTMLElement).style.display = "block"
-      console.log("fuck is unavailable")
+      // console.log("fuck is unavailable")
     }else{
       (searchResultContainer.children[0] as HTMLElement).style.display = "none"
     }
-  }
-
-  const handleSearchInputClick = (e: React.SyntheticEvent) => {
-    const target = e.target as HTMLInputElement
-    // console.log(target.parentElement)
   }
 
 
@@ -110,16 +108,18 @@ const TopNav = ({rootElement,mainContainerRef}: TopNavProps) => {
 
   if(articlesState.isSuccess){
     return (
+      <>
+      
       <div className='py-2 px-6 bg-white  flex justify-between items-center dark:bg-zinc-900'>
   
         {/* go to root/home page */}
-        <Link to='/' className=''><FaHome/></Link>
+        <Link to='/' className='p-2 rounded-full flex items-center gap-x-3 hover:bg-gray-400'><FaHome/></Link>
   
         {/* search input */}
-        <div className='w-[30%] relative'>
+        <div className='w-[30%] relative basis-2/4'>
           {/* the search input logic */}
           <div className='border border-stone-100 rounded-md flex focus-within:outline focus-within:outline-2 focus-within:outline-[hotpink] dark:border-stone-700'>
-            <input id="search-bar" onClick={handleSearchInputClick} onChange={handleSearchInputChange} className="px-3 outline-0 rounded-l-md w-full h-9 shadow-inner dark:bg-zinc-900" type="text" placeholder='Search'/>
+            <input id="search-bar" onChange={handleSearchInputChange} className="px-3 outline-0 rounded-l-md w-full h-9 shadow-inner dark:bg-zinc-900" type="text" placeholder='Search'/>
             <label htmlFor='search-bar' className='px-2 rounded-r-md flex bg-slate-100 shadow-inner dark:bg-zinc-900'>
               <ImSearch className='self-center'/>
             </label>
@@ -133,10 +133,10 @@ const TopNav = ({rootElement,mainContainerRef}: TopNavProps) => {
             }}
             className='border border-gray-100 w-full h-fit bg-[#fdfdfd] overflow-auto hidden absolute z-[2] dark:bg-zinc-900'
           >
-            {/* if nothing is found, display this specific li element */}
+            {/* if nothing is found, display this specific li element, this element is created particularly when indeed nothing is found */}
             <li className='hidden'>
               <h2 className='text-center text-gray-400'>
-                <mark className='bg-gray-100'>{keySearch}</mark> is unavailable
+                <mark className='bg-gray-200'>{keySearch}</mark> is unavailable
               </h2>
             </li>
             {
@@ -203,7 +203,7 @@ const TopNav = ({rootElement,mainContainerRef}: TopNavProps) => {
           </ul>
         </div>
   
-        {/* toogle dark / sign in(for future feature I guess) */}
+        {/* toogle dark mode btn / sign in btn(for future feature I guess) */}
         <nav>
           <ul className='flex gap-x-4 [&>*]:hover:cursor-pointer'>
             <li className=''>
@@ -217,6 +217,8 @@ const TopNav = ({rootElement,mainContainerRef}: TopNavProps) => {
           </ul>
         </nav>
       </div>
+        <hr className='drop-shadow-md'/>
+      </>
     )
   }
 }
@@ -227,7 +229,7 @@ export default TopNav
 The search algorithm is always running when the search input bar changed (onChange behavior).
 It always run for n times, n is the length of the list, and k times where k is the length of the string.
 Thus, the worstcase for this algo is O(n*k).
-It could be O(n*1) or O(n) iif the input value is only 1.
+It could be O(n*1) <=> O(n) iif the input value is only 1.
 */
 
 /*

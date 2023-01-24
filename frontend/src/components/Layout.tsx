@@ -26,7 +26,7 @@ const Layout = ({rootElement}: LayoutProps) => {
 
   return (
     <div 
-      className='dark:[background:black_!important] dark:text-white relative' 
+      className='relative dark:[background:black_!important] dark:text-white max-[640px]:font-sm' 
       style={{
         background:"linear-gradient(90deg, rgba(243,255,255,1) 0%, rgba(162,140,196,0.15) 15%, rgba(103,35,142,0.15) 30%, rgba(211,104,212,0.15) 45%, rgba(255,73,199,0.15) 63%, rgba(255,166,195,0.15) 82%, rgba(255,225,225,0.05) 93%, rgba(255,255,235,1) 100%)"
       }}

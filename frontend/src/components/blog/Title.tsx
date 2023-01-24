@@ -15,7 +15,7 @@ const Title = ({titlePage, miscInfo}: TitleProps) => {
       <h1 className='font-roboto text-center'>
         {titlePage}
       </h1>
-      <span className='text-gray-400 text-sm flex items-center tracking-[-0.9px]'>
+      <span className='text-gray-400 text-sm flex flex-wrap	items-center tracking-[-0.9px]'>
         <PublishedDate/> {miscInfo.date} • {miscInfo.wordCount} words written by {miscInfo.author} • <EstimatedReadTime/> {miscInfo.readingTime}
       </span>
       <hr />

@@ -1,31 +1,38 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
-
 @import "tailwindcss/utilities";
 
 html{
     height: 100%;
 }
-h1{font-size: 2em;}
-h2{font-size: 1.5em;}
-h3{font-size: 1.3em;}
-h4{font-size: 1em;}
-h5{font-size: 0.8em;}
-h6{font-size: 0.7em;}
+
+
+
+
 
 
 ::selection {
     color: black;
-    background: skyblue;
+    background: #aee7ff;
 }
 
 @layer base{
+    html{
+        @apply max-[768px]:text-sm
+    }
+    h1{@apply text-3xl}
+    h2{@apply text-2xl}
+    h3{@apply text-xl}
+    h4{@apply text-lg}
+    h5{@apply text-base}
+    h6{@apply text-sm}
     hr{
-        @apply dark:border-stone-700
+        @apply dark:border-stone-700;
     }
 }
 
 @layer components {
+
 
     /* credit: https://codepen.io/alvarotrigo/pen/RwxNbqw */
     .sketch-highlight{
