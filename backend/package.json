@@ -5,10 +5,10 @@
   "main": "./build/server.js",
   "type": "module",
   "scripts": {
-    "watch:clean": "npx rimraf ./build",
+    "watch:clean": "npx rimraf ./compiled-ts",
     "watch:build": "npx tsc --watch",
-    "watch:server": "npx nodemon ./build/server.js",
-    "server": "concurrently \"npm:watch:clean\" \"npm:watch:build\" \"npm:watch:server\""
+    "watch:server": "npx nodemon ./compiled-ts/server.js",
+    "server": "npx rimraf ./compiled-ts && tsc && concurrently npm:watch:build npm:watch:server"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.3",
@@ -22,8 +22,6 @@
     "chalk": "^5.2.0",
     "concurrently": "^7.6.0",
     "nodemon": "^2.0.20",
-    "npm-run-all": "^4.1.5",
-    "rimraf": "^3.0.2",
     "typescript": "^4.9.4"
   },
   "dependencies": {
@@ -36,6 +34,7 @@
     "fresh": "^0.5.2",
     "google-auth-library": "^8.7.0",
     "jsonwebtoken": "^9.0.0",
-    "mongoose": "^6.8.1"
+    "mongoose": "^6.8.1",
+    "rimraf": "^4.1.2"
   }
 }

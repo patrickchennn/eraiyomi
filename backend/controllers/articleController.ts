@@ -77,7 +77,7 @@ export const getArticle = async (req: Request, res:Response) => {
  * @access Private
  */
 export const postArticle =  async (req: Request, res: Response) => {
-  console.log(chalk.yellow("[API] POST /api/article/create"))
+  console.log(chalk.yellow("[API] POST /api/article"))
   const {body} = req
   console.log(body)
   const articleData = await articleModel.create({
@@ -86,6 +86,7 @@ export const postArticle =  async (req: Request, res: Response) => {
     shortDescription: body.shortDescription,
     publishedDate: body.publishedDate,
     publishedDateVerbose: body.publishedDateVerbose,
+    likes:0,  
     author: body.author,
     keywords: body.keywords,
     comments:{},
@@ -96,6 +97,29 @@ export const postArticle =  async (req: Request, res: Response) => {
   return res.status(201).json(articleData)
 }
 
+
+
+
+
+/**
+ * @desc Like an article
+ * @route POST /api/article/like/:articleId
+ * @access Public, login required
+ */
+export const putArticleLike =  async (req: Request, res: Response) => {
+  const {articleId} = req.params
+  console.log(chalk.yellow(`[API] POST /api/article/like/:articleId`))
+  const articleData = await articleModel.findByIdAndUpdate(
+    articleId,
+    {
+
+    }
+  )
+  if(articleData===null){
+    return res.status(404).send("404 Not Found")
+  }
+  return res.status(201).json(articleData)
+}
 
 
 
