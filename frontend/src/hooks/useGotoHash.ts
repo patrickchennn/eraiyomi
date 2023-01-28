@@ -1,31 +1,31 @@
-
-import {useLayoutEffect} from 'react'
+import {useEffect,useLayoutEffect} from 'react'
+import CitesRef from '../../types/CitesRef'
+import { Article } from '../../types/Article'
 
 const useGotoHash = (
-  TOCRef: React.MutableRefObject<{[key: string]: HTMLElement}>,
-  cites: React.MutableRefObject<any>
+  headingRef: React.MutableRefObject<{[key: string]: HTMLHeadingElement}>,
+  citesRef: React.MutableRefObject<CitesRef>,
+  articleData:Article
 ) => {
-  useLayoutEffect(() => {
+  useEffect(() => {
+    // console.log("useGotoHash")
+    // if there is a hash within the url
     if(window.location.hash){
-      console.log("table of content ref: ",TOCRef.current)
-      console.log("cites ref: ",cites.current)
+      // console.log(headingRef.current)
+      // console.log(citesRef.current)
 
+      // window.location.hash.substring(1) = omit the hash char(#)
       const hash: string = decodeURIComponent(window.location.hash.substring(1));
-      if(TOCRef.current[hash]!=undefined){
-        TOCRef.current[hash].scrollIntoView({behavior: "smooth"})
-        console.log("shit does not exist")
+      // console.log("hash: ",hash)
+      if(Object.hasOwn(headingRef.current,hash)){
+        headingRef.current[hash].scrollIntoView({behavior: "smooth"})
       }
-      if(cites.current[hash]!=undefined){
-        cites.current[hash][1].scrollIntoView({behavior: "smooth"})
+      if(Object.hasOwn(citesRef.current,hash)){
+        citesRef.current[hash][1].scrollIntoView({behavior: "smooth"})
       }
+    }
 
-      // console.log(TOCRef.current[hash])
-      // console.log(cites.current[hash])
-    }
-    else{
-      // console.log("both shit literally do not exist")
-    }
-  },[])
+  },[articleData])
 }
 
 export default useGotoHash

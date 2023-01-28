@@ -35,6 +35,7 @@ app.use(cookieParser())
 app.get('/api/articles', articleController.getArticles)
 app.get('/api/article/:name', articleController.getArticle)
 app.post('/api/article', articleController.postArticle)
+app.put('/api/article/like/:articleId', articleController.putArticleLike)
 app.delete("/api/article/delete/:articleId", articleController.deleteArticle)
 
 // article/comment
@@ -55,4 +56,3 @@ app.listen(
   port, 
   () => console.log(chalk.green(`[express] app listening on port http://localhost:${port}`))
 );
-//asdasdas

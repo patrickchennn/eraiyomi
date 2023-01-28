@@ -9,7 +9,7 @@ import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
-const rootElement = document.getElementById('root') as HTMLDivElement
+export const rootElement = document.getElementById('root') as HTMLDivElement
 const root = ReactDOM.createRoot(rootElement)
 
 
@@ -18,7 +18,7 @@ const root = ReactDOM.createRoot(rootElement)
 
 root.render(
   // <React.StrictMode>
-    <App rootElement={rootElement} />
+    <App />
   // </React.StrictMode>
 )
 

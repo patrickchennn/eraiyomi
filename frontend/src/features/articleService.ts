@@ -101,6 +101,39 @@ export const postArticleComment = async(
 
 
 
+export const putArticleLike = async (
+  articleId: string, 
+  email: string,
+) => {
+  let data: Article
+
+  try {
+    let res: Response = await fetch(
+      `${url}/like/${articleId}`,
+      {
+        method: "PUT",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body:JSON.stringify({
+          email,
+        }),
+      }
+    )
+    handleErrRes(res,"PUT")
+
+    data = await res.json()
+    console.log(`PUT ${res.url}`,data)
+  } catch (error: any) {
+    console.error(error)
+  }
+  return data
+}
+
+
+
+
+
 export const postCommentReply = async (
   articleId: string, 
   uniqueCommentId: string,

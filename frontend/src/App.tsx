@@ -13,9 +13,10 @@ import Article1 from './pages/article1/Article1';
 import Home from "./pages/Home";
 import DetailProfile from "./pages/DetailProfile";
 import { Article } from "../types/Article";
-import { GoogleIdentityRes } from "../types/Account";
+import { Account, GoogleIdentityRes } from "../types/Account";
 import { getArticles } from "./features/articleService";
 import ErrorPage from "./components/ErrorPage";
+import { rootElement } from ".";
 
 declare global {
   interface Window { google: any; }
@@ -29,7 +30,7 @@ const actions = {
   message:"message"
 }
 
-const App = ({rootElement}: {rootElement: HTMLDivElement}) => {
+const App = () => {
   const setArticles = (_:unknown, action: any) => {
     switch(action.type){
       case actions.isSuccess:
@@ -55,8 +56,19 @@ const App = ({rootElement}: {rootElement: HTMLDivElement}) => {
   }
   const initArticlesState = {isLoading:true,isSuccess:false,isError:false,message:""}
   const [articlesState,dispatch] = React.useReducer(setArticles,initArticlesState)
+  
+  const [accountInfo,setAccountInfo] = React.useState<Account>({
+    id: "",
+    name: "",
+    email: "",
+    picture: "",
+    isLoggedIn: false,
+  })
+
 
   React.useEffect(() => {
+    // window.document.title = 'new title';
+
     (async function(){
       const data = await getArticles()
       // if fetch is success
@@ -74,8 +86,8 @@ const App = ({rootElement}: {rootElement: HTMLDivElement}) => {
 
   const router = createBrowserRouter(
     createRoutesFromElements(
-      <Route errorElement={<ErrorPage/>} element={<Layout rootElement={rootElement} />}>
-        <Route index path="/" element={<Home rootElement={rootElement}/>}/>
+      <Route errorElement={<ErrorPage/>} element={<Layout />}>
+        <Route index path="/" element={<Home />}/>
         <Route path="/article1" element={<Article1 />}/>
         {/* <Route path="/sign-in" element={<SignIn SetAccountInfo={SetAccountInfo}/>}/> */}
         <Route path="/detail-profile" element={<DetailProfile />}/>
@@ -85,7 +97,11 @@ const App = ({rootElement}: {rootElement: HTMLDivElement}) => {
 
   return (
     <>
-    <AppContext.Provider value={{articlesState}}>
+    <AppContext.Provider 
+      value={{
+        articlesState,
+        accountInfoStates:[accountInfo,setAccountInfo]
+      }}>
       <RouterProvider 
         router={router} 
         fallbackElement={<>wait</>}

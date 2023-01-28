@@ -34,6 +34,10 @@ export interface Article{
   shortDescription: string,
   publishedDate: string,
   publishedDateVerbose: string,
+  numberOfLikes: number,
+  likes:{
+    [email: string]:boolean
+  },
   author: string,
   keywords: string[],
   comments: Comments | {},

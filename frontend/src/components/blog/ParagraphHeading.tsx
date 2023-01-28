@@ -1,10 +1,16 @@
+import { useCallback } from "react"
 import {FiHash} from "react-icons/fi"
 interface ParagraphHeadingProps {
   headingName: string,
   headingType: string,
-  setTOCRef: any
+  headingRef: React.MutableRefObject<{[key:string]: HTMLHeadingElement}>
 }
-const ParagraphHeading = ({headingName,headingType,setTOCRef}: ParagraphHeadingProps) => {
+const ParagraphHeading = ({headingName,headingType,headingRef}: ParagraphHeadingProps) => {
+  const setHeadingRef = useCallback((e: HTMLHeadingElement) => {
+    // console.log(e, e.textContent);
+    headingRef.current[e.textContent] = e
+  },[])
+
   const child: JSX.Element =
     <a 
       className="flex [&>svg]:hover:!visible" 
@@ -23,7 +29,7 @@ const ParagraphHeading = ({headingName,headingType,setTOCRef}: ParagraphHeadingP
   switch(headingType){
     case "h2":
       final = 
-        <h2 ref={setTOCRef} className='font-black'>
+        <h2 ref={setHeadingRef} className='font-black'>
           {child}
         </h2>
       break
@@ -31,7 +37,7 @@ const ParagraphHeading = ({headingName,headingType,setTOCRef}: ParagraphHeadingP
 
     case "h3":
       final = 
-        <h3 ref={setTOCRef} className='font-black'>
+        <h3 ref={setHeadingRef} className='font-black'>
           {child}
         </h3>
       break
@@ -39,7 +45,7 @@ const ParagraphHeading = ({headingName,headingType,setTOCRef}: ParagraphHeadingP
 
     case "h4":
       final = 
-        <h4 ref={setTOCRef} className='font-black'>
+        <h4 ref={setHeadingRef} className='font-black'>
           {child}
         </h4>
       break

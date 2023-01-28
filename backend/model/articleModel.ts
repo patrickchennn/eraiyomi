@@ -33,7 +33,8 @@ const articleSchema = new mongoose.Schema({
   shortDescription: String,
   publishedDate: String,
   publishedDateVerbose: String,
-  likes:Number,
+  numberOfLikes:Number,
+  likes:{},
   author: String,
   keywords: [String],
   comments: {}

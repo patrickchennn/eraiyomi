@@ -7,6 +7,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: path.join(__dirname, "public", "template.html"),
+      title: 'eraiyomi',
     }),
     new CleanTerminalPlugin(),
   ],

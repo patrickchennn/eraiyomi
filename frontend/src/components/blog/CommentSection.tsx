@@ -20,10 +20,10 @@ import { postAccountLogin, postAccountLoginVerify } from '../../features/account
 import { 
   deleteCommentDelete, 
   postArticleComment, 
-  postCommentReply, 
   putCommentEdit, 
   putCommentLikeDislike 
 } from '../../features/articleService'
+import { AppContext } from '../../App'
 
 
 
@@ -34,17 +34,19 @@ interface CommentSectionProps {
   style:string,
 }
 const CommentSection = ({articleId,initComments,style}: CommentSectionProps) => {
+  const {accountInfoStates} = React.useContext(AppContext)
+  const [accountInfo,setAccountInfo] = accountInfoStates
   const [comments, setComments] = React.useState<Comments>(initComments)
 
   const [msg,setMsg] = React.useState("")
 
-  const [accountInfo,setAccountInfo] = React.useState<Account>({
-    id: "",
-    name: "",
-    email: "",
-    picture: "",
-    isLoggedIn: false,
-  })
+  // const [accountInfo,setAccountInfo] = React.useState<Account>({
+  //   id: "",
+  //   name: "",
+  //   email: "",
+  //   picture: "",
+  //   isLoggedIn: false,
+  // })
 
   interface MsgTextarea{
     [uniqueCommentId: string]:{
@@ -54,13 +56,12 @@ const CommentSection = ({articleId,initComments,style}: CommentSectionProps) => 
   }
   const msgTextarea = React.useRef<MsgTextarea>({})
 
-  const msgTextareaRef = React.useCallback((
+  const msgTextareaCB = React.useCallback((
     currEle: HTMLTextAreaElement, 
     uniqueCommentId: string,
     idx: number=-1
   ) => {
     if(currEle!==null) {
-
       if(idx===-1){
         currEle.style.height = currEle.scrollHeight.toString() + "px"
         // for textarea element that is lies on comments object
@@ -200,6 +201,10 @@ const CommentSection = ({articleId,initComments,style}: CommentSectionProps) => 
     setComments(await putCommentLikeDislike(articleId,uniqueCommentId,type,accountInfo))
   }
 
+  /**
+   * 
+   * @param idx -1 means it has something do to with the comment object, otherwise it deals with replies object
+   */
   const handleEditCommentBtn = async(uniqueCommentId:string,idx: number=-1)=>{
     let thisMsgTextarea: HTMLTextAreaElement;
     if(idx===-1){
@@ -209,17 +214,24 @@ const CommentSection = ({articleId,initComments,style}: CommentSectionProps) => 
     }
     const msgLen: number = thisMsgTextarea.value.length
     const saveBtn = thisMsgTextarea.nextElementSibling as HTMLButtonElement
-
-    // if the 
-    // if(saveBtn.classList.contains())
     
+    
+    // toggle the readonly attribute
     thisMsgTextarea.toggleAttribute("readOnly")
-    thisMsgTextarea.classList.toggle("!outline-2")
-    thisMsgTextarea.focus()
+
+    // only focus the element whenever the readyonly is available
+    if(!thisMsgTextarea.hasAttribute("readOnly"))
+      thisMsgTextarea.focus()
+
+    // put the type cursor at the end of the text
     thisMsgTextarea.setSelectionRange(msgLen,msgLen)
     saveBtn.classList.toggle("hidden")
   }
 
+  /**
+   * 
+   * @param idx -1 means it has something do to with the comment object, otherwise it deals with replies object
+   */
   const handleEditCommentSubmit = async (
     e:React.SyntheticEvent, 
     uniqueCommentId: string,
@@ -245,6 +257,24 @@ const CommentSection = ({articleId,initComments,style}: CommentSectionProps) => 
     alert("the message is successfully deleted")
   }
 
+  /**
+   * @desc Handle the dot three button click.
+   */
+  const handleShowEditDeleteFeatures = async (e: React.SyntheticEvent, uniqueCommentId:string) => {
+    console.log(e.currentTarget)
+    const ul = e.currentTarget.nextElementSibling as HTMLUListElement
+    // if the ul already display, we need to automatically cancel the edit msg textarea
+    if(ul.classList.contains("!block")){
+      let thisMsgTextarea: HTMLTextAreaElement = msgTextarea.current[uniqueCommentId].commentTextarea;
+      thisMsgTextarea.setAttribute("readOnly","")
+      if(!thisMsgTextarea.nextElementSibling.classList.contains("hidden")){
+        thisMsgTextarea.nextElementSibling.classList.add("hidden")
+      }
+    }
+    ul.classList.toggle("!block")
+  }
+
+
 
 
 
@@ -264,12 +294,16 @@ const CommentSection = ({articleId,initComments,style}: CommentSectionProps) => 
           />
         </label>
         <div className='border border-stone-200 rounded-md w-full flex focus-within:outline focus-within:outline-2 focus-within:outline-[hotpink] dark:border-stone-700'>
-          <input 
-            onChange={e => setMsg(e.target.value)}
+          <textarea 
+            onChange={e => {
+              const target=e.target as HTMLTextAreaElement
+              target.style.height=""
+              target.style.height = target.scrollHeight.toString() + "px"
+              setMsg(e.target.value)
+            }}
             value={msg}
-            type="text" 
             id="comment-input"
-            className='outline-0 px-3 rounded-md w-full bg-[#f9f9f9] dark:bg-black' 
+            className='px-3 outline-0 rounded-md w-full bg-[#f9f9f9] resize-none placeholder-shown:italic max-[576px]:px-1 dark:bg-black' 
             placeholder='message...'
           />
           <button className='px-2' type='submit'><AiOutlineSend/></button>
@@ -282,10 +316,13 @@ const CommentSection = ({articleId,initComments,style}: CommentSectionProps) => 
         Object.keys(comments).map((uniqueCommentId: string,idx:number) => {
           const comment = comments[uniqueCommentId];
           return (
-            <div className='mb-6 flex gap-x-4' key={uniqueCommentId}>
+            <div className='mb-6 flex gap-x-2' key={uniqueCommentId}>
               <div>
-
-              <img className='w-[50px] h-[50px] max-[576px]:w-[40px] max-[576px]:h-[40px]' src={comment.profilePict} alt="profile picture" />
+                <img 
+                  className='w-[50px] h-auto max-[576px]:w-[40px]'
+                  src={comment.profilePict} 
+                  alt="profile picture" 
+                />
               </div>
               <div className='w-full'>
                 {/* start: name, reply date, edit & delete a comment */}
@@ -293,17 +330,7 @@ const CommentSection = ({articleId,initComments,style}: CommentSectionProps) => 
                   <NameDate name={comment.name} date={comment.commentDate}/>
 
                   <div className='relative' style={{display: comment.id===accountInfo.id ? "block":"none"}}>
-                    <button onClick={e=>{
-                      const ul = e.currentTarget.nextElementSibling as HTMLUListElement
-                      // if the ul already display, we need to automatically cancel the edit msg textarea
-                      if(ul.classList.contains("!block")){
-                        let thisMsgTextarea: HTMLTextAreaElement = msgTextarea.current[uniqueCommentId].commentTextarea;
-                        thisMsgTextarea.toggleAttribute("readOnly")
-                        thisMsgTextarea.classList.toggle("!outline-2")
-                        thisMsgTextarea.nextElementSibling.classList.toggle("hidden")
-                      }
-                      ul.classList.toggle("!block")
-                    }}>
+                    <button onClick={e=>handleShowEditDeleteFeatures(e,uniqueCommentId)}>
                       <BsThreeDots />
                     </button>
                     {/* TODO: there is a possibility to simplify this ul */}
@@ -330,8 +357,8 @@ const CommentSection = ({articleId,initComments,style}: CommentSectionProps) => 
                       target.style.height=""
                       target.style.height = target.scrollHeight.toString() + "px"
                     }}
-                    ref={currEle=>msgTextareaRef(currEle,uniqueCommentId)}
-                    className="outline outline-0 rounded-md w-full resize-none dark:bg-inherit" 
+                    ref={currEle=>msgTextareaCB(currEle,uniqueCommentId)}
+                    className="rounded-md w-full resize-none dark:bg-inherit" 
                     readOnly
                     defaultValue={comment.commentMsg}
                   >
@@ -340,7 +367,7 @@ const CommentSection = ({articleId,initComments,style}: CommentSectionProps) => 
                 </form>
 
                 {/* show input reply & like & dislike & show all replies btn */}
-                <div className='text-sm flex gap-x-3 [&>button>svg]:inline'>
+                <div className='text-sm flex gap-x-2 [&>button>svg]:inline'>
                   <button onClick={e=>handleInputReply(e,comment.name)}>
                     <BiReply/> reply
                   </button>
@@ -374,10 +401,13 @@ const CommentSection = ({articleId,initComments,style}: CommentSectionProps) => 
                   Object.keys(comment.replies).map((uniqueReplyId:string, idx:number) => {
                     const reply = (comment.replies as Replies)[uniqueReplyId]
                     return (
-                      <div className='mt-6 flex gap-x-4' key={uniqueReplyId}>
+                      <div className='mt-6 flex gap-x-2' key={uniqueReplyId}>
                         <div>
-
-                        <img className='w-[50px] h-[50px] max-[576px]:w-[40px] max-[576px]:h-[40px]' src={reply.profilePict} alt="" />
+                          <img 
+                            className='w-[50px] h-auto max-[576px]:w-[40px]' 
+                            src={reply.profilePict} 
+                            alt="profile picture" 
+                          />
                         </div>
                         <div className='w-full'>
                           {/* start: name, reply date, edit & delete a reply */}
@@ -386,17 +416,7 @@ const CommentSection = ({articleId,initComments,style}: CommentSectionProps) => 
 
 
                             <div className='relative' style={{display: reply.id===accountInfo.id ? "block":"none"}}>
-                              <button onClick={e=>{
-                                const ul = e.currentTarget.nextElementSibling as HTMLUListElement
-                                // if the ul already display, we need to automatically cancel the edit msg textarea
-                                if(ul.classList.contains("block")){
-                                  let thisMsgTextarea: HTMLTextAreaElement = msgTextarea.current[uniqueCommentId].replyTextarea[idx];
-                                  thisMsgTextarea.toggleAttribute("readOnly")
-                                  thisMsgTextarea.classList.toggle("!outline-2")
-                                  thisMsgTextarea.nextElementSibling.classList.toggle("hidden")
-                                }
-                                ul.classList.toggle("!block")
-                              }}>
+                              <button onClick={e=>handleShowEditDeleteFeatures(e,uniqueCommentId)}>
                                 <BsThreeDots />
                               </button>
                               <ul className='hidden absolute [&>li>button]:border [&>li>button]:bg-zinc-50 [&>li>button]:px-3 [&>li>button]:py-1 [&>li>button]:w-full'>
@@ -423,8 +443,8 @@ const CommentSection = ({articleId,initComments,style}: CommentSectionProps) => 
                                 target.style.height=""
                                 target.style.height = target.scrollHeight.toString() + "px"
                               }}
-                              ref={currEle=>msgTextareaRef(currEle,uniqueCommentId,idx)}
-                              className="outline outline-0 rounded-md w-full resize-none dark:bg-inherit" 
+                              ref={currEle=>msgTextareaCB(currEle,uniqueCommentId,idx)}
+                              className="rounded-md w-full resize-none dark:bg-inherit" 
                               readOnly
                               defaultValue={reply.replyMsg}
                             >
@@ -433,7 +453,7 @@ const CommentSection = ({articleId,initComments,style}: CommentSectionProps) => 
                           </form>
 
                           {/* show input reply & like & dislike btn */}
-                          <div className='text-sm flex gap-x-3 [&>button>svg]:inline '>
+                          <div className='text-sm flex gap-x-2 [&>button>svg]:inline '>
                             <button onClick={e=>handleInputReply(e,reply.name)}>
                               <BiReply/> reply
                             </button>
@@ -478,7 +498,7 @@ interface NameDateProps{
 const NameDate = ({name,date}: NameDateProps) => {
   return (
     <div>
-      <span className='text-xl font-semibold mr-3'>{name}</span>
+      <p className='mr-3 inline font-semibold'>{name}</p>
       <dfn title='dd/mm/yyyy'>
         <span className='text-gray-400'>{date}</span>
       </dfn>

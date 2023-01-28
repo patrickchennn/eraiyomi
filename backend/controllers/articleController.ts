@@ -3,7 +3,6 @@ import {articleModel} from "../model/articleModel.js"
 import { Request,Response } from "express"
 import mongoose from "mongoose"
 import { setDislikeComment, setLikeComment } from "../utils/setLikeDislikeComment.js"
-
 import fresh from "fresh"
 import etag from "etag"
 
@@ -17,31 +16,33 @@ import etag from "etag"
 export const getArticles = async (req: Request, res:Response) => {
   console.log(chalk.yellow(`[API] GET /api/articles`))
 
-  // console.log(req.headers);
-  
+
   const articleDatas = await articleModel.find()
   if(articleDatas===null){
     return res.status(404).send("404 Not Found")
   }
-  // check etag (caching)
-  const myETag: string = etag(Object.keys(articleDatas).length.toString()) 
-  const myETagMod: string = myETag.substring(1,myETag.length-1)
 
-  var reqHeaders = { 'if-none-match': req.headers["if-none-match"] }
-  var resHeaders = { 'etag': myETagMod }
-  // console.log(reqHeaders,resHeaders,fresh(reqHeaders, resHeaders))
-  if(fresh(reqHeaders, resHeaders)){
+
+  // check etag (caching)
+
+  const myEtag: string = etag(JSON.stringify(articleDatas)) 
+
+  const reqEtag = { 'if-none-match': req.headers["if-none-match"] }
+  const resEtag = { 'etag': myEtag }
+  // console.log(articleDatas,typeof(articleDatas))
+  // console.log(reqEtag,resEtag,fresh(reqEtag, resEtag))
+  if(fresh(reqEtag, resEtag)){
     return res.status(304).send("Not modifiedd")
   }
 
-  // console.log(myETagMod)
-  res.setHeader('ETag', myETagMod)
-
-
+  // // console.log(myETagMod)
+  res.setHeader('ETag', myEtag)
   res.set({
     "Access-Control-Expose-Headers":"Etag",
   })
-  // console.log(res.getHeaders())
+
+  // console.log(req.headers);
+  // console.log(myEtag)
 
   return res.status(200).json(articleDatas)
 }
@@ -86,7 +87,8 @@ export const postArticle =  async (req: Request, res: Response) => {
     shortDescription: body.shortDescription,
     publishedDate: body.publishedDate,
     publishedDateVerbose: body.publishedDateVerbose,
-    likes:0,  
+    numberOfLikes:0,
+    likes:{},
     author: body.author,
     keywords: body.keywords,
     comments:{},
@@ -108,17 +110,37 @@ export const postArticle =  async (req: Request, res: Response) => {
  */
 export const putArticleLike =  async (req: Request, res: Response) => {
   const {articleId} = req.params
-  console.log(chalk.yellow(`[API] POST /api/article/like/:articleId`))
-  const articleData = await articleModel.findByIdAndUpdate(
-    articleId,
-    {
+  const {email} = req.body
 
-    }
-  )
-  if(articleData===null){
+  console.log(chalk.yellow(`[API] PUT /api/article/like/:articleId`))
+  if(!email.length){
+    return res.status(401).send("Unauthorized")
+  }else{
+    // verify the gmail account (for future feature)    
+  }
+  const article = await articleModel.findById(articleId)
+  if(article===null){
     return res.status(404).send("404 Not Found")
   }
-  return res.status(201).json(articleData)
+
+  if(!article.likes.hasOwnProperty(email)){
+    article.likes[email] = true
+    article.numberOfLikes! += 1
+    article.markModified("likes")
+  }else{
+    if(article.likes[email]){
+      article.numberOfLikes! -= 1
+      article.likes[email] = false
+    }else{
+      article.numberOfLikes! += 1
+      article.likes[email] = true
+    }
+  } 
+  article.markModified("numberOfLikes")
+  article.markModified("likes")
+
+  await article.save()
+  return res.status(201).json(article)
 }
 
 

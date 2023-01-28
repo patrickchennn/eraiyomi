@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom'
 import { Article } from '../../types/Article';
 import { ArticlesState } from '../../types/Article';
 
-const Home = ({rootElement}: {rootElement: HTMLDivElement}) => {
+const Home = () => {
   const {articlesState}: {articlesState: ArticlesState} = React.useContext(AppContext)
 
   const [showArrow,setShowArrow] = React.useState(true) 
@@ -95,17 +95,17 @@ const Home = ({rootElement}: {rootElement: HTMLDivElement}) => {
               <Link to={article.path} target="_blank" className="text-2xl font-bold after:content-[''] after:block after:w-0 after:h-0.5 after:bg-black after:transition-[width] after:duration-500 after:ease-in after:hover:w-full after:dark:bg-white">
                 {article.titleArticle}
               </Link>
-              <div className='flex gap-x-3'>
+              <div className='text-center flex gap-x-2'>
                 <dfn className='text-gray-400' title={article.publishedDateVerbose}>
                   {article.publishedDate}
                 </dfn>
                 <div>
                   <BsEye className='mx-auto'/>
-                  123
+                  09312
                 </div>
                 <div>
                   <BiLike className='mx-auto'/>
-                  123
+                  {article.numberOfLikes}
                 </div>
               </div>
             </div>

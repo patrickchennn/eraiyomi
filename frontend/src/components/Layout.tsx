@@ -6,8 +6,7 @@ import TopNav from './TopNav'
 interface LayoutProps{
   rootElement: HTMLDivElement,
 }
-
-const Layout = ({rootElement}: LayoutProps) => {
+const Layout = () => {
   const mainContainerRef = React.useRef<MainContainerRef>({
     searchContainer: null,
     bgSearch: null,
@@ -33,7 +32,6 @@ const Layout = ({rootElement}: LayoutProps) => {
     >
       <TopNav 
         mainContainerRef={mainContainerRef} 
-        rootElement={rootElement} 
       />
       <div className='relative'>
         <div ref={currEle => mainContainerRef.current.bgSearch = currEle} className='bg-black opacity-70 w-full h-full hidden absolute z-[1] top-0 right-0 bottom-0 left-0' onClick={handleClick}></div>

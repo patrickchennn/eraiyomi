@@ -8,15 +8,15 @@ import {ImSearch} from "react-icons/im"
 import {AiOutlineSearch} from "react-icons/ai"
 import {MainContainerRef} from "./Layout"
 import { AppContext } from '../App'
+import { rootElement } from '..'
 
 // my custom types
 import { Article, ArticlesState } from '../../types/Article'
 
 interface TopNavProps{
-  rootElement: HTMLDivElement,
   mainContainerRef: React.MutableRefObject<MainContainerRef>,
 }
-const TopNav = ({rootElement,mainContainerRef}: TopNavProps) => {
+const TopNav = ({mainContainerRef}: TopNavProps) => {
   const {articlesState}: {articlesState: ArticlesState} = React.useContext(AppContext)
 
   const [isDark,setIsDark] = React.useState(false)
