@@ -20,4 +20,5 @@ module.exports = merge(config,{
     minimize: true,
     minimizer: [new TerserPlugin()],
   },
+  devtool: false,
 });

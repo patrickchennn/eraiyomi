@@ -1,6 +1,5 @@
 const path = require('path');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const CleanTerminalPlugin = require('clean-terminal-webpack-plugin');
 
 module.exports = {
   entry: path.resolve(__dirname,'src/index.tsx'),
@@ -9,7 +8,6 @@ module.exports = {
       template: path.join(__dirname, "public", "template.html"),
       title: 'eraiyomi',
     }),
-    new CleanTerminalPlugin(),
   ],
   module:{
     rules:[

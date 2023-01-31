@@ -99,10 +99,10 @@ const Home = () => {
                 <dfn className='text-gray-400' title={article.publishedDateVerbose}>
                   {article.publishedDate}
                 </dfn>
-                <div>
+                {/* <div>
                   <BsEye className='mx-auto'/>
                   09312
-                </div>
+                </div> */}
                 <div>
                   <BiLike className='mx-auto'/>
                   {article.numberOfLikes}

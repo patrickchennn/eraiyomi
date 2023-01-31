@@ -9,14 +9,13 @@ import {
 } from "react-router-dom";
 
 import Layout from './components/Layout';
-import Article1 from './pages/article1/Article1';
+import _217ContainsDuplicate from './pages/217-contains-duplicate/_217ContainsDuplicate';
 import Home from "./pages/Home";
 import DetailProfile from "./pages/DetailProfile";
 import { Article } from "../types/Article";
 import { Account, GoogleIdentityRes } from "../types/Account";
 import { getArticles } from "./features/articleService";
 import ErrorPage from "./components/ErrorPage";
-import { rootElement } from ".";
 
 declare global {
   interface Window { google: any; }
@@ -88,7 +87,7 @@ const App = () => {
     createRoutesFromElements(
       <Route errorElement={<ErrorPage/>} element={<Layout />}>
         <Route index path="/" element={<Home />}/>
-        <Route path="/article1" element={<Article1 />}/>
+        <Route path="/217-contains-duplicate" element={<_217ContainsDuplicate />}/>
         {/* <Route path="/sign-in" element={<SignIn SetAccountInfo={SetAccountInfo}/>}/> */}
         <Route path="/detail-profile" element={<DetailProfile />}/>
       </Route>

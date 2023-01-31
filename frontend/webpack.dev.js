@@ -1,6 +1,7 @@
 const path = require('path');
 const config = require("./webpack.config");
 const {merge} = require('webpack-merge');
+const CleanTerminalPlugin = require('clean-terminal-webpack-plugin');
 
 module.exports = merge(config, {
   mode: "development",
@@ -11,6 +12,9 @@ module.exports = merge(config, {
     port: 3000,
     historyApiFallback: true
   },
+  plugins:[
+    new CleanTerminalPlugin(),
+  ],
   // devtool:"inline-source-map",
   devtool: "source-map"
 });

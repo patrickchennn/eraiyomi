@@ -13,7 +13,7 @@ interface TitleProps{
 const Title = ({titlePage, miscInfo}: TitleProps) => {
   return (
     <div className="pb-3">
-      <h1 className='font-roboto text-center'>
+      <h1 className='font-roboto'>
         {titlePage}
       </h1>
       <span className='text-gray-400 text-sm flex flex-wrap	items-center tracking-[-0.9px]'>

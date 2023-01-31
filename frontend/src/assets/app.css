@@ -7,7 +7,11 @@ html{
 }
 
 
-
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    text-align: left;
+}
 
 
 
@@ -20,6 +24,7 @@ html{
     html{
         @apply max-[768px]:text-sm
     }
+    pre{@apply max-[640px]:!whitespace-pre-line}
     h1{@apply text-3xl}
     h2{@apply text-2xl}
     h3{@apply text-xl}

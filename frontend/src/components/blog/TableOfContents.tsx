@@ -173,7 +173,13 @@ export const TableOfContents2 = ({headingRef, TOCData}: TableOfContentsProps) =>
         const borderColorOnHover: string = prevEle.dataset.borderColorOnHover
         const borderColor: string = prevEle.dataset.borderColorDefault
         removeAddClass(prevEle, borderColorOnHover, borderColor)
-        removeAddClass(prevEle,"bg-slate-300", "bg-slate-200")
+        
+        if(isDarkMode()){
+          removeAddClass(prevEle,"dark:bg-slate-800", "dark:bg-slate-700")
+        }else{
+          console.log("not dark shittttt")
+          removeAddClass(prevEle,"bg-slate-300", "bg-slate-200")
+        }
         prevEle.classList.toggle("!font-semibold")
 
       }
@@ -229,7 +235,7 @@ export const TableOfContents2 = ({headingRef, TOCData}: TableOfContentsProps) =>
           style={{display:showTOC?"block":"none"}}
           ref={TOCParentBoxRef}
         >
-          <h3 className='py-1 font-bold text-center text-[darkblue]'>
+          <h3 className='py-1 font-bold text-center'>
             <span className='sketch-highlight dark:before:border-sky-200 dark:after:border-sky-200'>
               Table Of Contents
             </span>

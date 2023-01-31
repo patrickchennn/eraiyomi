@@ -6,8 +6,14 @@ import { Article } from '../../../types/Article'
 
 interface OtherPostsProps{
   style: string,
+  currArticleId: string
 }
-const OtherPosts = ({style}: OtherPostsProps) => {
+/**
+ * 
+ * @currArticleId Current article id is the currently viewed article. If that is the case, then no need to display it to otherposts logic
+ * @returns 
+ */
+const OtherPosts = ({style,currArticleId}: OtherPostsProps) => {
   const {articlesState}: {articlesState: ArticlesState} = React.useContext(AppContext)
 
 
@@ -20,6 +26,7 @@ const OtherPosts = ({style}: OtherPostsProps) => {
         <div className=''>
           {
             articlesState.message.map((article: Article) => {
+              if(article._id===currArticleId) return
               return (
                 <div className='hover:bg-gray-100 dark:hover:bg-gray-800' key={article._id}>
                   <h3>
