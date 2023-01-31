@@ -115,7 +115,7 @@ export const TableOfContents = ({headingRef, TOCData}: TableOfContentsProps) => 
           <h3 className='mb-3 font-bold text-center block'>
             <button onClick={() => setShowTOC(prev=>!prev)}>☰</button>
             <span className='sketch-highlight dark:before:border-sky-200 dark:after:border-sky-200'>
-              Table Of Contents
+              Daftar Isi
             </span>
           </h3>
           {
@@ -173,7 +173,7 @@ export const TableOfContents2 = ({headingRef, TOCData}: TableOfContentsProps) =>
         const borderColorOnHover: string = prevEle.dataset.borderColorOnHover
         const borderColor: string = prevEle.dataset.borderColorDefault
         removeAddClass(prevEle, borderColorOnHover, borderColor)
-        
+
         if(isDarkMode()){
           removeAddClass(prevEle,"dark:bg-slate-800", "dark:bg-slate-700")
         }else{
@@ -237,7 +237,7 @@ export const TableOfContents2 = ({headingRef, TOCData}: TableOfContentsProps) =>
         >
           <h3 className='py-1 font-bold text-center'>
             <span className='sketch-highlight dark:before:border-sky-200 dark:after:border-sky-200'>
-              Table Of Contents
+              Daftar Isi
             </span>
           </h3>
             <ul onClick={handleTOCClick}>

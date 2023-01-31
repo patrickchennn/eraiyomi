@@ -110,7 +110,7 @@ const _217ContainsDuplicate = () => {
                 titlePage={articleData.titleArticle}
                 miscInfo={{
                   date: articleData.publishedDate,
-                  wordCount: 743,
+                  wordCount: 718,
                   author: articleData.author,
                   readingTime: "5 min",
                   keywords: articleData.keywords,

@@ -17,7 +17,7 @@ const Title = ({titlePage, miscInfo}: TitleProps) => {
         {titlePage}
       </h1>
       <span className='text-gray-400 text-sm flex flex-wrap	items-center tracking-[-0.9px]'>
-        <PublishedDate/> {miscInfo.date} • {miscInfo.wordCount} words written by {miscInfo.author} • <EstimatedReadTime/> {miscInfo.readingTime}
+        <PublishedDate/> {miscInfo.date} • {miscInfo.wordCount} kata ditulis oleh {miscInfo.author} • <EstimatedReadTime/> {miscInfo.readingTime}
       </span>
       <span className='text-gray-400 text-sm flex gap-x-1'>
         {miscInfo.keywords.map((keyword: string, idx: number) => (

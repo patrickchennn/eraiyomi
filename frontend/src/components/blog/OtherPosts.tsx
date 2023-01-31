@@ -21,7 +21,7 @@ const OtherPosts = ({style,currArticleId}: OtherPostsProps) => {
   if(articlesState.isSuccess){
     return (
       <div className={style}>
-        <h3 className='font-bold text-center'>Other Posts</h3>
+        <h3 className='font-bold text-center'>Baca juga</h3>
         <hr className='mb-5'/>
         <div className=''>
           {
