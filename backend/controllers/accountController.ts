@@ -31,7 +31,7 @@ export const postAccountLogin = (req: Request, res: Response) => {
     try {
       // verify the jwt
       decoded = jwt.verify(token,process.env.JWT_SECRET as string)
-      console.log(decoded)
+      // console.log(decoded)
       // verify the google account (for future feature)
     } catch (error: any) {
       data.isLoggedIn = false
