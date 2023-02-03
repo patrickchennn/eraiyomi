@@ -56,6 +56,7 @@ app.post("/api/account/login", accountController.postAccountLogin)
 
 
 
+console.log(process.env.private_key)
 
 app.listen(
   port, 
@@ -75,8 +76,8 @@ const propertyId: string = '347340790';
 const analyticsDataClient = new BetaAnalyticsDataClient(
   {
     credentials:{
-      "private_key": process.env.private_key as string,
-      "client_email": process.env.client_email as string,
+      private_key: process.env.private_key as string,
+      client_email: process.env.client_email as string,
     },
     projectId:process.env.projectId as string
   }
