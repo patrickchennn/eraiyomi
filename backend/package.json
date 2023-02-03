@@ -8,7 +8,9 @@
     "watch:clean": "npx rimraf ./compiled-ts",
     "watch:build": "npx tsc --watch",
     "watch:server": "npx nodemon ./compiled-ts/server.js",
-    "server": "npx rimraf ./compiled-ts && tsc && concurrently npm:watch:build npm:watch:server"
+    "server": "npx rimraf ./compiled-ts && tsc && concurrently npm:watch:build npm:watch:server",
+    "server-prod": "npx rimraf ./compiled-ts && tsc && node ./compiled-ts/server.js --omit=dev"
+
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.3",
