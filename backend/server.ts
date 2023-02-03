@@ -72,10 +72,15 @@ const propertyId: string = '347340790';
 
 // Using a default constructor instructs the client to use the credentials
 // specified in GOOGLE_APPLICATION_CREDENTIALS environment variable.
-const analyticsDataClient = new BetaAnalyticsDataClient({credentials:{
-  "private_key": process.env.private_key as string,
-  "client_email": process.env.client_email as string,
-}});
+const analyticsDataClient = new BetaAnalyticsDataClient(
+  {
+    credentials:{
+      "private_key": process.env.private_key as string,
+      "client_email": process.env.client_email as string,
+    },
+    projectId:process.env.projectId as string
+  }
+);
 
 
 // Runs a simple report.
@@ -92,6 +97,9 @@ async function runReport() {
       {
         name: 'pageLocation',
       },
+      {
+        name:"hostName"
+      }
     ],
     metrics: [
       {
@@ -100,20 +108,36 @@ async function runReport() {
       {
         name: 'screenPageViews',
       },
-      {
-        name: 'screenPageViewsPerSession',
-      },
-      {
-        name: 'screenPageViewsPerUser',
-      },
     ],
+    dimensionFilter: {
+      // Filter hostname such name is not started with eraiyomi. This filters the localhost (or 12.0.0.7) analytics. I do not want that because localhost is not a real views it is just for testing (development) purpose.
+      orGroup:{
+        expressions:[
+          {
+            filter: {
+              fieldName: "hostName",
+              stringFilter: {
+                value: "eraiyomi.web.app"
+              }
+            },
+          },
+          {
+            filter: {
+              fieldName: "hostName",
+              stringFilter: {
+                value: "eraiyomi.firebaseapp.com"
+              }
+            },
+          }
+        ]
+      }
+    },
   });
   console.log('Report result:');
   response.rows!.forEach(row => {
-    // @ts-ignore
     console.log(row)
   });
 }
 
 runReport();
-//asdasdasasas
+//asdasdasasasfgpo[]asdasdpppasdasd
