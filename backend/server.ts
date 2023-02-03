@@ -72,13 +72,10 @@ const propertyId: string = '347340790';
 
 // Using a default constructor instructs the client to use the credentials
 // specified in GOOGLE_APPLICATION_CREDENTIALS environment variable.
-const analyticsDataClient = new BetaAnalyticsDataClient();
-// console.log(analyticsDataClient)
-
-// export GOOGLE_APPLICATION_CREDENTIALS=/c/Users/User/env/dev/eraiyomi/backend/credentials.json
-// export GOOGLE_APPLICATION_CREDENTIALS="C:\Users\User\env\dev\eraiyomi\backend\credentials.json"
-
-
+const analyticsDataClient = new BetaAnalyticsDataClient({credentials:{
+  "private_key": process.env.private_key as string,
+  "client_email": process.env.client_email as string,
+}});
 
 
 // Runs a simple report.
@@ -119,4 +116,4 @@ async function runReport() {
 }
 
 runReport();
-// adsdssdsadasdasdasdi
+//asdasdasasas
