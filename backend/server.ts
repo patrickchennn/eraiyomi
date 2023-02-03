@@ -87,7 +87,7 @@ async function runReport() {
     property: `properties/${propertyId}`,
     dateRanges: [
       {
-        startDate: 'yesterday',
+        startDate: '7daysAgo',
         endDate: 'today',
       },
     ],

@@ -3,14 +3,19 @@ import { Account } from "../../types/Account"
 import handleErrRes from "./handleErrRes"
 
 
-let url: string = "http://localhost:8080/api/article"
+let url: string 
+if(process.env.BUILD_MODE==="development"){
+  url = "http://localhost:8080/"
+}else{
+  url = "https://eraiyomi-api.up.railway.app/"
+}
 
 export const getArticles = async () => {
   let data: Article[]
   try{
     const etag: string = localStorage.getItem("etag-articles")
     const res = await fetch(
-      `${url}s`,
+      `${url}articles`,
       {
         headers:{
           "if-none-match":etag
@@ -48,7 +53,7 @@ export const getArticles = async () => {
 export const getArticle = async (titleArticle: string) => {
   let data: Article
   try{
-    const res = await fetch(`${url}/${titleArticle}`)
+    const res = await fetch(`${url}/article/${titleArticle}`)
     handleErrRes(res,"GET")
     data = await res.json()
     console.log(`GET ${res.url}\n`,data)
@@ -70,7 +75,7 @@ export const postArticleComment = async(
   let data: Comments
   try{
     let res: Response = await fetch(
-      `${url}/comment/${articleId}`,
+      `${url}/article/comment/${articleId}`,
       {
         method: "POST",
         headers: {
@@ -109,7 +114,7 @@ export const putArticleLike = async (
 
   try {
     let res: Response = await fetch(
-      `${url}/like/${articleId}`,
+      `${url}/article/like/${articleId}`,
       {
         method: "PUT",
         headers: {
@@ -143,7 +148,7 @@ export const postCommentReply = async (
   let data: Comments;
   try{
     const res = await fetch(
-      `${url}/comment/reply/${articleId}/${uniqueCommentId}`,
+      `${url}/article/comment/reply/${articleId}/${uniqueCommentId}`,
       {
         headers: {
           'Content-Type': 'application/json'
@@ -181,7 +186,7 @@ export const putCommentLikeDislike = async (
   let data: Comments
   try {
     const res = await fetch(
-      `${url}/comment/like-dislike/${articleId}/${uniqueCommentId}?type=${type}&accountId=${accountInfo.id}`,
+      `${url}/article/comment/like-dislike/${articleId}/${uniqueCommentId}?type=${type}&accountId=${accountInfo.id}`,
       {
         method:"PUT"
       }
@@ -207,7 +212,7 @@ export const putCommentEdit = async (
   let data: Comments
   try {
     const res = await fetch(
-      `http://localhost:8080/api/article/comment/edit/${articleId}/${uniqueCommentId}`,
+      `${url}/article/comment/edit/${articleId}/${uniqueCommentId}`,
       {
         method:"PUT",
         headers: {
@@ -239,7 +244,7 @@ export const deleteCommentDelete = async (
   let data: Comments
   try {
     const res = await fetch(
-      `http://localhost:8080/api/article/comment/delete/${articleId}/${uniqueCommentId}`,
+      `${url}/article/comment/delete/${articleId}/${uniqueCommentId}`,
       {
         method:"DELETE"
       }
