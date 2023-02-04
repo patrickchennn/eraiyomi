@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "server": "npm run server --prefix backend",
-    "client": "npm run client --prefix frontend",
-    "dev": "concurrently npm:server npm:client"
+    "dev": "concurrently \"npm run server --prefix backend\" \"npm run client --prefix frontend\"",
+    "build": "npm run build --prefix backend && npm run build --prefix frontend",
+    "review":"concurrently \"npm run server-prod --prefix backend\" \"firebase emulators:start\""
   },
   "repository": {
     "type": "git",

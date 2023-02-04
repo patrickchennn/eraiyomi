@@ -5,7 +5,7 @@ import mongoose from "mongoose"
 import { setDislikeComment, setLikeComment } from "../utils/setLikeDislikeComment.js"
 import fresh from "fresh"
 import etag from "etag"
-
+import { getReport } from "./GAController.js"
 
 
 /**
@@ -23,28 +23,34 @@ export const getArticles = async (req: Request, res:Response) => {
   }
 
 
-  // check etag (caching)
+  const dataAnalytics = await getReport()
 
-  const myEtag: string = etag(JSON.stringify(articleDatas)) 
+  // concatenate the article datas and its analytics
+  const concat = {articleDatas,dataAnalytics}
 
+  // start: check etag (caching)
+  const myEtag: string = etag(JSON.stringify(concat)) 
+
+  // etag from the client request
   const reqEtag = { 'if-none-match': req.headers["if-none-match"] }
+
+  // etag from the server
   const resEtag = { 'etag': myEtag }
   // console.log(articleDatas,typeof(articleDatas))
   // console.log(reqEtag,resEtag,fresh(reqEtag, resEtag))
   if(fresh(reqEtag, resEtag)){
-    return res.status(304).send("Not modifiedd")
+    return res.sendStatus(304)
   }
+  // end: check etag (caching)
+
 
   // // console.log(myETagMod)
-  res.setHeader('ETag', myEtag)
   res.set({
     "Access-Control-Expose-Headers":"Etag",
+    'ETag': myEtag
   })
 
-  // console.log(req.headers);
-  // console.log(myEtag)
-
-  return res.status(200).json(articleDatas)
+  return res.status(200).json(concat)
 }
 
 

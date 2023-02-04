@@ -5,8 +5,9 @@
   "private": true,
   "proxy": "http://localhost:8080",
   "scripts": {
-    "client": "webpack serve --config ./webpack.dev.js",
-    "build": "webpack --config ./webpack.prod.js"
+    "client": "echo MODE=development > .env && webpack serve --config ./webpack.dev.js",
+    "build": "echo MODE=development > .env && webpack --config ./webpack.prod.js",
+    "deploy":"echo MODE=production > .env && firebase deploy"
   },
   "devDependencies": {
     "@babel/core": "^7.20.2",

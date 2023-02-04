@@ -1,21 +1,22 @@
-import { Article, Comments } from "../../types/Article"
+import { Article, Comments, GetArticlesRes } from "../../types/Article"
 import { Account } from "../../types/Account"
 import handleErrRes from "./handleErrRes"
 
-
 let url: string 
-if(process.env.BUILD_MODE==="development"){
-  url = "http://localhost:8080/"
-}else{
-  url = "https://eraiyomi-api.up.railway.app/"
+if(process.env.MODE==="development"){
+  url = "http://localhost:8080/api"
+}else if(process.env.MODE==="production"){
+  url = "https://eraiyomi-api.up.railway.app/api"
 }
 
 export const getArticles = async () => {
-  let data: Article[]
+  // let data: Article[]
+
+  let dataRes: GetArticlesRes
   try{
     const etag: string = localStorage.getItem("etag-articles")
     const res = await fetch(
-      `${url}articles`,
+      `${url}/articles`,
       {
         headers:{
           "if-none-match":etag
@@ -23,27 +24,27 @@ export const getArticles = async () => {
       }
     )
 
-    // if true, it means the data was fetched from the localstorage, the data was cached with etag
+    // // if true, it means the data was fetched from the localstorage, the data was cached with etag
     if(res.status===304){
-      console.log(`GET ${url} ${304}\nCached on localstorage `)
+      console.log(`GET ${res.url} ${304}\nCached on localstorage `)
       return JSON.parse(localStorage.getItem("articles"))
     }
 
     handleErrRes(res,"GET")
+    dataRes = await res.json()
 
     // store the etag value which is generated from the server
     localStorage.setItem("etag-articles",res.headers.get('Etag'))
 
-    data = await res.json()
-    localStorage.setItem("articles",JSON.stringify(data))
+    localStorage.setItem("articles",JSON.stringify(dataRes))
 
-    console.log(`GET ${url} ${res.status}\n`,data)
-    
+    console.log(`GET ${url} ${res.status}\n`,dataRes)
+    return dataRes
+
   }catch(err: unknown){
     alert(err)
     console.error(err)
   }
-  return data
 }
 
 

@@ -41,6 +41,8 @@ const _217ContainsDuplicate = () => {
     [cite_n: string]: [HTMLAnchorElement, HTMLParagraphElement];
   }
   const citesRef = useRef<CitesRef>({});
+  const mainContent = useRef<HTMLElement>();
+
   const [articleData, setArticleData] = useState<Article>();
 
   useLayoutEffect(() => {
@@ -110,9 +112,9 @@ const _217ContainsDuplicate = () => {
                 titlePage={articleData.titleArticle}
                 miscInfo={{
                   date: articleData.publishedDate,
-                  wordCount: 718,
+                  wordCount: 703,
                   author: articleData.author,
-                  readingTime: "5 min",
+                  readingTime: "4 min",
                   keywords: articleData.keywords,
                 }}
               />

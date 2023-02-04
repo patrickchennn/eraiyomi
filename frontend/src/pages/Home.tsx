@@ -33,7 +33,6 @@ const Home = () => {
   
   
   const handleSortMenuClick = (e: React.SyntheticEvent) => {
-    console.log(ulRef.current)
     ulRef.current.classList.toggle("!visible")
     setShowArrow(prev=>!prev)
   }
@@ -46,13 +45,13 @@ const Home = () => {
     setArticlesSorted(prev => ({
       ...prev,
       latest: 
-        (articlesState.message as Article[]).sort((a,b)=>{
+        (articlesState.message.articleDatas as Article[]).sort((a,b)=>{
           let aa = a.publishedDate.split('/').reverse().join();
           let bb = b.publishedDate.split('/').reverse().join();
           return (aa > bb) ? -1 : (aa < bb ? 1 : 0);
         })
     })) 
-    console.log("sort_Articles_By_Latest_Date ", articlesSorted.latest)
+    // console.log("sort_Articles_By_Latest_Date ", articlesSorted.latest)
     sortByTitleRef.current.textContent = "Latest Post"
   }
 
@@ -64,7 +63,7 @@ const Home = () => {
     setArticlesSorted(prev => ({
       ...prev,
       earliest: 
-        (articlesState.message as Article[]).sort((a,b)=>{
+        (articlesState.message.articleDatas as Article[]).sort((a,b)=>{
           let aa = a.publishedDate.split('/').reverse().join();
           let bb = b.publishedDate.split('/').reverse().join();
       
@@ -72,7 +71,7 @@ const Home = () => {
         })
     })) 
 
-    console.log("sort_Articles_By_Earliest_Date",articlesSorted.earliest)
+    // console.log("sort_Articles_By_Earliest_Date",articlesSorted.earliest)
     sortByTitleRef.current.textContent = "Earliest Post"
     setIsSorted([false,true])
   }
@@ -80,12 +79,16 @@ const Home = () => {
   const showArticles = () => {
     let whichOne: Article[]
     if(isSorted[0]){
+      // sort by the earliest date
       whichOne = articlesSorted.latest
     }else if(isSorted[1]){
+      // sort by the earliest date
       whichOne = articlesSorted.earliest
     }else{
-      whichOne = articlesState.message
+      // default
+      whichOne = articlesState.message.articleDatas
     }
+    // console.log(whichOne)
 
     return whichOne.map(article => 
       (
@@ -99,10 +102,11 @@ const Home = () => {
                 <dfn className='text-gray-400' title={article.publishedDateVerbose}>
                   {article.publishedDate}
                 </dfn>
-                {/* <div>
+                <div>
                   <BsEye className='mx-auto'/>
-                  09312
-                </div> */}
+                  {/* get the view counter from google analytics. */}
+                  {articlesState.message.dataAnalytics[article.path].screenPageViews}
+                </div>
                 <div>
                   <BiLike className='mx-auto'/>
                   {article.numberOfLikes}
@@ -161,14 +165,13 @@ const Home = () => {
       </div>
     )
   }
-  // else if(articlesState.isError){
-  //   return (
-  //     <>
-  //       err
-      
-  //     </>
-  //   )
-  // }
+  else if(articlesState.isError){
+    return (
+      <>
+        {articlesState.message}
+      </>
+    )
+  }
 }
 
 export default Home

@@ -1,8 +1,7 @@
 import React from 'react'
 import { AppContext } from '../../App'
 import { Link } from 'react-router-dom'
-import { ArticlesState } from '../../../types/Article'
-import { Article } from '../../../types/Article'
+import { ArticlesState,Article } from '../../../types/Article'
 
 interface OtherPostsProps{
   style: string,
@@ -18,14 +17,16 @@ const OtherPosts = ({style,currArticleId}: OtherPostsProps) => {
 
 
 
+
+
   if(articlesState.isSuccess){
     return (
       <div className={style}>
         <h3 className='font-bold text-center'>Baca juga</h3>
         <hr className='mb-5'/>
-        <div className=''>
+        <div>
           {
-            articlesState.message.map((article: Article) => {
+            articlesState.message.articleDatas.map((article: Article) => {
               if(article._id===currArticleId) return
               return (
                 <div className='hover:bg-gray-100 dark:hover:bg-gray-800' key={article._id}>

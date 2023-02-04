@@ -10,10 +10,9 @@ import bodyParser from 'body-parser'
 import errorHandler from './middleware/errorHandler.js'
 import cors from "cors"
 import cookieParser from "cookie-parser"
+import { BetaAnalyticsDataClient } from '@google-analytics/data'
 
-// Imports the Google Analytics Data API client library.
-// const {BetaAnalyticsDataClient} = require('@google-analytics/data');
-import {BetaAnalyticsDataClient} from '@google-analytics/data'
+
 
 
 dotenv.config()
@@ -34,6 +33,7 @@ app.use(cors({
   credentials: true 
 }))
 app.use(cookieParser())
+app.set('etag', false); // turn off
 
 
 // article
@@ -56,16 +56,14 @@ app.post("/api/account/login", accountController.postAccountLogin)
 
 
 
-console.log(process.env.private_key)
-
 app.listen(
   port, 
   () => console.log(chalk.green(`[express] app listening on port http://localhost:${port}`))
 );
 
 /**
- * TODO(developer): Uncomment this variable and replace with your
- *   Google Analytics 4 property ID before running the sample.
+ * TODO(developer): Uncomment this variable and replace with your Google Analytics 4 property ID before running the sample.
+ * docs: https://developers.google.com/analytics/devguides/reporting/data/v1
  */
 const propertyId: string = '347340790';
 
@@ -85,60 +83,55 @@ const analyticsDataClient = new BetaAnalyticsDataClient(
 
 
 // Runs a simple report.
-async function runReport() {
-  const [response] = await analyticsDataClient.runReport({
+// https://developers.google.com/analytics/devguides/reporting/data/v1/rest
+async function runReportTesting() {
+  const [response] = await analyticsDataClient.runRealtimeReport({
     property: `properties/${propertyId}`,
-    dateRanges: [
-      {
-        startDate: '7daysAgo',
-        endDate: 'today',
-      },
-    ],
+    // dateRanges: [
+    //   {
+    //     startDate: '2023-01-31',
+    //     endDate: 'today',
+    //   },
+    // ],
     dimensions: [
       {
-        name: 'pageLocation',
+        name:"eventName"
       },
-      {
-        name:"hostName"
-      }
     ],
     metrics: [
-      {
-        name: 'activeUsers',
-      },
       {
         name: 'screenPageViews',
       },
     ],
-    dimensionFilter: {
-      // Filter hostname such name is not started with eraiyomi. This filters the localhost (or 12.0.0.7) analytics. I do not want that because localhost is not a real views it is just for testing (development) purpose.
-      orGroup:{
-        expressions:[
-          {
-            filter: {
-              fieldName: "hostName",
-              stringFilter: {
-                value: "eraiyomi.web.app"
-              }
-            },
-          },
-          {
-            filter: {
-              fieldName: "hostName",
-              stringFilter: {
-                value: "eraiyomi.firebaseapp.com"
-              }
-            },
-          }
-        ]
-      }
-    },
+    // dimensionFilter: {
+    //   // Filter hostname such name is not started with eraiyomi. This filters the localhost (or 12.0.0.7) analytics. I do not want that because localhost is not a real views it is just for testing (development) purpose.
+    //   orGroup:{
+    //     expressions:[
+    //       {
+    //         filter: {
+    //           fieldName: "hostName",
+    //           stringFilter: {
+    //             value: "eraiyomi.web.app"
+    //           }
+    //         },
+    //       },
+    //       {
+    //         filter: {
+    //           fieldName: "hostName",
+    //           stringFilter: {
+    //             value: "eraiyomi.firebaseapp.com"
+    //           }
+    //         },
+    //       }
+    //     ]
+    //   }
+    // },
   });
   console.log('Report result:');
+  console.log(response)
   response.rows!.forEach(row => {
     console.log(row)
   });
 }
 
-runReport();
-//asdasdasasasfgpo[]asdasdpppasdasd
+// runReportTesting();

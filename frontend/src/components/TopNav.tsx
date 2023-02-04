@@ -140,7 +140,7 @@ const TopNav = ({mainContainerRef}: TopNavProps) => {
               </h2>
             </li>
             {
-              (articlesState.message as Article[]).map((article) => (
+              (articlesState.message.articleDatas as Article[]).map((article) => (
                 <li 
                   ref={currEle => {
                     const title: string = article.titleArticle

@@ -2,10 +2,10 @@ import { Account, GoogleIdentityRes } from "../../types/Account"
 import handleErrRes from "./handleErrRes"
 
 let url: string 
-if(process.env.BUILD_MODE==="development"){
-  url = "http://localhost:8080/"
-}else{
-  url = "https://eraiyomi-api.up.railway.app/"
+if(process.env.MODE==="development"){
+  url = "http://localhost:8080/api"
+}else if(process.env.MODE==="production"){
+  url = "https://eraiyomi-api.up.railway.app/api"
 }
 
 /**
@@ -22,7 +22,7 @@ export const postAccountLoginVerify = async (accountInfo: string) => {
       `${url}/account/login?verify=true`,
       {
         method: 'POST',
-        headers:{
+        headers:{ 
           'Content-Type': 'application/json'
         },
         body:accountInfo,

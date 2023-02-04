@@ -49,3 +49,13 @@ export interface ArticlesState{
   isError: boolean,
   message: any,
 }
+
+export interface GetArticlesRes{
+  articleDatas:Article[],
+  dataAnalytics:{
+    [pagePath: string]:{
+      activeUsers: string
+      screenPageViews: string
+    },
+  }
+}
