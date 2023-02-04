@@ -5,11 +5,10 @@
   "main": "./build/server.js",
   "type": "module",
   "scripts": {
-    "watch:build": "tsc --watch",
     "watch:server": "nodemon ./compiled-ts/server.js",
-    "build": "rimraf ./compiled-ts && tsc",
-    "server": "npm run build && concurrently npm:watch:build npm:watch:server",
-    "server-prod": "node ./compiled-ts/server.js"
+    "watch:build": "tsc --watch",
+    "server": "rimraf ./compiled-ts && tsc && concurrently npm:watch:build npm:watch:server",
+    "build": "rimraf ./compiled-ts && tsc && node ./compiled-ts/server.js"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.3",

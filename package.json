@@ -4,8 +4,7 @@
   "description": "",
   "scripts": {
     "dev": "concurrently \"npm run server --prefix backend\" \"npm run client --prefix frontend\"",
-    "build": "npm run build --prefix backend && npm run build --prefix frontend",
-    "review":"concurrently \"npm run server-prod --prefix backend\" \"firebase emulators:start\""
+    "build": "concurrently \"npm run build --prefix backend\" \"npm run build --prefix frontend\""
   },
   "repository": {
     "type": "git",
