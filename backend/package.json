@@ -2,7 +2,7 @@
   "name": "eraiyomi-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "./build-prod/backend/server.js",
+  "main": "./build-prod/server.js",
   "type": "module",
   "scripts": {
     "watch:server": "nodemon ./build/backend/server.js -V --delay 1",
@@ -10,7 +10,7 @@
     "server": "rimraf ./build && tsc && concurrently npm:watch:build npm:watch:server",
     "build-prod": "rimraf ./build-prod && tsc -p tsconfig.prod.json",
     "build": "npm run build-prod",
-    "start": "node ./build-prod/backend/server.js",
+    "start": "node ./build-prod/server.js",
     "test": "jest"
   },
   "nodemonConfig": {},
