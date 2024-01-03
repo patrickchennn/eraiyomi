@@ -3,11 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "concurrently --names 'server,client' -c 'bgBlue.bold,bgMagenta.bold' \"npm run server --prefix backend\" \"npm run dev --prefix frontend-next\"",
-    "heroku-prebuild": "npm install --prefix backend && npm install --prefix frontend-next",
-    "build":"npm run build-prod --prefix backend && npm run build --prefix frontend-next",
-    "start":"npm run start --prefix frontend-next"
-
+    "dev": "concurrently --names 'server,client' -c 'bgBlue.bold,bgMagenta.bold' \"npm run server --prefix backend\" \"npm run dev --prefix frontend-next\""
   },
   "repository": {
     "type": "git",
@@ -21,7 +17,7 @@
   },
   "homepage": "https://github.com/patrickchennn/eraiyomi#readme",
   "engines": {
-    "node": "18.x"
+    "node": "18.17.1"
   },
   "devDependencies": {
     "concurrently": "^7.6.0"
