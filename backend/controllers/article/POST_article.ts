@@ -1,4 +1,4 @@
-import { POST_ReqBodyArticle } from "@eraiyomi/types/Article";
+import { POST_ReqBodyArticle } from "@patorikkuuu/eraiyomi-types";
 import chalk from "chalk";
 import mongoose from "mongoose";
 import { articleModel } from "../../schema/articleSchema.js";

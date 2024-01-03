@@ -1,6 +1,6 @@
 import chalk from "chalk"
 import { Request,Response } from "express"
-import { User } from "../../../types"
+import { User } from "@patorikkuuu/eraiyomi-types"
 
 
 interface ReqBodyVerify {

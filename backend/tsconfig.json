@@ -6,10 +6,6 @@
     "outDir": "build",
     "moduleResolution": "node",
     "isolatedModules": true,
-
-    "paths": {
-      "@eraiyomi/types/*": ["../types/*"]
-    },               
     "sourceMap": true,
     "allowJs": true, // Allow importing JavaScript files
     "esModuleInterop": true,      

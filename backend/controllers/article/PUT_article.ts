@@ -1,7 +1,7 @@
 import chalk from "chalk"
 import { articleModel } from "../../schema/articleSchema.js"
 import { Request,Response } from "express"
-import { User } from "@eraiyomi/types/User.js"
+import { User } from "@patorikkuuu/eraiyomi-types"
 import isEmpty from "lodash.isempty"
 import { renameSync } from "fs"
 import { parentDirectory } from "../../server.js"

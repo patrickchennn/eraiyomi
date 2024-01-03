@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import { Request,Response } from "express"
-import { ReqBodyLoginTraditional } from "../../../types";
+import { ReqBodyLoginTraditional } from "@patorikkuuu/eraiyomi-types";
 import { userModel } from "../../schema/userSchema.js";
 import bcrypt from "bcrypt"
 import generateToken from "../../utils/generateJWT.js";

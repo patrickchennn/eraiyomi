@@ -1,7 +1,6 @@
-import { POST_ReqBodyArticle } from "@eraiyomi/types/Article";
 import chalk from "chalk";
 import { Request,Response } from "express"
-
+import {POST_ReqBodyArticle} from "@patorikkuuu/eraiyomi-types"
 
 /**
  * @desc Create an article asset. By saying asset, I mean such things like images, videos, the actual content

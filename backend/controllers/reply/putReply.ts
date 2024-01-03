@@ -1,7 +1,7 @@
 import chalk from "chalk"
 import { replyModel } from "../../schema/replySchema.js"
 import { Request,Response } from "express"
-import { User } from "@eraiyomi/types/User.js"
+import { User } from "@patorikkuuu/eraiyomi-types"
 
 interface putReplyReqBody{
   // the object (with three properties) below are used only for testing

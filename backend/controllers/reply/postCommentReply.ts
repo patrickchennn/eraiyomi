@@ -1,4 +1,4 @@
-import { User } from "@eraiyomi/types/User"
+import { User } from "@patorikkuuu/eraiyomi-types"
 import chalk from "chalk"
 import { Request,Response } from "express"
 import mongoose from "mongoose"
