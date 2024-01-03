@@ -8,7 +8,7 @@
     "watch:server": "nodemon ./build/backend/server.js -V --delay 1",
     "watch:build": "tsc --watch",
     "server": "rimraf ./build && tsc && concurrently npm:watch:build npm:watch:server",
-    "build-prod": "cp -R ../types ./types && rimraf ./build-prod && tsc -p tsconfig.prod.json",
+    "build-prod": "rimraf ./build-prod && tsc -p tsconfig.prod.json",
     "build": "npm run build-prod",
     "start": "node ./build-prod/backend/server.js",
     "test": "jest"
