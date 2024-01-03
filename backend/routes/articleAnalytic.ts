@@ -1,0 +1,6 @@
+import  { Router } from "express"
+import { GET_articlesAnalytic } from "../controllers/getArticlesAnalytic.js"
+export const routerArticleAnalytic = Router()
+
+routerArticleAnalytic.route("/api/articles/analytic")
+  .get(GET_articlesAnalytic)

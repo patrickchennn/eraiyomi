@@ -1,0 +1,1289 @@
+{
+  "openapi":"3.1.0",
+  "info": {
+    "title":"eraiyomi RESTful API",
+    "description": "OpenAPI for eraiyomi",
+    "version":"1",
+    "contact": {
+      "name":"Patrick Chen",
+      "email": "patrick.chen31@gmail.com",
+      "url":"eraiyomi.com"
+    }
+  },
+  "servers": [
+    {"url":"http://localhost:8080/api"}
+  ],
+  "components": {
+    "parameters": {
+      "ArticleIdParam": {
+        "name": "articleId",
+        "description": "The article's id for performing CRUD operation",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "CommentId":{
+        "name": "commentId",
+        "description": "The comment's id",
+        "in":"path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "schemas": {
+      "ContentItem":{
+        "type":"array",
+        "items":{
+          "anyOf": [
+            {
+              "type":"object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "paragraph",
+                    "heading",
+                    "list",
+                    "linebreak",
+                    "code"
+                  ]
+                },
+                "style":{
+                  "type": "string",
+                  "enum": [
+                    "ordered",
+                    "unordered",
+                    "h2",
+                    "h3"
+                  ]
+                },
+                "items":{
+                  "type": "array",
+                  "items":{
+                    "type": "string"
+                  }
+                },
+                "text":{
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "Article":{
+        "type":"object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "titleArticle": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "URLpath": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "shortDescription": {
+            "type": "string"
+          },
+          "publishedDate": {
+            "type": "string"
+          },
+          "status":{
+            "type": "string",
+            "enum": [
+              "published",
+              "unpublished"
+            ]
+          },
+          "editHistory":{
+            "type":"object",
+            "properties": {
+              "date":{
+                "type":"array",
+                "items":{
+                  "type":"string"
+                }
+              }
+            }
+          },
+          "likeDislike":{
+            "type": "object",
+            "properties": {
+              "totalLike":{
+                "type": "integer"
+              },
+              "totalDislike":{
+                "type": "integer"
+              },
+              "users":{
+                "type": "object",
+                "additionalProperties": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "author": {
+            "type": "string"
+          },
+          "category":{
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "__v": {
+            "type": "integer"
+          }
+        }
+      },
+      "DetailedArticle": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Article" },
+          {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "object"
+              },
+              "comments":{
+                "type": "object"
+              }
+            }
+          }
+        ]
+      },
+
+      "CommentTemplate":{
+        "type": "object",
+        "properties": {
+          "_id":{
+            "type":"string"
+          },
+          "displayName": {
+            "type":"string"
+          },
+          "profilePictureUrl": {
+            "type":"string"
+          },
+          "userId":{
+            "type":"string"
+          },
+          "like":{
+            "type": "object",
+            "properties": {
+              "likeCount":{
+                "type": "integer",
+                "default":0
+              },
+              "users":{
+                "type": "object",
+                "additionalProperties": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "message": {
+            "type":"string"
+          },
+
+          "publishedAt": {
+            "type":"string",
+            "default": "dd/mm/yy"
+          },
+          "updatedAt":{
+            "type":"string",
+            "default":"dd/mm/yy"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/articles":{
+      "get":{
+        "tags":["Article"],
+        "summary": "Get all article",
+        "responses": {
+          "200":{
+            "description": "success get all article",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Article"
+                }
+              }
+            }
+          },
+          "404":{
+            "description": "failed get all article",
+            "content":{
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message":{
+                      "type":"string"
+                    }
+                  }
+                },
+                "examples":{
+                  "failed":{
+                    "value": {
+                      "message":"failed get all articles"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name":"sort",
+            "description": "Sort articles with several available options",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default":"latest",
+              "enum": [
+                "latest",
+                "earliest",
+                "popular",
+                "unpopular"
+              ]
+            }
+          },
+          {
+            "name":"status",
+            "description": "get articles based on its status: published or unpublished",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default":"all",
+              "enum": [
+                "all",
+                "published",
+                "unpublished"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/article/{articleId}":{
+      "get":{
+        "tags":["Article"],
+        "summary": "Get an individual article by id",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ArticleIdParam"
+          },
+          {
+            "name": "info",
+            "description":"Return full the article info or not. If not returning full article, it will return only the content and comments",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "complete",
+                "incomplete"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200":{
+            "description": "success get $title article",
+            "content":{
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetailedArticle"
+                },
+                "examples":{
+                  "complete":{
+                    
+                  },
+                  "incomplete":{
+                    "value": {
+                      "content":[{}],
+                      "comments":[{}]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404":{
+            "description": "failed to get $titleArticle.title article",
+            "content":{
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message":{
+                      "type":"string"
+                    }
+                  }
+                },
+                "examples":{
+                  "failed":{
+                    "value": {
+                      "message":"failed to get $titleArticle.title article"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post":{
+        "tags":["Article"],
+        "summary": "Create an acrticle",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ArticleIdParam"
+          }
+        ],
+        "requestBody": {
+          "description":"The actual content of the article",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type":"object",
+                "properties": {
+                  "titleArticle": {
+                    "type":"object",
+                    "properties": {
+                      "URLpath": {
+                        "type":"string"
+                      },
+                      "title": {
+                        "type":"string"
+                      }
+                    }
+                  },
+                  "shortDescription": {
+                    "type":"string"
+                  },
+                  "publishedDate":{
+                    "type":"string",
+                    "default":"yyyy-mm-dd"
+                  },
+                  "status":{
+                    "type": "string",
+                    "enum": [
+                      "published","unpublished"
+                    ]
+                  },
+                  "editHistory":{
+                    "type":"object",
+                    "properties": {
+                      "date":{
+                        "type":"array",
+                        "items":{
+                          "type":"string"
+                        }
+                      }
+                    }
+                  },
+                  "likeDislike":{
+                    "type":"object",
+                    "properties":{
+                      "totalLike":{
+                        "type": "integer",
+                        "default": 0
+                      },
+                      "totalDislike":{
+                        "type": "integer",
+                        "default": 0
+                      },
+                      "users":{
+                        "type":"object"
+                      }
+                    }
+                  },
+                  "author":{
+                    "type":"string"
+                  },
+                  "email":{
+                    "type":"string"
+                  },
+                  "category": {
+                    "type":"array",
+                    "items":{
+                      "type": "string"
+                    }
+                  },
+                  "commentsIdRef": {
+                    "type":"string"
+                  },
+                  "articleAssetIdRef":{
+                    "type":"string"
+                  }
+                }
+              },
+              "examples": {
+                "client request body": {
+                  "value": {
+                    "title": "Sample Title",
+                    "shortDescription": "Sample Short Description",
+                    "status": "published",
+                    "author": "Sample Author",
+                    "email": "sample@example.com",
+                    "category": ["Category1", "Category2","Category(n)"]
+                  }
+                },
+                "server database model": {
+                  "value": {
+                    "_id": "1234567890",
+                    "titleArticle": {
+                      "title": "Sample Title",
+                      "URLpath": "sample-title"
+                    },
+                    "shortDescription": "Sample Short Description",
+                    "publishedDate": "yyyy-mm-dd",
+                    "status": "published",
+                    "editHistory": {
+                      "date": []
+                    },
+                    "likeDislike": {
+                      "totalLike": 0,
+                      "totalDislike": 0,
+                      "users": {}
+                    },
+                    "author": "Sample Author",
+                    "email": "sample@example.com",
+                    "category": ["Category1", "Category2"],
+                    "commentsIdRef": "0987654321",
+                    "articleAssetIdRef":"12344567"
+                  }
+                }
+              }
+            } 
+          }
+        },
+        "responses": {
+          "201":{
+            "description": "success create a article",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message":{
+                      "type":"string"
+                    }
+                  }
+                },
+                "examples": {
+                  "success-1":{
+                    "value":{
+                      "message":"success create $title article"
+                    }
+                  }
+                }
+              }
+            }
+          }
+          
+        }
+      },
+      "put":{
+        "tags":["Article"],
+        "summary": "Edit an article",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ArticleIdParam"
+          },
+          {
+            "description":"an action of like or dislike an article",
+            "name":"action",
+            "in":"query",
+            "schema":{
+              "type": "string",
+              "enum": [
+                "like", "dislike"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "titleArticle": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type":"string"
+                      },
+                      "title": {
+                        "type":"string"
+                      }
+                    }
+                  },
+                  "shortDescription": {
+                    "type":"string"
+                  },
+                  "editHistory": {
+                    "type": "array",
+                    "items":{
+                      "type":"string"
+                    }
+                  },
+                  "likeDislike":{
+                    "type": "object",
+                    "properties": {
+                      "totalLike":{
+                        "type": "integer"
+                      },
+                      "totalDislike":{
+                        "type": "integer"
+                      },
+                      "users":{
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  },
+                  "category": {
+                    "type": "array",
+                    "items":{
+                      "type":"string"
+                    }
+                  },
+                  "content": {
+                    "type": "object"
+                  }
+                }
+              },
+              "examples": {
+                "like":{
+                  "value":{
+                    "totalLike":"++1",
+                    "totalDislike":"--1",
+                    "users":{
+                      "{name_of_the_user_displayName}":"true"
+                    }
+                  }
+                },
+                "dislike":{
+                  "value":{
+                    "totalLike":"--1",
+                    "totalDislike":"++1",
+                    "users":{
+                      "{name_of_the_user_displayName}":"false"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201":{
+            "description": "Success edit an article",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message":{
+                      "type":"string"
+                    }
+                  }
+                },
+                "examples": {
+                  "success-1":{
+                    "value":{
+                      "message":"success editing $title article"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete":{
+        "tags":["Article"],
+        "summary": "Delete an article",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ArticleIdParam"
+          }
+        ],
+        "responses": {
+          "200":{
+            "description": "Success delete $title article",
+            "content":{
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "success-1":{
+                    "value":{
+                      "message":"success deleting $title"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/article/{articleId}/comments":{
+      "get":{
+        "tags":["Comment"],
+        "summary": "Get all comments on a particular article",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ArticleIdParam"
+          }
+        ],
+        "responses": {
+          "200":{
+            "description": "success get all comments on $title article",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id":{
+                      "type":"string"
+                    },
+                    "articleIdRef":{
+                      "type": "string"
+                    },
+                    "totalCommentsCount":{
+                      "type":"number"
+                    },
+                    "items":{
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {"$ref": "#/components/schemas/CommentTemplate"},
+                          {
+                            "type":"object",
+                            "properties": {
+                              "totalRepliesCount":{
+                                "type": "number"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/article/{articleId}/comment":{
+      "post":{
+        "summary":"Create a comment",
+        "tags":["Comment"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ArticleIdParam"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties":{
+                  "displayName": {
+                    "type":"string"
+                  },
+                  "profilePictureUrl": {
+                    "type":"string"
+                  },
+                  "message": {
+                    "type":"string"
+                  }
+                }
+              },
+              "examples":{
+                "client req body":{
+                  "value":{
+                    "displayName":"Rudy",
+                    "profilePictureUrl":"profile_picture.jpg",
+                    "accountId":"123456789",
+                    "message":"Great post!"
+                  }
+                },
+                "server database model": {
+                  "value": {
+                    "displayName": "Example Display Name",
+                    "profilePictureUrl": "example_profile.jpg",
+                    "accountId": "987654321",
+                    "like": {
+                      "likeCount": 42,
+                      "users": {
+                        "user1": true,
+                        "user2": true
+                      }
+                    },
+                    "message": "This is an example message",
+                    "publishedAt": "2023-10-11",
+                    "updatedAt": "2023-10-11",
+                    "totalRepliesCount": 10
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201":{
+            "description": "created a comment namely $name for article $title",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/CommentTemplate" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "totalRepliesCount":{
+                          "type":"number"
+                        }
+                      }
+                    }
+                  ]
+                }
+
+              }
+            }
+          }
+        }
+      }
+    },
+    "/article/{articleId}/comment/{commentId}":{
+      "put":{
+        "summary":"Edit a comment",
+        "description": "the complete endpoint is: /article/{articleId}/comment/{commentId}?action=like||dislike",
+        "tags":["Comment"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ArticleIdParam"
+          },
+          {
+            "$ref": "#/components/parameters/CommentId"
+          },
+          {
+            "description":"an action of like or dislike a comment",
+            "name":"action",
+            "in":"query",
+            "schema":{
+              "type": "string",
+              "enum": [
+                "like"
+              ]
+            }
+          }
+        ],
+        "requestBody":{
+          "content":{
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message":{
+                    "type":"string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete":{
+        "summary":"Delete a comment",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ArticleIdParam"
+          },
+          {
+            "$ref": "#/components/parameters/CommentId"
+          }
+        ],
+        "tags":["Comment"],
+        "responses": {
+          "201":{
+            "description": "success deleting a commente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "message": "string"
+                },                
+                "examples": {
+                  "success-1":{
+                    "value":{
+                      "message":"success deleting $displayName comment"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/article/{articleId}/comment/replies":{
+      "get":{
+        "summary":"get all reply on a particular article",
+        "description":"given a specific comment's id, then we can return all of its replies",
+        "tags":["Reply Comment"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ArticleIdParam"
+          }
+        ],
+        "responses": {
+          "200":{
+            "description": "success get all replies for article: $article_titleArticle",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id":{
+                      "type":"string"
+                    },
+                    "articleIdRef":{
+                      "type": "string"
+                    },
+                    "commentsIdRef":{
+                      "type": "string"
+                    },
+                    "items":{
+                      "type": "array",
+                      "items": {
+                        "type":"object",
+                        "properties": {
+                          "parentCommentId":{
+                            "type": "string"
+                          },
+                          "replies":{
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/CommentTemplate"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/article/{articleId}/comment/{commentId}/replies":{
+      "get":{
+        "summary":"get all reply on a particular comment",
+        "description":"given a specific comment's id, then we can return all of its replies",
+        "tags":["Reply Comment"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ArticleIdParam"
+          },
+          {
+            "$ref": "#/components/parameters/CommentId"
+          }
+        ],
+        "responses": {
+          "200":{
+            "description": "success get all replies for comment $comment_displayName",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommentTemplate"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/article/{articleId}/comment/{commentId}/reply":{
+      "post":{
+        "summary":"Creata a reply comment",
+        "description":"Reply to someone commentary",
+        "tags":["Reply Comment"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ArticleIdParam"
+          },
+          {
+            "$ref": "#/components/parameters/CommentId"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentTemplate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201":{
+            "description": "success replying to someone's comment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentTemplate"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/article/{articleId}/comment/{commentId}/reply/{replyId}":{
+      "put":{
+        "summary":"Edit a comment",
+        "tags":["Reply Comment"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ArticleIdParam"
+          },
+          {
+            "$ref": "#/components/parameters/CommentId"
+          },
+          {
+            "name": "replyId",
+            "description": "The reply's id",
+            "in":"path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description":"an action of like or dislike a comment",
+            "name":"action",
+            "in":"query",
+            "schema":{
+              "type": "string",
+              "enum": [
+                "like"
+              ]
+            }
+          }
+        ],
+        "requestBody":{
+          "content":{
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message":{
+                    "type":"string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete":{
+        "summary":"Delete a comment",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ArticleIdParam"
+          },
+          {
+            "$ref": "#/components/parameters/CommentId"
+          },
+          {
+            "name": "replyId",
+            "description": "The reply's id",
+            "in":"path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags":["Reply Comment"],
+        "responses": {
+          "201":{
+            "description": "success deleting a commente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "message": "string"
+                },                
+                "examples": {
+                  "success-1":{
+                    "value":{
+                      "message":"success deleting $displayName reply"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users":{
+      "get":{
+        "tags": [
+          "user"
+        ],
+        "responses":{
+          "200":{
+            "description": "success get all registered user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type":"string"
+                    },
+                    "userId":{
+                      "type":"string"
+                    },
+                    "name":{
+                      "type":"string"
+                    },
+                    "username":{
+                      "type":"string"
+                    },
+                    "email":{
+                      "type":"string"
+                    },
+                    "password":{
+                      "type":"string"
+                    },
+                    "profilePictureUrl":{
+                      "type":"string"
+                    }
+                  }
+                },                
+                "examples": {
+                  "success-1":{
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account/login-traditional":{
+      "post":{
+        "summary": "login",
+        "description": "login with the account that created with register method",
+        "tags": [
+          "account"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties":{
+                  "username":{
+                    "type": "string"
+                  },
+                  "email":{
+                    "type":"boolean"
+                  },
+                  "password":{
+                    "type": "string"
+                  }
+                }
+              },
+              "examples":{
+                "client-req-body":{
+                  "value":{
+                    "username":"abcd",
+                    "email":"abcd@mail.com",
+                    "password":"abcd123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201":{
+            "description": "success login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username":{
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "password":{
+                      "type":"string"
+                    }
+                  }
+                },
+                "examples": {
+                  "success-with-acc-res":{
+                    "value":{
+                      "username":"qwerty",
+                      "name": "abcd",
+                      "email":"abcd@email.com",
+                      "pictureURL":"https://pictureurl.com",
+                      "accountId":"123456789",
+                      "message":"success creating a new account"
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {
+              "set-cookie": {
+                "description": "Cookie containing user credentials token",
+                "schema": {
+                  "type": "string"
+                },
+                "example": "userCredToken=xyz123; Max-Age=3600; HttpOnly; Secure"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account/register":{
+      "post":{
+        "summary": "login",
+        "description": "login with the account that created with register method",
+        "tags": [
+          "account"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties":{
+                  "username":{
+                    "type": "string"
+                  },
+                  "email":{
+                    "type":"boolean"
+                  },
+                  "password":{
+                    "type": "string"
+                  },
+                  "name":{
+                    "type": "string"
+                  },
+                  "profilePictureUrl":{
+                    "type": "string"
+                  }
+                }
+              },
+              "examples":{
+                "client-req-body":{
+                  "value":{
+                    "username":"abcd",
+                    "email":"abcd@mail.com",
+                    "password":"abcd123",
+                    "name":"abcd efg",
+                    "profilePictureUrl":"www.image.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201":{
+            "description": "success login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username":{
+                      "message": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "success-with-acc-res":{
+                    "value":{
+                      "message":"success creating a new account"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account/verify":{
+      "post":{
+        "tags": [
+          "account"
+        ]
+      }
+    },
+    "/account":{
+      "delete":{
+        "tags": [
+          "account"
+        ]
+      }
+    }
+  }
+}

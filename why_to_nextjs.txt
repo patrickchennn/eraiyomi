@@ -1,0 +1,18 @@
+Why I'm converting this project to next js
+
+I'm creating a blog web app and SEO is important for me because I want people be able and easily find my writings. When creating this project I began with react and express, and the architecture for rendering the web app is CSR. At that time, I did not know such things. If I knew, I should have gone with SSR rendering, not using CSR, like `create-react-app`.
+
+That is not the only reason. There was two peak of problem that made me thinking `i think i should use SSR`.
+
+First, I have this comment feature, think of it like youtube comment video feature. One needs to login in order to comment for preventing spam, it is just a security concern. Obviously, when one give a commentary on a particular video, I need to display some features whether the users can `edit` or `delete`, basically modify, their comment's. The problem emerged, I just cannot give this access, modify comment, to every people. So, I need to conditionally render the feature.
+
+to illustrate to algorithm:
+1. One needs to login in order to comment
+2. User gives a commentary
+3. display modify comment feature
+4. but before that (no.3) we need to check whether that person is the one who actually gives the comment
+4.1. to illustrate: if(user.id===currentUserId) showModifyFeature() else return
+
+The solution is easy, as I put it on point no 4.1, I just need some conditional. However, where should I put it? I can't just put it on the frontend side? the DOM is easily gets manipulated since I render it on the client side? I need to completely hide the DOM and that is where I need SSR, to put the logic inside the server rather than on the client.
+
+On the second problem is about that google analytics. (TODO: complete the background problem)

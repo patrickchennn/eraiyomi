@@ -1,0 +1,25 @@
+{
+    "extends": "./tsconfig", // Extend from your base configuration
+    "compilerOptions": {
+      "outDir": "build-prod", // Separate production build directory
+      "sourceMap": false, // Disable source maps in production for smaller files and security
+      "declaration": false, // You might not need type declarations in production
+      "removeComments": true, // Remove comments to reduce file size
+      "noEmitOnError": true, // Avoid emitting files if there's an error
+      "strict": true, // Keep strict checks
+      // Consider enabling these additional strict checks for production
+      "noImplicitAny": true,
+      "strictNullChecks": true,
+      "strictFunctionTypes": true,
+      "strictBindCallApply": true,
+      "strictPropertyInitialization": true,
+      "noImplicitThis": true,
+      "alwaysStrict": true,
+      // Optimization options
+      "skipLibCheck": true, // Skip type checking of all declaration files (*.d.ts).
+      "incremental": false // Don't use incremental compilation in production for a clean build
+    },
+    "include": ["./**/*"], // Only include your source files
+    "exclude": ["./node_modules", "./build", "**/*.spec.ts"] // Exclude node_modules, build directory, and test files
+  }
+  
