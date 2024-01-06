@@ -2,8 +2,8 @@
 
 import { POST_verify } from "@/services/userService";
 import getCookie from "@/utils/getCookie";
-import { Article } from "@eraiyomi/types/Article";
-import { User, UserRes } from "@eraiyomi/types/User";
+import { Article } from "@patorikkuuu/eraiyomi-types";
+import { User, UserRes } from "@patorikkuuu/eraiyomi-types";
 import chalk from "chalk";
 
 import { Dispatch, SetStateAction, createContext, useContext, useEffect, useState } from "react";

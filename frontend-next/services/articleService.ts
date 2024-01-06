@@ -1,4 +1,4 @@
-import { Article, POST_ReqBodyArticle } from "@eraiyomi/types/Article"
+import { Article, POST_ReqBodyArticle } from "@patorikkuuu/eraiyomi-types"
 import axios from "axios"
 import chalk from "chalk"
 

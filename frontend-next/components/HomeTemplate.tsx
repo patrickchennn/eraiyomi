@@ -13,7 +13,7 @@ import Link from "next/link";
 
 // my custom types
 import { getArticles } from '../services/articleService';
-import { Article, ArticlesAnalytic } from '@eraiyomi/types/Article'
+import { Article, ArticlesAnalytic } from '@patorikkuuu/eraiyomi-types'
 
 interface HomeTemplateProps{
   initArticles: Article[]

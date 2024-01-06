@@ -1,4 +1,4 @@
-import { ArticlesAnalytic } from "@eraiyomi/types/Article"
+import { ArticlesAnalytic } from "@patorikkuuu/eraiyomi-types"
 import chalk from "chalk"
 
 const url = process.env.URL_API

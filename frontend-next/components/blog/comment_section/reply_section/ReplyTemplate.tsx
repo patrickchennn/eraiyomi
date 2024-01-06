@@ -5,8 +5,8 @@ import LikeReply from "./LikeReply"
 import ModifyReply from "./ModifyReply"
 import ReplyInput from "./ReplyInput"
 import ReplyInputBtn from "./ReplyInputBtn"
-import { ArticleCommentReply } from "@eraiyomi/types/Reply"
-import { User } from "@eraiyomi/types/User"
+import { ArticleCommentReply } from "@patorikkuuu/eraiyomi-types"
+import { User } from "@patorikkuuu/eraiyomi-types"
 import { useEffect, useState } from "react"
 
 interface ReplyTemplateProps{

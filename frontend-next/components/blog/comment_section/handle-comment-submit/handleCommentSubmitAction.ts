@@ -1,7 +1,7 @@
 "use server"
 
 import { postArticleComment } from "@/services/commentService";
-import { User } from "@eraiyomi/types/User";
+import { User } from "@patorikkuuu/eraiyomi-types";
 import chalk from "chalk";
 import { revalidateTag } from "next/cache";
 

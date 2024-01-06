@@ -1,4 +1,4 @@
-import { UserRes, ReqBodyLoginTraditional } from "../../types/User"
+import { UserRes, ReqBodyLoginTraditional } from "@patorikkuuu/eraiyomi-types"
 import chalk from "chalk"
 
 const url = process.env.URL_API

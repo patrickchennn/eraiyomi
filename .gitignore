@@ -3,3 +3,5 @@ build*
 .env
 /backend/credentials.json
 cypress
+# Local Netlify folder
+.netlify

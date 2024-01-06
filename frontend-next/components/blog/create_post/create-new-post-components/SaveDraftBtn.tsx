@@ -2,7 +2,7 @@ import React from 'react'
 import {ArticleMetadataType} from "../CreateNewPost"
 import { postArticle } from '@/services/articleService'
 import { useUserInfo } from '@/hooks/appContext'
-import { POST_ReqBodyArticle } from '@eraiyomi/types/Article'
+import { POST_ReqBodyArticle } from '@patorikkuuu/eraiyomi-types'
 
 interface SaveDraftBtnProps{
   articleMetadata: ArticleMetadataType

@@ -1,4 +1,4 @@
-import { User } from '@eraiyomi/types/User'
+import { User } from '@patorikkuuu/eraiyomi-types'
 import React from 'react'
 import Profile from './display-user/Profile'
 

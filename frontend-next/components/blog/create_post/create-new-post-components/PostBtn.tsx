@@ -6,7 +6,7 @@ import {ArticleMetadataType} from "../CreateNewPost"
 
 import { useUserInfo } from '@/hooks/appContext';
 
-import { POST_ReqBodyArticle } from '@eraiyomi/types/Article';
+import { POST_ReqBodyArticle } from '@patorikkuuu/eraiyomi-types';
 
 import { postArticle } from "@/services/articleService";
 import { PUT_articleAsset } from '@/services/articleAssetService';

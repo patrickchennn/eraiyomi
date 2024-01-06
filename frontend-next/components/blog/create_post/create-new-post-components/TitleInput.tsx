@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react'
 import { ArticleMetadataType } from '../CreateNewPost'
-import { Article } from '@eraiyomi/types/Article'
+import { Article } from '@patorikkuuu/eraiyomi-types'
 
 interface TitleInputProps{
   title: string

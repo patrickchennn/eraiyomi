@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react'
 import {Noto_Serif} from "next/font/google"
 import { postLoginTraditional, POST_user } from '@/services/userService'
-import { ReqBodyLoginTraditional, ReqBodyRegisterUser } from '../../../types/User'
+import { ReqBodyLoginTraditional, ReqBodyRegisterUser } from '@patorikkuuu/eraiyomi-types'
 import isEmail from 'validator/lib/isEmail';
 import { useUserInfo } from '@/hooks/appContext'
 import Link from 'next/link'

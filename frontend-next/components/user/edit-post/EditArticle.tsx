@@ -3,8 +3,8 @@
 import TextEditor from '@/components/TextEditor';
 import APIKeyInput from '@/components/blog/create_post/create-new-post-components/APIKeyInput';
 
-import { Article } from '@eraiyomi/types/Article';
-import { ArticleAsset } from '@eraiyomi/types/ArticleAsset';
+import { Article } from '@patorikkuuu/eraiyomi-types';
+import { ArticleAsset } from '@patorikkuuu/eraiyomi-types';
 
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import ReactQuill from 'react-quill';

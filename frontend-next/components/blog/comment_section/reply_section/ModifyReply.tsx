@@ -3,7 +3,7 @@
 import { BsThreeDots } from "react-icons/bs";
 import { deleteReply } from "../../../../services/replyService";
 import { useRouter } from "next/navigation";
-import { ArticleCommentReply } from "@eraiyomi/types/Reply";
+import { ArticleCommentReply } from "@patorikkuuu/eraiyomi-types";
 import { Dispatch, SetStateAction } from "react";
 
 interface ModifyReplyProps{

@@ -6,7 +6,7 @@ import { AiOutlineSend } from 'react-icons/ai'
 import defaultProfile from "@/assets/default-profile.jpg"
 import { postCommentReply } from '../../../../services/replyService'
 import GenerateProfilePict from '../GenerateProfilePict'
-import { User } from '@eraiyomi/types/User'
+import { User } from '@patorikkuuu/eraiyomi-types'
 import { useRouter } from 'next/navigation'
 import getCookie from '@/utils/getCookie'
 import chalk from 'chalk'

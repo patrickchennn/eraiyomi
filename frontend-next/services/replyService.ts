@@ -1,6 +1,6 @@
 
-import { User } from "@eraiyomi/types/User";
-import { ArticleCommentReply } from "@eraiyomi/types/Reply";
+import { User } from "@patorikkuuu/eraiyomi-types";
+import { ArticleCommentReply } from "@patorikkuuu/eraiyomi-types";
 import getCookie from "../utils/getCookie"
 import chalk from "chalk";
 

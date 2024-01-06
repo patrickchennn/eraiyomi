@@ -3,7 +3,7 @@
 import { useState, useRef, Dispatch, SetStateAction } from 'react';
 import { putReply } from '@/services/replyService';
 import { useRouter } from 'next/navigation';
-import { ArticleCommentReply } from '@eraiyomi/types/Reply';
+import { ArticleCommentReply } from '@patorikkuuu/eraiyomi-types';
 
 interface EditReplyInputProps{
   articleId: string

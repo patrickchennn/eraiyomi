@@ -3,7 +3,7 @@
 import { AiOutlineSend } from 'react-icons/ai'
 import ProfilePict from './GenerateProfilePict'
 import { experimental_useFormState } from 'react-dom'
-import { User } from '@eraiyomi/types/User'
+import { User } from '@patorikkuuu/eraiyomi-types'
 import handleCommentSubmit from './handle-comment-submit/handleCommentSubmitAction'
 import isEmpty from 'lodash.isempty'
 

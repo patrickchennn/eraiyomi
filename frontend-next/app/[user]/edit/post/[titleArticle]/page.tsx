@@ -2,7 +2,7 @@ import EditArticle from '@/components/user/edit-post/EditArticle';
 import { GET_articleAsset } from '@/services/articleAssetService';
 import { getArticle } from '@/services/articleService';
 import { GET_user, POST_verify } from '@/services/userService';
-import { User } from '@eraiyomi/types/User';
+import { User } from '@patorikkuuu/eraiyomi-types';
 import { cookies } from 'next/headers';
 import React from 'react'
 

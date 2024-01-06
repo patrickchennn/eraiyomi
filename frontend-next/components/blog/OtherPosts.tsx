@@ -1,5 +1,5 @@
 import { getArticles } from '@/services/articleService'
-import { Article } from '@eraiyomi/types/Article'
+import { Article } from '@patorikkuuu/eraiyomi-types'
 import Link from 'next/link'
 
 

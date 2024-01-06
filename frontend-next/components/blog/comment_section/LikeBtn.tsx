@@ -4,7 +4,7 @@ import {
   AiFillLike,AiOutlineLike
 } from "react-icons/ai"
 import { putComment } from '../../../services/commentService'
-import { ArticleComment } from '@eraiyomi/types/Comment'
+import { ArticleComment } from '@patorikkuuu/eraiyomi-types'
 import { useState } from "react"
 import { useUserInfo } from "@/hooks/appContext"
 

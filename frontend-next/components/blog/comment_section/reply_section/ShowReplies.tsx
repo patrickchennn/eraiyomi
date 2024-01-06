@@ -1,12 +1,12 @@
 "use client"
 
-import { ArticleComment } from "@eraiyomi/types/Comment";
+import { ArticleComment } from "@patorikkuuu/eraiyomi-types";
 import { getReplies } from "@/services/replyService";
 import ReplyTemplate from "./ReplyTemplate";
 import { createPortal } from "react-dom";
 import { useEffect, useState } from "react";
 import { useUserInfo } from "@/hooks/appContext";
-import { ArticleCommentReply } from "@eraiyomi/types/Reply";
+import { ArticleCommentReply } from "@patorikkuuu/eraiyomi-types";
 
 interface ShowRepliesProps{
   articleId:string

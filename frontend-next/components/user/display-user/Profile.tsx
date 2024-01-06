@@ -1,4 +1,4 @@
-import { User } from "@eraiyomi/types/User"
+import { User } from "@patorikkuuu/eraiyomi-types"
 import Image from "next/image"
 
 interface ProfileProps{

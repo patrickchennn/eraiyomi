@@ -1,6 +1,6 @@
 import { cookies } from "next/headers"
 import UserClient from "@/components/user/VerifiedUser"
-import { User } from "@eraiyomi/types/User"
+import { User } from "@patorikkuuu/eraiyomi-types"
 import { GET_user, POST_verify } from "@/services/userService"
 import DisplayUser from "@/components/user/DisplayUser"
 

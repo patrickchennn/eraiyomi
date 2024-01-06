@@ -1,6 +1,6 @@
-import { ArticleComment, ArticleCommentResponse } from "@eraiyomi/types/Comment"
+import { ArticleComment, ArticleCommentResponse } from "@patorikkuuu/eraiyomi-types"
 import getCookie from "../utils/getCookie"
-import { User } from "@eraiyomi/types/User"
+import { User } from "@patorikkuuu/eraiyomi-types"
 import chalk from "chalk"
 
 const url = process.env.URL_API

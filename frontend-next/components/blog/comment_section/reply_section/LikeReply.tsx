@@ -2,7 +2,7 @@
 
 import { putReply } from "@/services/replyService"
 import {AiFillLike,AiOutlineLike} from "react-icons/ai"
-import {ArticleCommentReply} from "@eraiyomi/types/Reply"
+import {ArticleCommentReply} from "@patorikkuuu/eraiyomi-types"
 import { useUserInfo } from "@/hooks/appContext"
 import { Dispatch, SetStateAction } from "react"
 

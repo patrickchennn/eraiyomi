@@ -1,5 +1,5 @@
 import "@/assets/globals.css"
-import { GoogleIdentityRes } from "../../types/User";
+import { GoogleIdentityRes } from "@patorikkuuu/eraiyomi-types";
 import { getArticles } from "@/services/articleService";
 import HomeTemplate from "@/components/HomeTemplate";
 import { getArticlesAnalytic } from "@/services/articleAnalyticService";

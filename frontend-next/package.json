@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@patorikkuuu/eraiyomi-types": "^1.0.0",
     "@types/node": "20.5.9",
     "@types/quill": "^2.0.13",
     "@types/react": "^18.2.22",
@@ -39,6 +40,7 @@
     "validator": "^13.11.0"
   },
   "devDependencies": {
+    "@netlify/plugin-nextjs": "^4.41.3",
     "@types/google-one-tap": "^1.2.2",
     "@types/google.analytics": "^0.0.45",
     "@types/gtag.js": "^0.0.18",
@@ -48,6 +50,7 @@
     "@types/uuid": "^9.0.3",
     "@types/validator": "^13.11.7",
     "clean-terminal-webpack-plugin": "^3.0.0",
-    "cypress": "^13.6.0"
+    "cypress": "^13.6.0",
+    "netlify-cli": "^17.11.1"
   }
 }

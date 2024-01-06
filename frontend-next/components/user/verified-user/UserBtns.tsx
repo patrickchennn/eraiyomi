@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import Profile from '../display-user/Profile'
-import { User } from '@eraiyomi/types/User'
+import { User } from '@patorikkuuu/eraiyomi-types'
 import ArticleOverview from './ArticleOverview'
-import { Article, ArticlesAnalytic } from '@eraiyomi/types/Article'
-import { ArticleAsset } from '@eraiyomi/types/ArticleAsset'
+import { Article, ArticlesAnalytic } from '@patorikkuuu/eraiyomi-types'
+import { ArticleAsset } from '@patorikkuuu/eraiyomi-types'
 
 
 interface UserBtnsProps{

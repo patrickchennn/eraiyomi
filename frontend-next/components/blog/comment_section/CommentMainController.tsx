@@ -16,7 +16,7 @@ import ModifyCommentToolbar from "./ModifyCommentToolbar";
 import NewCommentInput from "./NewCommentInput";
 import GenerateProfilePict from "./GenerateProfilePict";
 
-import { User } from "@eraiyomi/types/User";
+import { User } from "@patorikkuuu/eraiyomi-types";
 
 import AuthUIHandler from "@/components/AuthUIHandler";
 import isEmpty from "lodash.isempty";

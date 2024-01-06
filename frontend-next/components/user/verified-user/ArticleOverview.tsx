@@ -1,12 +1,12 @@
 "use client"
 
 import { deleteArticle, getArticles } from "@/services/articleService"
-import { Article, ArticlesAnalytic } from "@eraiyomi/types/Article"
+import { Article, ArticlesAnalytic } from "@patorikkuuu/eraiyomi-types"
 import { useState } from "react"
 import { Sono } from 'next/font/google'
 import {AiOutlineEdit,AiTwotoneEdit} from "react-icons/ai"
 import Link from "next/link"
-import { ArticleAsset } from "@eraiyomi/types/ArticleAsset"
+import { ArticleAsset } from "@patorikkuuu/eraiyomi-types"
 import { useUserInfo } from "@/hooks/appContext"
 import Image from "next/image"
 import isEmpty from "lodash.isempty"
