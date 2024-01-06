@@ -56,7 +56,7 @@ const port = process.env.PORT as string // PORT=8000
 app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json({strict:false}))
 app.use(cors({
-  origin: ['http://localhost:3000',"http://localhost:3005"], // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin
+  origin: ['http://localhost:3000',"https://eraiyomi.netlify.com"], // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin
   credentials: true // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials
 }))
 app.use(cookieParser())
