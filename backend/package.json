@@ -2,7 +2,7 @@
   "name": "eraiyomi-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "./build-prod/server.js",
+  "main": "./build/server.js",
   "type": "module",
   "scripts": {
     "watch:server": "nodemon ./build/backend/server.js -V --delay 1",

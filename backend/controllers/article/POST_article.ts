@@ -19,7 +19,7 @@ export const POST_article =  async (
   req: Request<{}, {}, POST_ReqBodyArticle>,
   res: Response
 ) => {
-  console.log(chalk.yellow("[API] POST /api/article"))
+  console.log(chalk.yellow.bgBlack("[API] POST /api/article"))
 
   const {body} = req
   // console.log("body=",body)

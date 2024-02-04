@@ -59,17 +59,14 @@ export const GET_articles = async (
   }
 
   const articleDatas = await articleDatasOnQuery.exec()
-  // console.log("articleDatas=",articleDatas)
+  console.log("articleDatas=",articleDatas)
 
-  if(isEmpty(articleDatas)){
-    return res.status(404).send("404 Not Found")
-  }
-
+  // eventhough `articleDatas` is empty `[]` it shouldn't be null.
   if(articleDatas===null){
-    return res.status(500).send("500 Internal Server Error")
+    console.log(chalk.red(`[API] GET /api/articles?sort=${sort}&status=${status}&search=${search} 500\n`))
+    return res.status(500).json({message:"Internal Server Error"})
   }
 
   console.log(chalk.green(`[API] GET /api/articles?sort=${sort}&status=${status}&search=${search} 200\n`))
   return res.status(200).json(articleDatas)
 }
-// xx
