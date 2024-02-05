@@ -1,9 +1,9 @@
 import "@/assets/globals.css"
 import { GoogleIdentityRes } from "@patorikkuuu/eraiyomi-types";
-import { getArticles } from "@/services/articleService";
 import HomeTemplate from "@/components/HomeTemplate";
 import { getArticlesAnalytic } from "@/services/articleAnalyticService";
 import chalk from "chalk";
+import getArticles from "@/services/article/getArticles";
 
 declare global {
   const google: typeof import('google-one-tap');

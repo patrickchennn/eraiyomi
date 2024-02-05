@@ -8,10 +8,11 @@ import { useUserInfo } from '@/hooks/appContext';
 
 import { POST_ReqBodyArticle } from '@patorikkuuu/eraiyomi-types';
 
-import { postArticle } from "@/services/articleService";
-import { PUT_articleAsset } from '@/services/articleAssetService';
+
 import ReactQuill from 'react-quill';
 import { revalidatePath } from 'next/cache';
+import { postArticle } from '@/services/article/postArticle';
+import { PUT_articleAsset } from '@/services/article-asset/PUT_articleAsset';
 
 
 

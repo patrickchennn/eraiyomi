@@ -2,13 +2,14 @@
 
 import { useRef, useState } from 'react'
 import {Noto_Serif} from "next/font/google"
-import { postLoginTraditional, POST_user } from '@/services/userService'
 import { ReqBodyLoginTraditional, ReqBodyRegisterUser } from '@patorikkuuu/eraiyomi-types'
 import isEmail from 'validator/lib/isEmail';
 import { useUserInfo } from '@/hooks/appContext'
 import Link from 'next/link'
 import useComponentVisible from '@/hooks/useComponentVisible'
 import GoogleLoginBtn from '../GoogleLoginBtn'
+import { POST_user } from '@/services/user/POST_user';
+import { postLoginTraditional } from '@/services/user/postLoginTraditional';
 
 const noto_serif = Noto_Serif({weight:"400",subsets:["latin"]})
 

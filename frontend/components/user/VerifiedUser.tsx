@@ -1,11 +1,11 @@
 import { User } from "@patorikkuuu/eraiyomi-types"
 
 
-import { getArticles } from "@/services/articleService"
 import { getArticlesAnalytic } from "@/services/articleAnalyticService"
-import { GET_articlesAsset } from "@/services/articleAssetService"
 import chalk from "chalk"
 import UserBtns from "./verified-user/UserBtns"
+import { GET_articlesAsset } from "@/services/article-asset/GET_articlesAsset"
+import getArticles from "@/services/article/getArticles"
 
 interface VerifiedUserProps{
   user: User

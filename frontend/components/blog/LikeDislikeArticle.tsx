@@ -1,11 +1,11 @@
 "use client"
 
-import { putArticle } from "../../services/articleService"
 import {AiOutlineLike,AiFillLike,AiFillDislike,AiOutlineDislike} from "react-icons/ai"
 import { Article } from "@patorikkuuu/eraiyomi-types"
 import { useState } from "react"
 import { useUserInfo } from "@/hooks/appContext"
 import getCookie from "@/utils/getCookie"
+import { putArticle } from "@/services/article/putArticle"
 
 
 

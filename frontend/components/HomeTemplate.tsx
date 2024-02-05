@@ -12,8 +12,8 @@ import { v4 as uuidv4 } from 'uuid';
 import Link from "next/link";
 
 // my custom types
-import { getArticles } from '../services/articleService';
 import { Article, ArticlesAnalytic } from '@patorikkuuu/eraiyomi-types'
+import getArticles from '@/services/article/getArticles'
 
 interface HomeTemplateProps{
   initArticles: Article[]

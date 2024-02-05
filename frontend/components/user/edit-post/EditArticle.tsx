@@ -14,11 +14,13 @@ import EditInputDesc from './edit-article-utils/EditInputDesc';
 import EditInputCategory from './edit-article-utils/EditInputCategory';
 import EditInputThumbnail from './edit-article-utils/EditInputThumbnail';
 
-import { PUT_articleAsset, PUT_thumbnail } from '@/services/articleAssetService';
-import { putArticle } from '@/services/articleService';
+
 import EditSelectStatus from './edit-article-utils/EditSelectStatus';
 
 import isEqual from 'lodash.isequal';
+import { PUT_articleAsset } from '@/services/article-asset/PUT_articleAsset';
+import { PUT_thumbnail } from '@/services/article-asset/PUT_thumbnail';
+import { putArticle } from '@/services/article/putArticle';
 
 export interface ArticleData{
   title:string

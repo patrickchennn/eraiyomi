@@ -1,6 +1,6 @@
 "use client";
 
-import { POST_verify } from "@/services/userService";
+import { POST_verify } from "@/services/user/POST_verify";
 import getCookie from "@/utils/getCookie";
 import { Article } from "@patorikkuuu/eraiyomi-types";
 import { User, UserRes } from "@patorikkuuu/eraiyomi-types";

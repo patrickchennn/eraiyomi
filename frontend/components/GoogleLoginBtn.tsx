@@ -1,10 +1,10 @@
 "use client"
 
-import { POST_verify } from '@/services/userService';
 import { CredentialResponse } from 'google-one-tap';
 import {useCallback} from 'react'
 import { useRouter } from 'next/navigation'
 import { useUserInfo } from '@/hooks/appContext';
+import { POST_verify } from '@/services/user/POST_verify';
 
 interface GoogleLoginBtnProps{
 }

@@ -1,6 +1,5 @@
 "use client"
 
-import { deleteArticle, getArticles } from "@/services/articleService"
 import { Article, ArticlesAnalytic } from "@patorikkuuu/eraiyomi-types"
 import { useState } from "react"
 import { Sono } from 'next/font/google'
@@ -13,6 +12,8 @@ import isEmpty from "lodash.isempty"
 import { IoTrashOutline, IoTrashSharp } from "react-icons/io5"
 import getCookie from "@/utils/getCookie"
 import { ImSearch } from "react-icons/im"
+import { deleteArticle } from "@/services/article/deleteArticle"
+import getArticles from "@/services/article/getArticles"
 
 const sono = Sono({
   weight: '400',

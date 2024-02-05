@@ -1,6 +1,6 @@
 "use client"
 
-import { getArticles } from "@/services/articleService"
+import getArticles from "@/services/article/getArticles"
 import { Article } from "@patorikkuuu/eraiyomi-types"
 import chalk from "chalk"
 import isEmpty from "lodash.isempty"

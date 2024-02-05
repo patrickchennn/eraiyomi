@@ -1,7 +1,8 @@
 import EditArticle from '@/components/user/edit-post/EditArticle';
-import { GET_articleAsset } from '@/services/articleAssetService';
-import { getArticle } from '@/services/articleService';
-import { GET_user, POST_verify } from '@/services/userService';
+import { GET_articleAsset } from '@/services/article-asset/GET_articleAsset';
+import { getArticle } from '@/services/article/getArticle';
+import { GET_user } from '@/services/user/GET_user';
+import { POST_verify } from '@/services/user/POST_verify';
 import { User } from '@patorikkuuu/eraiyomi-types';
 import { cookies } from 'next/headers';
 import React from 'react'

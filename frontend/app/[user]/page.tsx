@@ -1,8 +1,9 @@
 import { cookies } from "next/headers"
 import UserClient from "@/components/user/VerifiedUser"
 import { User } from "@patorikkuuu/eraiyomi-types"
-import { GET_user, POST_verify } from "@/services/userService"
 import DisplayUser from "@/components/user/DisplayUser"
+import { GET_user } from "@/services/user/GET_user"
+import { POST_verify } from "@/services/user/POST_verify"
 
 
 interface UserProps{

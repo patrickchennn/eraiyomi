@@ -4,10 +4,7 @@ import HeaderSection from "@/components/blog/HeaderSection";
 import LikeDislikeArticle from "@/components/blog/LikeDislikeArticle";
 import OtherPosts from "@/components/blog/OtherPosts";
 import { TableOfContents } from "@/components/blog/TableOfContents";
-import CommentMainSection from "@/components/blog/comment_section/CommentMainController";
 
-import { getArticle } from "@/services/articleService";
-import { GET_articleAsset } from "@/services/articleAssetService";
 import convertDate from "@/utils/convertDate";
 
 import hljs from 'highlight.js'
@@ -15,6 +12,8 @@ import 'highlight.js/styles/atom-one-dark.css';
 import chalk from "chalk";
 import { Metadata, ResolvingMetadata } from "next";
 import CreateTitle from "@/components/blog/CreateTitle";
+import { GET_articleAsset } from "@/services/article-asset/GET_articleAsset";
+import { getArticle } from "@/services/article/getArticle";
 
 
 
@@ -214,10 +213,7 @@ export default async function Page({
         {/* <TableOfContents /> */}
 
         {/* commentary, server component */}
-        <CommentMainSection
-          style="mb-5 px-16 py-8 border border-zinc-300 rounded-3xl h-fit bg-white col-start-2 col-span-full dark:bg-zinc-900 max-[1024px]:px-14 max-[576px]:px-8 min-[1024px]:col-start-2 min-[1024px]:col-span-3"
-          articleId={article._id}
-        />
+        {/* NOTE: add comment libarary, probably disqus */}
       </div>
     </>
   )
