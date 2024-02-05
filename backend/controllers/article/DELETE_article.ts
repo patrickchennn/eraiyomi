@@ -1,9 +1,7 @@
 import chalk from "chalk"
 import { Request,Response } from "express"
 import { articleModel } from "../../schema/articleSchema.js"
-import { commentModel } from "../../schema/commentSchema.js"
 import { articleAssetModel } from "../../schema/articleAssetSchema.js"
-import { replyModel } from "../../schema/replySchema.js"
 import { parentDirectory } from "../../server.js"
 import { existsSync, rmSync } from "fs"
 
@@ -17,8 +15,6 @@ export const DELETE_article =  async (req: Request, res: Response) => {
   console.log(chalk.yellow(`[API] DELETE /api/article/${articleId}`))
 
   const article = await articleModel.findById(articleId)
-  const commentsDoc = await commentModel.findOne({articleIdRef:articleId})
-  const replyDoc = await replyModel.findOne({articleIdRef:articleId})
   const articleAsset = await articleAssetModel.findOne({articleIdRef:articleId})
 
 
@@ -29,15 +25,13 @@ export const DELETE_article =  async (req: Request, res: Response) => {
 
 
   
-  if(article && commentsDoc && replyDoc && articleAsset){
+  if(article && articleAsset){
     const articleImagesFullPath = `${parentDirectory}/article-images/${article.titleArticle.URLpath}`;
 
     if (existsSync(articleImagesFullPath)) {
       rmSync(articleImagesFullPath, { recursive: true, force: true });
     }
     await article.remove();
-    await commentsDoc.remove();
-    await replyDoc.remove()
     await articleAsset.remove();
 
     console.log(chalk.green(`[API] DELETE /api/article/${articleId} 204\n`))

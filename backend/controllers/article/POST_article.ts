@@ -2,8 +2,6 @@ import { POST_ReqBodyArticle } from "@patorikkuuu/eraiyomi-types";
 import chalk from "chalk";
 import mongoose from "mongoose";
 import { articleModel } from "../../schema/articleSchema.js";
-import { commentModel } from "../../schema/commentSchema.js";
-import { replyModel } from "../../schema/replySchema.js";
 import { Request,Response } from "express"
 import { articleAssetModel } from "../../schema/articleAssetSchema.js";
 import { existsSync, mkdirSync } from "fs";
@@ -70,20 +68,6 @@ export const POST_article =  async (
   if(createdArticle===null){
     return res.status(500).send("Error during articleModel.create(). Error during article creation")
   };
-
-  // IF there is a blog post, obsiouly there must be a comment feature
-  await commentModel.create({
-    _id:commentsId,
-    articleIdRef: articleId,
-    items:[]
-  })
-  
-  // IF there is a comment feature, obviously there will be a reply feature
-  await replyModel.create({
-    articleIdRef:articleId,
-    commentsIdRef: commentsId,
-    items:[]
-  })
 
   await articleAssetModel.create({
     _id: articleAssetId,
