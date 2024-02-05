@@ -8,6 +8,7 @@ import { useUserInfo } from '@/hooks/appContext';
 import customRound from '@/utils/customRound';
 import ReactQuill from 'react-quill';
 import convertDate from '@/utils/convertDate';
+import chalk from 'chalk';
 
 
 interface PreviewBtnProps{
@@ -29,7 +30,14 @@ export default function PreviewBtn({
 
   // method
   const handlePreview = () => {
+    console.log(chalk.yellow.bgBlack("@handlePreview"))
+
     // console.log("content=",content)
+
+    // IF the user have not login --> login first
+    if(!userInfo.email.trim()){
+      return alert("login first in order to post your work (only the admin/dev are allowed)")
+    }
 
     const TOCData: {[key: string]:HTMLHeadingElement} = {};
   
@@ -39,8 +47,8 @@ export default function PreviewBtn({
   
     // console.log("preview")
     const textEditorElem = document.querySelector<HTMLDivElement>(".quill")
-    if(!textEditorElem) return console.error("textEditorElem is",textEditorElem)
-    if(!textEditorRef.current) return console.error("textEditorRef.current is",textEditorRef)
+    if(!textEditorElem) return console.error("textEditorElem=",textEditorElem)
+    if(!textEditorRef.current) return console.error("textEditorRef.current=",textEditorRef)
 
     // @ts-ignore
     const wordCount = textEditorElem.textContent.match(/\S+/g).length

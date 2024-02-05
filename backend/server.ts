@@ -25,8 +25,6 @@ import { fileURLToPath } from 'url';
 import { routerArticle } from './routes/articleRoute.js'
 import { routerUser } from './routes/userRoute.js'
 import { routerArticleAsset } from './routes/articleAssetRoute.js'
-import { routerComment } from './routes/commentRoute.js'
-import { routerReply } from './routes/replyRoute.js'
 import { routerArticleAnalytic } from './routes/articleAnalytic.js'
 
 
@@ -91,11 +89,6 @@ app.use(routerArticle)
 // article-asset
 app.use(routerArticleAsset)
 
-// article/comment
-app.use(routerComment)
-
-// article/comment/reply
-app.use(routerReply)
 
 // article analytic
 app.use(routerArticleAnalytic)

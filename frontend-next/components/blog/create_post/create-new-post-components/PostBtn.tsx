@@ -30,17 +30,17 @@ export default function PostBtn({
   const handlePost = async () => {
   
     // console.log(previewSectionRef.current)
-  
+    
     // IF have not preview the writing --> must have preview it first in order to post the writing
-    // if(!previewElem){
-    //   return alert("preview it first in order to post your work")
-    // }
-  
+    if(!previewElem){
+      return alert("preview it first in order to post your work")
+    }
   
     // IF the user have not login --> login first
     if(!userInfo.email.trim()){
       return alert("login first in order to post your work (only the admin/dev are allowed)")
     }
+    
     // console.log("userInfo=",userInfo)
     // console.log("contentImages=",contentImages)
 
@@ -71,7 +71,6 @@ export default function PostBtn({
       // TODO: fix the type `as any`, use more specific type
       formData.append('thumbnail', articleMetadata.thumbnail as File);
       formData.append('content', JSON.stringify(articleMetadata.content));
-      formData.append('title', articleMetadata.title);
 
       console.log("putArticleAssetReqBody=",...formData)
       await PUT_articleAsset(
