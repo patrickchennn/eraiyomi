@@ -21,6 +21,7 @@ import isEqual from 'lodash.isequal';
 import { PUT_articleAsset } from '@/services/article-asset/PUT_articleAsset';
 import { PUT_thumbnail } from '@/services/article-asset/PUT_thumbnail';
 import { putArticle } from '@/services/article/putArticle';
+import chalk from 'chalk';
 
 export interface ArticleData{
   title:string
@@ -87,7 +88,8 @@ export default function EditArticle({
 
   // methods
   const handleSave = async () => {
-    if(!API_key) return alert("leave from this page!")
+    console.log(chalk.yellow("@handleSave()"))
+    if(!API_key) return alert("API key is needed.")
 
     const articleDataReqBody: {[key: string]:any} = {} 
 
@@ -113,9 +115,8 @@ export default function EditArticle({
 
     // IF the thumbnail is changed
     if(articleAssetData.thumbnail!=="default"){
-      // console.log("thumbnail=",articleAssetData.thumbnail,articleAssetData.thumbnail instanceof File)
+      console.log("articleAssetData.thumbnail=",articleAssetData.thumbnail,articleAssetData.thumbnail instanceof File)
 
-      // @ts-ignore
       articleAssetForm.append('thumbnail', articleAssetData.thumbnail);
 
       const updatedThumbnail = await PUT_thumbnail(article._id,articleAssetForm,API_key)
@@ -127,11 +128,14 @@ export default function EditArticle({
       // IF the main content(quill delta or you can say) is changed
       console.log("articleAsset.content=",articleAsset.content)
       console.log("deltaContent=",deltaContent)
-      console.log(!isEqual(articleAsset.content,deltaContent.ops))
-
-
+      
+      
       // IF: the previous "main content" is NOT the same anymore, meaning there is a change being made on the "main content"
       if(!isEqual(articleAsset.content,deltaContent.ops)){
+        console.log(
+          chalk.magenta("IF: !isEqual(articleAsset.content,deltaContent.ops)="),
+          !isEqual(articleAsset.content,deltaContent.ops)
+        )
         articleAssetForm.append('content', JSON.stringify(deltaContent.ops));
         articleAssetForm.append('title', article.titleArticle.title);
   

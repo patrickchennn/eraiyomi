@@ -33,7 +33,6 @@ export const POST_article =  async (
   }
 
   const articleId = new mongoose.Types.ObjectId();
-  const commentsId = new mongoose.Types.ObjectId();
   const articleAssetId = new mongoose.Types.ObjectId();
 
   
@@ -60,7 +59,6 @@ export const POST_article =  async (
     author: body.author,
     email: body.email,
     category: body.category,
-    commentsIdRef:commentsId,
     articleAssetIdRef: articleAssetId
   })
   // console.log("createdArticle=",createdArticle)
@@ -77,10 +75,12 @@ export const POST_article =  async (
   })
 
   const articleImagesFullPath = `${parentDirectory}/article-images/${URLpathMod}`
+  console.log("articleImagesFullPath=",articleImagesFullPath)
+  
   if(!existsSync(articleImagesFullPath)) mkdirSync(articleImagesFullPath)
 
 
-  console.log(chalk.green(`[201] success creating a new article with title "${body.title}"\n`))
+  console.log(chalk.green.bgBlack(`[201] success creating a new article with title "${body.title}"\n`))
 
   return res.status(201).json({
     message:`success creating a new article with title "${body.title}"`,

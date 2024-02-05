@@ -6,7 +6,6 @@ import { existsSync, mkdirSync, readdirSync, renameSync, unlink, writeFile } fro
 import { parentDirectory } from "../../server.js"
 import { articleModel } from "../../schema/articleSchema.js"
 
-
 interface ReqBodyPutArticleAsset{
   content?:string
   relativePath?:string
@@ -32,7 +31,7 @@ export const PUT_articleAsset =  async (
   
   
   const isArticleIdValid = isValidObjectId(articleId)
-  // console.log("isArticleIdValid=",isArticleIdValid)
+  console.log("isArticleIdValid=",isArticleIdValid)
 
   if(!isArticleIdValid){
     const msg = `404 Bad Request. Article with id "${articleId}" is invalid.`
@@ -56,26 +55,34 @@ export const PUT_articleAsset =  async (
     return res.status(404).json({"message":msg})
   }
   
-  const articleImagesFullPath = `${parentDirectory}/${article.titleArticle.URLpath}`
+  const articleImagesFullPath = `${parentDirectory}/article-images/${article.titleArticle.URLpath}`
+  console.log("articleImagesFullPath=",articleImagesFullPath)
 
-  // IF: the path/directory for storing the file does not exist
-  if(!existsSync(articleImagesFullPath)) mkdirSync(articleImagesFullPath)
+  // IF: the path/directory for storing the file does not exist --> create it. Actually this is considered as double check. Initially when creating an article the path must be already exist, already created in there
+  if(!existsSync(articleImagesFullPath)) {
+    console.log(chalk.magenta.bgBlack(`IF: article-images/${article.titleArticle.URLpath} directory does not exist`))
+
+    mkdirSync(articleImagesFullPath)
+  }
   
   // FIND: all file that starts with `thumbnail`. IF found it will return its file name, ELSE returning `undefined`
   const files = readdirSync(articleImagesFullPath)
-  // console.log("file=",file)
+  console.log("files=",files)
 
   if(body.content){
-    // console.log("editing the quill content")
+    console.log(chalk.yellow.bgBlack("section: editing the quill content"))
     
     // quillData is an array of object
     const quillData = JSON.parse(body.content) as [{}]
     // console.log("quillData=",quillData)
 
     articleAsset.content = quillData
-    // START: content images logic
 
-    // PURPOSE OF `contentImgs`: the purpose of this `contentImgs` set is to track some files that are needed to be deleted or not
+    // START: content images logic
+    console.log(chalk.yellow.bgBlack("section: content images logic"))
+    /* Purpose of `contentImgs` set container
+      The purpose of this `contentImgs` is to track some files that are needed to be deleted or not
+    */
     const contentImgs = new Set<string>()
 
     for(let i=0; i<files.length; i++){
@@ -84,7 +91,7 @@ export const PUT_articleAsset =  async (
         contentImgs.add(file)
       }
     }
-    // console.log("contentImgs=",contentImgs)
+    console.log("contentImgs=",contentImgs)
 
     for(let i=0; i<quillData.length; i++){
       const data:{[key: string]: any} = quillData[i]
@@ -92,18 +99,39 @@ export const PUT_articleAsset =  async (
       
       // IF: we found an image among all of these quill data, or also I can say that, IF there is a new image that want to be saved on the database
       if(Object.hasOwn(data.insert,"image")){
-        const filename = data.insert.image['data-filename']
-        const fileDataUrl = data.insert.image.src.split(",")[1]
-        // console.log("Found image at index: ",i)
+        console.log(chalk.magenta.bgBlack("IF: found image at index: "),i)
+        // console.log(data)
 
-        const toBinary = Buffer.from(
-          fileDataUrl, 
-          'base64'
-        );
+        const filename = data.insert.image['data-filename']
+        console.log("filename=",filename)
+
+        const imgSrc = data.insert.image.src as string
+        // console.log("imgSrc=",imgSrc)
+
+        let toBinary;
+        // IF: the source image is from "Data URLs", and it's mimetype is `image/png`
+        if(imgSrc.startsWith("data:image/png;base64")){
+          // extract the true data, not the metadata `data:image/png;base64`
+          const base64Data = imgSrc.replace(/^data:image\/\w+;base64,/, '');
+
+          console.log(chalk.magenta.bgBlack("\tIF: img src type is data:image/png;base64"))
+
+          toBinary = Buffer.from(
+            base64Data, 
+            'base64'
+          );
+        }else{
+          console.log(chalk.magenta.bgBlack("\tIF: img src type is probably from existing cloud"))
+
+        }
+
 
         // IF: the image does NOT exist on the filesystem --> add the image in it
         if(!existsSync(`${articleImagesFullPath}/${filename}`)){
-          // console.log(`${filename} does not exist, now creating the file`)
+          console.log(
+            chalk.magenta.bgBlack(`\tIF: ${filename} does not exist, now creating+save the file`)
+          )
+
           // add to FS(file system)
           writeFile(
             `${articleImagesFullPath}/${filename}`,
@@ -117,8 +145,8 @@ export const PUT_articleAsset =  async (
           /* so to illustrate how is the datamodel gonna be:
            insert:{
              image:{
-              src:{data url} --> will be deleted
-              data-{file name} --> will be preserved
+              src:<data url> --> will be deleted
+              data-<file name> --> will be preserved
              }
            }
           */
@@ -137,10 +165,10 @@ export const PUT_articleAsset =  async (
 
     // actual logic for deleting the files
     for(const img of contentImgs){
-      // console.log("delete file:",img)
+      console.log(chalk.magenta.bgBlack("FOR: delete file:"),img)
       unlink(`${articleImagesFullPath}/${img}`, (err) =>{
         if (err) throw err;
-        // console.log(`${file} was deleted`);
+        // console.log(`${img} was deleted`);
       }); 
   
     }
@@ -149,11 +177,11 @@ export const PUT_articleAsset =  async (
 
 
     
-  // console.log("upadated articleAsset=",articleAsset)
+  // console.log("articleAsset.save()=",articleAsset)
 
   await articleAsset.save()
 
-  console.log(chalk.green(`[API] PUT /api/article-asset/${articleId} 200; success editing article asset\n`))
+  console.log(chalk.green.bgBlack(`[API] PUT /api/article-asset/${articleId} 200; success editing article asset\n`))
   return res.status(201).json({
     message:`success editing article asset`,
     articleAsset

@@ -35,9 +35,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Navigate up 2 level to get the parent directory `backend`
 // to illustrate: build/backend/server.js/../../backend
 // we need to reach the `backend` real directory
-// when the typescript project get compiled, this file `server.ts` will be on `./build/backend/server.js` so we need to go back twice
-export const parentDirectory = path.join(__dirname, '../..');
-// console.log("parentDirectory=",parentDirectory)
+// when the typescript project get compiled, this file `server.ts` will be on `./build/server.js` so we need to go back twice
+export const parentDirectory = path.join(__dirname, '..');
+console.log("parentDirectory=",parentDirectory)
 
 
 

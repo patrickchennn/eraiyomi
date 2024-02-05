@@ -4,7 +4,7 @@
  * yyyy-mm-dd
  * 0123456789 (the indexes, this is just a helper)
  */
-const months = [
+const months_en = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'
 ];
@@ -16,7 +16,8 @@ const months_id = [
  * convert date with format yyyy-mm-dd(2020-12-1 or 2020/12/1) to dd month yyyy(1 December 2020)
  */
 const convertDate = (date: string) => {
-  console.log("date=",date)
+  // console.log("date=",date)
+
   const monthNumber = date[5] + date[6] // mm
   const dayNumber = date[8] + date[9] // dd
   const yearNumber = date.substring(0,4) // yyyy

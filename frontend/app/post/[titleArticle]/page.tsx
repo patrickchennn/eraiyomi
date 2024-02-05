@@ -36,14 +36,6 @@ export async function generateMetadata(
   // Step 3: Join the words back into a single string
   let modTitle = capitalizedTitleArray.join(' ');
 
-
-//   <Script>
-//   {`
-//     gtag('event', 'screen_view', {
-//       'screen_name': xxx${modTitle}
-//     });
-//   `}
-// </Script>
   return {
     title: modTitle,
   }
@@ -150,8 +142,8 @@ export default async function Page({
         if(op.insert.type==="image"){
           // console.log("found an image")
           // console.log(op)
-          // @ts-ignore
-          const src = articleAsset.content.quill[imgIdxs[0]].insert.image.src
+
+          const src = articleAsset.content[imgIdxs[0]].insert.image.src
           // const dataFilename = articleAsset.content.quill[imgIdxs[0]].insert.image["data-filename"]
           // console.log("idx=",imgIdxs[0])
           // console.log("dataFilename=",dataFilename)

@@ -2,6 +2,7 @@ node_modules
 build*
 .env
 /backend/credentials.json
+/backend/article-images
 cypress
 # Local Netlify folder
 .netlify

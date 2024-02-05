@@ -18,7 +18,7 @@ export const GET_articleAsset =  async (
 ) => {
   const {id,title} = req.query
 
-  console.log(chalk.yellow(`[API] GET /api/article-asset/?id=${id}&title=${title}`))
+  console.log(chalk.yellow(`[API] GET /api/article-asset?id=${id}&title=${title}`))
 
   const isValid = isValidObjectId(id)
   // console.log("isValid=",isValid)
@@ -47,11 +47,12 @@ export const GET_articleAsset =  async (
     return res.status(404).json({"message":msg})
   }
 
-  const articleImagesFullPath = `${parentDirectory}/${article.titleArticle.URLpath}`
+  const articleImagesFullPath = `${parentDirectory}/article-images/${article.titleArticle.URLpath}`
   console.log("articleImagesFullPath=",articleImagesFullPath)
 
   // START: thumbnail img logic
   if(!isEmpty(articleAsset.thumbnail)){
+    console.log(chalk.magenta.bgBlack("IF: found image thumbnail"))
 
     const thumbnailImgPath = `${articleImagesFullPath}/${articleAsset.thumbnail.filename}`
 
@@ -70,21 +71,24 @@ export const GET_articleAsset =  async (
 
   // START: content images logic
   for(let i=0; i<articleAsset.content.length; i++){
+
     const data = articleAsset.content[i]
+    // console.log(`[${i}]:`,data)
 
     if(Object.hasOwn(data.insert,"image")){
+      console.log(chalk.magenta.bgBlack("IF: found image at index: "),i)
+      // console.log(`[${i}]:`,data)
 
-      // ori
       const contentImgPath = `${articleImagesFullPath}/${data.insert.image["data-filename"]}`
+      console.log("contentImgPath=",contentImgPath)
 
-      // const contentImgPath = `${articleImagesFullPath}/${data.insert.attributes["data-filename"]}`
-
-
-      // console.log("contentImgPath=",contentImgPath)
+      
       const imageBinary = readFileSync(contentImgPath);
+      // console.log("imageBinary=",imageBinary)
 
       // Convert binary data to a data URL
       const dataURL = `data:image/png;base64,${imageBinary.toString('base64')}`;
+      // console.log("dataURL=",dataURL)
 
       // Place it into the res body
       data.insert.image.src = dataURL

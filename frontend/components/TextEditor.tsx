@@ -10,6 +10,7 @@ import 'highlight.js/styles/atom-one-dark.css';
 import { UnprivilegedEditor } from 'react-quill';
 
 import ReactQuill from 'react-quill';
+import chalk from 'chalk';
 
 
 
@@ -71,9 +72,12 @@ export default function TextEditor({contentState,textEditorRef}: TextEditorProps
 
 
   // methods
+  // custom image handler
   function imageHandler(){
+    console.log(chalk.yellow("@imageHandler"))
+
     // @ts-ignore
-    // NOTE TO `@ts-ignore`: the type should be an `Toolbar` object(just console.log it `this`) but it's nowhere to found.
+    // NOTE TO `@ts-ignore`: the type should be an `Toolbar` object(just console.log it `this`) but it's nowhere to found in the React Quill library.
     console.log("this=",this)
 
     const input = document.createElement('input');
