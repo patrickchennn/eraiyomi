@@ -24,7 +24,7 @@ export interface AccountInfo{
 
 
 export default async function App(){
-  console.log(chalk.blue("@App()"))
+  console.log(chalk.yellow.bgBlack("@App()"))
 
   const articles = await getArticles({
     sort:"newest",status:"published"

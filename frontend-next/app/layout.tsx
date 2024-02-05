@@ -23,6 +23,7 @@ export default function RootLayout({children}: RootLayoutProps){
 
         <GoogleAnalytics />
 
+        <link rel="icon" href="/icon.png" sizes="any" />
 
         {/* G. identity, authentication, Sign In with Google */}
         <script src="https://accounts.google.com/gsi/client" async></script>

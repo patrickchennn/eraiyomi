@@ -2,6 +2,7 @@
 
 import { getArticles } from "@/services/articleService"
 import { Article } from "@patorikkuuu/eraiyomi-types"
+import chalk from "chalk"
 import isEmpty from "lodash.isempty"
 import Link from "next/link"
 import { useState, useRef, useEffect, useLayoutEffect } from "react"
@@ -11,7 +12,7 @@ import {ImSearch} from "react-icons/im"
 interface SearchInputProps{
 }
 export default function SearchInput({}: SearchInputProps){
-  console.log("@SearchInput")
+  console.log(chalk.yellow.bgBlack("@SearchInput"))
   // hooks
   const [keySearch,setKeySearch] = useState("")
   const typingTimer = useRef<number|NodeJS.Timeout>(0);
