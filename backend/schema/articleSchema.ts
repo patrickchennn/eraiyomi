@@ -71,11 +71,6 @@ const articleSchema = new Schema({
     type:[String],
     required: true
   },
-  commentsIdRef: { 
-    type: Schema.Types.ObjectId, 
-    ref: 'comments',
-    required: true
-  },
   articleAssetIdRef:{
     type: Schema.Types.ObjectId, 
     ref: 'article-asset',
