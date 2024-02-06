@@ -2,9 +2,11 @@ import chalk from "chalk"
 import { Request,Response } from "express"
 import { isValidObjectId } from "mongoose"
 import { articleAssetModel } from "../../schema/articleAssetSchema.js"
-import { existsSync, mkdirSync, readdirSync, renameSync, unlink, writeFile } from "fs"
+import { existsSync, mkdirSync, readdirSync, renameSync, unlink } from "fs"
+import { writeFile } from "fs/promises"
 import { parentDirectory } from "../../server.js"
 import { articleModel } from "../../schema/articleSchema.js"
+import { downloadImage } from "../../utils/downloadImage.js"
 
 interface ReqBodyPutArticleAsset{
   content?:string
@@ -66,8 +68,8 @@ export const PUT_articleAsset =  async (
   }
   
   // FIND: all file that starts with `thumbnail`. IF found it will return its file name, ELSE returning `undefined`
-  const files = readdirSync(articleImagesFullPath)
-  console.log("files=",files)
+  const existingFiles = readdirSync(articleImagesFullPath)
+  console.log("existingFiles=",existingFiles)
 
   if(body.content){
     console.log(chalk.yellow.bgBlack("section: editing the quill content"))
@@ -80,18 +82,18 @@ export const PUT_articleAsset =  async (
 
     // START: content images logic
     console.log(chalk.yellow.bgBlack("section: content images logic"))
-    /* Purpose of `contentImgs` set container
-      The purpose of this `contentImgs` is to track some files that are needed to be deleted or not
+    /* Purpose of `imgsToDelete` set container
+      The purpose of this `imgsToDelete` is to track some files that are needed to be deleted or not. If some existed on that set, it means that files need to be deleted.
     */
-    const contentImgs = new Set<string>()
+    const imgsToDelete = new Set<string>()
 
-    for(let i=0; i<files.length; i++){
-      const file = files[i]
+    for(let i=0; i<existingFiles.length; i++){
+      const file = existingFiles[i]
       if(!file.startsWith("thumbnail")){
-        contentImgs.add(file)
+        imgsToDelete.add(file)
       }
     }
-    console.log("contentImgs=",contentImgs)
+    console.log("imgsToDelete=",imgsToDelete)
 
     for(let i=0; i<quillData.length; i++){
       const data:{[key: string]: any} = quillData[i]
@@ -100,46 +102,39 @@ export const PUT_articleAsset =  async (
       // IF: we found an image among all of these quill data, or also I can say that, IF there is a new image that want to be saved on the database
       if(Object.hasOwn(data.insert,"image")){
         console.log(chalk.magenta.bgBlack("IF: found image at index: "),i)
-        // console.log(data)
+        console.log("before: data: ",data)
 
-        const filename = data.insert.image['data-filename']
-        console.log("filename=",filename)
+        // for storing the file name
+        let filename
 
+        // currently this can be data URL or external resources
         const imgSrc = data.insert.image.src as string
         // console.log("imgSrc=",imgSrc)
 
-        let toBinary;
         // IF: the source image is from "Data URLs", and it's mimetype is `image/png`
         if(imgSrc.startsWith("data:image/png;base64")){
-          // extract the true data, not the metadata `data:image/png;base64`
-          const base64Data = imgSrc.replace(/^data:image\/\w+;base64,/, '');
-
           console.log(chalk.magenta.bgBlack("\tIF: img src type is data:image/png;base64"))
 
-          toBinary = Buffer.from(
+          filename = data.insert.image['data-filename']
+
+          const [dataUrlMetadata,base64Data] = imgSrc.split(",")
+          // console.log("dataUrlMetadata=",dataUrlMetadata)
+
+          const toBinary = Buffer.from(
             base64Data, 
             'base64'
           );
-        }else{
-          console.log(chalk.magenta.bgBlack("\tIF: img src type is probably from existing cloud"))
-
-        }
-
-
-        // IF: the image does NOT exist on the filesystem --> add the image in it
-        if(!existsSync(`${articleImagesFullPath}/${filename}`)){
-          console.log(
-            chalk.magenta.bgBlack(`\tIF: ${filename} does not exist, now creating+save the file`)
-          )
 
           // add to FS(file system)
-          writeFile(
-            `${articleImagesFullPath}/${filename}`,
-            toBinary,
-            (err) => {
-              if(err) console.error(err)
-            }
-          )
+          try {
+            await writeFile(`${articleImagesFullPath}/${filename}`, toBinary);
+    
+            // res.send('Image saved successfully');
+          } catch (err) {
+            console.error(err);
+            return res.status(500).send({statusCode:"500 Server Internal Error",message:'Error saving the image'});
+          }
+
           // also add to database with some modification:
           // delete the `src` property because it contains data URL in which it stores bunch of binary image (that is converted into base64), and it could cause some headache for the database because of its size
           /* so to illustrate how is the datamodel gonna be:
@@ -150,21 +145,44 @@ export const PUT_articleAsset =  async (
              }
            }
           */
-          delete articleAsset.content[i].insert.image.src
-        }
-        // ELSE --> deciding whether to delete some file or not
-        else{
-          // CASE 1 DELETE SOME FILE. IF: the given file is available on the set data structure of `contentImgs` --> it means that file will still be preserved
-          if(contentImgs.has(filename)){
-            contentImgs.delete(filename)
+          articleAsset.content[i].insert.image.src = dataUrlMetadata
+        }else{
+          console.log(chalk.magenta.bgBlack("\tIF: img src type is probably from existing cloud"))
+          try {
+            const response = await downloadImage(imgSrc, articleImagesFullPath);
+            console.log("response=",response);
+
+            // change/update this local `filename` variable. `response.fileName` should contains a appropriate file name
+            filename = response.fileName
+
+            articleAsset.content[i].insert.image["data-filename"] = filename
+            articleAsset.markModified(`content.${i}.insert.image`);
+
+          } catch (error) {
+            console.error(error);
+            
+            return res.status(500).send({statusCode:"500 Server Internal Error",message:'Error downloading the image'});
           }
         }
-      }
 
+
+        // IF: the image does exist on the filesystem
+        // this means the file should be preserved
+        if(existsSync(`${articleImagesFullPath}/${filename}`)){
+          console.log(chalk.magenta.bgBlack(`file "${filename}" already existed on filesystem`))
+          // CASE 1 DELETE SOME FILE. IF: the given file is available on the set data structure of `imgsToDelete` --> it means that file will still be preserved
+          // the wording might a little confusing, basically the set is inteded to filled with files that are inteded to be deleted.
+          if(imgsToDelete.has(filename)){
+            imgsToDelete.delete(filename)
+          }
+        }
+
+        console.log("after: data: ",data)
+      }
     }
 
     // actual logic for deleting the files
-    for(const img of contentImgs){
+    for(const img of imgsToDelete){
       console.log(chalk.magenta.bgBlack("FOR: delete file:"),img)
       unlink(`${articleImagesFullPath}/${img}`, (err) =>{
         if (err) throw err;
