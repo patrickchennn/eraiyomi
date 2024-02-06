@@ -14,6 +14,10 @@ import { Metadata, ResolvingMetadata } from "next";
 import CreateTitle from "@/components/blog/CreateTitle";
 import { GET_articleAsset } from "@/services/article-asset/GET_articleAsset";
 import { getArticle } from "@/services/article/getArticle";
+import DisqusEmbed from "@/components/blog/DisqusEmbed";
+
+
+ 
 
 
 
@@ -23,6 +27,7 @@ interface PageProps{
   }
   searchParams: { id: string };
 }
+// Dynamic metadata
 export async function generateMetadata(
   { params, searchParams }: PageProps,
   parent: ResolvingMetadata
@@ -165,6 +170,7 @@ export default async function Page({
   // console.log("content=",content)
 
 
+
   return (
     <>
       <div className="px-16 py-5 relative max-[576px]:px-1">
@@ -204,9 +210,33 @@ export default async function Page({
         {/* table of content (>1024px), client component*/}
         {/* <TableOfContents /> */}
 
-        {/* commentary, server component */}
-        {/* NOTE: add comment libarary, probably disqus */}
+        {/* Disqus library, client component */}
+        <DisqusEmbed articleId={article._id}/>
       </div>
     </>
   )
 }
+
+// function Commentary(){
+//   /**
+//   *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+//   *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
+//   /*
+//   */
+//   var disqus_config = function () {
+//     this.page.url = metadata.title;  // Replace PAGE_URL with your page's canonical URL variable
+//     // this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+//   };
+
+//   (function() { // DON'T EDIT BELOW THIS LINE
+//     var d = document;
+//     const s = d.createElement('script');
+//     s.src = 'https://eraiyomi.disqus.com/embed.js';
+//     s.setAttribute('data-timestamp', +new Date());
+//     (d.head || d.body).appendChild(s);
+//   })();
+//   return (
+//     <div id="disqus_thread"></div>
+
+//   )
+// }

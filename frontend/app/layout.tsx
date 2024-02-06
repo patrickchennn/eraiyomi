@@ -19,6 +19,8 @@ export default function RootLayout({children}: RootLayoutProps){
     <html lang="en" >
       <head>
 
+        <script id="dsq-count-scr" src="//eraiyomi.disqus.com/count.js" async></script>
+
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
         <GoogleAnalytics />
