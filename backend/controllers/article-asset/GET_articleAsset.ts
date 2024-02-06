@@ -80,30 +80,19 @@ export const GET_articleAsset =  async (
       console.log(`[${i}]:`,data)
 
       const imgSrc = data.insert.image.src
-      if(imgSrc && imgSrc.startsWith("data:image/png;base64")){
-        console.log(chalk.magenta.bgBlack("\tIF: img src type is data:image/png;base64"))
 
-        const contentImgPath = `${articleImagesFullPath}/${data.insert.image["data-filename"]}`
-        console.log("contentImgPath=",contentImgPath)
-  
-        
-        const imageBinary = readFileSync(contentImgPath);
-        console.log("imageBinary=",imageBinary)
-  
-        // Convert binary data to a data URL
-        const dataURL = `data:image/png;base64,${imageBinary.toString('base64')}`;
-        // console.log("dataURL=",dataURL)
-  
-        // Place it into the res body
-        data.insert.image.src = dataURL
-      }else{
-        console.log(chalk.magenta.bgBlack("\tIF: img src type is probably from existing cloud"))
-        // TODO: check whether the URL host a uncorrupted img or not
-        // currently assuming the URL will always be okay
-        continue
-      }
+      const contentImgPath = `${articleImagesFullPath}/${data.insert.image["data-filename"]}`
+      console.log("contentImgPath=",contentImgPath)
 
+      const imageBinary = readFileSync(contentImgPath);
+      // console.log("imageBinary=",imageBinary)
 
+      // Convert binary data to a data URL
+      const dataURL = `data:image/png;base64,${imageBinary.toString('base64')}`;
+      // console.log("dataURL=",dataURL)
+
+      // Place it into the res body
+      data.insert.image.src = dataURL
     }
   }
   // END: content images logic
@@ -111,4 +100,3 @@ export const GET_articleAsset =  async (
   console.log(chalk.green(`[API] GET /api/article-asset/?id=${id}&title=${title} 200\n`))
   return res.status(200).json(articleAsset)
 }
-// xk
