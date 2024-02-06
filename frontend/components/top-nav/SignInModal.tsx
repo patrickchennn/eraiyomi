@@ -7,7 +7,7 @@ import isEmail from 'validator/lib/isEmail';
 import { useUserInfo } from '@/hooks/appContext'
 import Link from 'next/link'
 import useComponentVisible from '@/hooks/useComponentVisible'
-import GoogleLoginBtn from '../GoogleLoginBtn'
+// import GoogleLoginBtn from '../GoogleLoginBtn'
 import { POST_user } from '@/services/user/POST_user';
 import { postLoginTraditional } from '@/services/user/postLoginTraditional';
 
@@ -195,7 +195,8 @@ export default function SignInModal({}: SignInModalProps) {
                     <button type="submit">Sign Up</button>
                   </div>
                 </form>
-                <GoogleLoginBtn />
+                {/* removing this feature */}
+                {/* <GoogleLoginBtn /> */}
               </div>
             </div>
           </div >
