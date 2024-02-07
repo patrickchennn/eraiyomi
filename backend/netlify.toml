@@ -8,4 +8,3 @@
   to = "/.netlify/functions/api/:splat"
 [build]
   command = "npm run build-prod"
-  publish = "build-prod"
