@@ -128,10 +128,10 @@ export default function TextEditor({contentState,textEditorRef}: TextEditorProps
       toolbar: {
         container:[
           [{ 'header': [2, 3, false] },{ 'font': [] }],
-          ['bold', 'italic', 'underline','strike'],
+          ['bold', 'italic', 'underline'],
           [{ 'color': [] }, { 'background': [] }],
           ['blockquote', 'code-block'],
-          [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+          [{ 'script': 'sub'}, { 'script': 'super' },'strike'],
           [{'list': 'ordered'}, {'list': 'bullet'}, { 'align': [] }, {'indent': '-1'}, {'indent': '+1'}],
           ['link', 'image'],
           ['clean']
@@ -162,6 +162,7 @@ export default function TextEditor({contentState,textEditorRef}: TextEditorProps
     // console.log("source=",source)
     // console.log("editor.getSelection()=",editor.getSelection())
     // console.log("editor.getContents()=",editor.getContents())
+    console.log("editor.getLength=",editor.getLength())
 
 
     setContent(val)

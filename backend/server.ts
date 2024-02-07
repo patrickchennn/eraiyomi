@@ -9,6 +9,8 @@ import mongoose from 'mongoose'
 // import {google} from 'googleapis';
 // import { authenticate } from '@google-cloud/local-auth'
 // import process from 'process';
+import serverless from "serverless-http";
+
 
 // middleware
 import bodyParser from 'body-parser'
@@ -48,6 +50,10 @@ mongoose.set('strictQuery', true);
 connectDB()
 
 const app = express()
+export const handler = serverless(app);
+
+
+
 const port = process.env.PORT as string // PORT=8000
 
 
