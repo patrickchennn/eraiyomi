@@ -7,6 +7,7 @@ import { POST_ReqBodyArticle } from '@patorikkuuu/eraiyomi-types';
 import ReactQuill from 'react-quill';
 import { postArticle } from '@/services/article/postArticle';
 import { PUT_articleAsset } from '@/services/article-asset/PUT_articleAsset';
+import calculateWordCount from '@/utils/calculateWordCount';
 
 
 
@@ -68,6 +69,7 @@ export default function PostBtn({
       
       formData.append('thumbnail', articleMetadata.thumbnail as File);
       formData.append('content', JSON.stringify(articleMetadata.content));
+      formData.append('totalWordCounts', calculateWordCount(".ql-editor").toString());
 
       console.log("putArticleAssetReqBody=",...formData)
       await PUT_articleAsset(

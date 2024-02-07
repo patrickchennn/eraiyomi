@@ -5,10 +5,11 @@ import CreateTitle from '../../CreateTitle';
 import GeneratePreview from './GeneratePreview';
 import { ArticleMetadataType } from '../CreateNewPost';
 import { useUserInfo } from '@/hooks/appContext';
-import customRound from '@/utils/customRound';
 import ReactQuill from 'react-quill';
 import convertDate from '@/utils/convertDate';
 import chalk from 'chalk';
+import getReadEstimation from '@/utils/getReadEstimation';
+import calculateWordCount from '@/utils/calculateWordCount';
 
 
 interface PreviewBtnProps{
@@ -46,18 +47,17 @@ export default function PreviewBtn({
     // previewSectionRef.current.classList.remove("!hidden")
   
     // console.log("preview")
-    const textEditorElem = document.querySelector<HTMLDivElement>(".quill")
+    const textEditorElem = document.querySelector<HTMLDivElement>(".ql-editor")
     if(!textEditorElem) return console.error("textEditorElem=",textEditorElem)
     if(!textEditorRef.current) return console.error("textEditorRef.current=",textEditorRef)
 
-    // @ts-ignore
-    const wordCount = textEditorElem.textContent.match(/\S+/g).length
-    // console.log("wordCount=",wordCount)
 
-    const readingTime = wordCount < 200 ? "<1 min" : `${customRound(wordCount/200)} min`
+    const wordCount = calculateWordCount(textEditorElem)
+    console.log("wordCount=",wordCount)
+
+    const readingTime = getReadEstimation(wordCount)
     // console.log("readingTime=",readingTime)
 
-    
     const TitleContent = <CreateTitle
       titlePage={articleMetadata.title}
       miscInfo={{

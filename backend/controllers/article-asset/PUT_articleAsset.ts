@@ -10,7 +10,7 @@ import { downloadImage } from "../../utils/downloadImage.js"
 
 interface ReqBodyPutArticleAsset{
   content?:string
-  relativePath?:string
+  totalWordCounts: number
 }
 /**
  * @desc edit a particular article asset
@@ -194,6 +194,8 @@ export const PUT_articleAsset =  async (
   }
 
 
+  // update the word counter
+  articleAsset.totalWordCounts = body.totalWordCounts
     
   // console.log("articleAsset.save()=",articleAsset)
 
@@ -202,6 +204,6 @@ export const PUT_articleAsset =  async (
   console.log(chalk.green.bgBlack(`[API] PUT /api/article-asset/${articleId} 200; success editing article asset\n`))
   return res.status(201).json({
     message:`success editing article asset`,
-    articleAsset
+    data: articleAsset
   })
 }

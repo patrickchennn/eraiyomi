@@ -6,7 +6,7 @@ import APIKeyInput from '@/components/blog/create_post/create-new-post-component
 import { Article } from '@patorikkuuu/eraiyomi-types';
 import { ArticleAsset } from '@patorikkuuu/eraiyomi-types';
 
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ReactQuill from 'react-quill';
 
 import EditInputTitle from './edit-article-utils/EditInputTitle';
@@ -22,6 +22,7 @@ import { PUT_articleAsset } from '@/services/article-asset/PUT_articleAsset';
 import { PUT_thumbnail } from '@/services/article-asset/PUT_thumbnail';
 import { putArticle } from '@/services/article/putArticle';
 import chalk from 'chalk';
+import calculateWordCount from '@/utils/calculateWordCount';
 
 export interface ArticleData{
   title:string
@@ -107,14 +108,12 @@ export default function EditArticle({
       const modifiedArticle = await putArticle(API_key,article._id,articleDataReqBody)
       console.log("modifiedArticle=",modifiedArticle)
     }
-    
-    const deltaContent = textEditorRef.current?.unprivilegedEditor?.getContents()
-    // console.log("deltaContent=",deltaContent)
+
     
     const articleAssetForm = new FormData()
 
     // IF the thumbnail is changed
-    if(articleAssetData.thumbnail!=="default"){
+    if(articleAssetData.thumbnail!=="default" && articleAssetData.thumbnail!==null){
       console.log("articleAssetData.thumbnail=",articleAssetData.thumbnail,articleAssetData.thumbnail instanceof File)
 
       articleAssetForm.append('thumbnail', articleAssetData.thumbnail);
@@ -123,11 +122,20 @@ export default function EditArticle({
       console.log("updatedThumbnail=",updatedThumbnail)
     }
 
+    // preparing for hitting API `PUT /api/article-asset/${articleId}`
+    const textEditorElem = document.querySelector<HTMLDivElement>(".quill")
+    
+    if(!textEditorElem) return console.error("textEditorElem=",textEditorElem)
+
+    if(!textEditorRef.current) return console.error("textEditorRef.current=",textEditorRef)
+
+    const deltaContent = textEditorRef.current.unprivilegedEditor?.getContents()
+    // console.log("deltaContent=",deltaContent)
+
     // handling the "main content" logic
+    // IF: `deltaContent` is exist, i.e. not undefined
     if(deltaContent){
-      // IF the main content(quill delta or you can say) is changed
-      console.log("articleAsset.content=",articleAsset.content)
-      console.log("deltaContent=",deltaContent)
+
       
       
       // IF: the previous "main content" is NOT the same anymore, meaning there is a change being made on the "main content"
@@ -135,9 +143,23 @@ export default function EditArticle({
         console.log(
           chalk.magenta("IF: !isEqual(articleAsset.content,deltaContent.ops)="),
           !isEqual(articleAsset.content,deltaContent.ops)
-        )
+        );
+
+        console.log("articleAsset.content=",articleAsset.content)
+        console.log("deltaContent=",deltaContent)
+
+        // get all of the text inside the editor
+        const textEditorElemTextContent = textEditorElem.textContent;
+        // make sure it won't return null
+        if (textEditorElemTextContent === null) {
+          return console.error("textEditorElemTextContent is null");
+        }
+
+
+        const wordCount = calculateWordCount(".quill");
+
         articleAssetForm.append('content', JSON.stringify(deltaContent.ops));
-        articleAssetForm.append('title', article.titleArticle.title);
+        articleAssetForm.append('totalWordCounts', wordCount.toString());
   
         const updatedArticleAsset = await PUT_articleAsset(article._id,articleAssetForm,API_key)
         console.log("updatedArticleAsset=",updatedArticleAsset)

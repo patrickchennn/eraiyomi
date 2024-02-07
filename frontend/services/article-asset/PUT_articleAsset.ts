@@ -1,3 +1,4 @@
+import { ArticleAsset } from "@patorikkuuu/eraiyomi-types"
 import chalk from "chalk"
 
 const url = process.env.URL_API
@@ -38,5 +39,5 @@ export const PUT_articleAsset = async (
   }
 
   console.log(chalk.green.bgBlack(`${httpMethod} ${res.url} ${res.status}`) )
-  return data as any
+  return data as {message:string,data:ArticleAsset}
 }

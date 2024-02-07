@@ -15,6 +15,7 @@ import CreateTitle from "@/components/blog/CreateTitle";
 import { GET_articleAsset } from "@/services/article-asset/GET_articleAsset";
 import { getArticle } from "@/services/article/getArticle";
 import DisqusEmbed from "@/components/blog/DisqusEmbed";
+import getReadEstimation from "@/utils/getReadEstimation";
 
 
  
@@ -52,7 +53,7 @@ export default async function Page({
   params,
   searchParams 
 }: PageProps) {
-  console.log(chalk.blue(`app/post/${params.titleArticle}/page.tsx Page()`))
+  console.log(chalk.yellow(`@app/post/${params.titleArticle}/page.tsx Page()`))
 
 
   if(!searchParams.id){
@@ -94,8 +95,7 @@ export default async function Page({
 
 
   for(let i=0; i<articleAsset.content.length; i++){
-    const data = articleAsset.content[i]
-    // @ts-ignore
+    const data = articleAsset.content[i] as {[key: string]: any}
     if(Object.hasOwn(data.insert,"image")){
       imgIdxs.push(i)
     }
@@ -122,6 +122,8 @@ export default async function Page({
     // }
   );
 
+  // this function is supposed to return a `string` type. But I had no idea what to return, I did not understand the doc
+  // currently, it returns void, obviously, an error type. So to simplify task, I just add `@ts-ignore`
   // @ts-ignore
   converter.beforeRender((groupType, data)=>{
     // console.log("groupType=",groupType)
@@ -134,21 +136,21 @@ export default async function Page({
         /* fail implementation of feature
           the main problem: https://github.com/nozer/quill-delta-to-html/issues/95
           
-          This shit is supposed to help me constructing an `img` tag that is looks like: <img src="" alt="" data-[attribute]/>. You see there are several attributes on that img tag, and I want those attributes to, of course, enrich the `img` information. Current solution I can only use, `op.insert.value = src`, to set the `src` attribute which you can see in here
+          This supposed to help me constructing an `img` tag that is looks like: <img src="" alt="" data-[attribute]/>. You see there are several attributes on that img tag, and I want those attributes to, of course, enrich the `img` information. Current solution I can only use, `op.insert.value = src`, to set the `src` attribute which you can see in here
 
           the first solution approach(1st) is to use the `beforeRender` method. It worked but only for the `src` attribute
           
-          another approach(2nd) is to use the `customTagAttributes` method on the second argument of `QuillDeltaToHtmlConverter` class. But, in short, it's not fking working because whenever I set/return the attribute, the same fking data is again being loop which cause some unnecessary cycle
+          another approach(2nd) is to use the `customTagAttributes` method on the second argument of `QuillDeltaToHtmlConverter` class. But, in short, it's not working because whenever I set/return the attribute, the same data is again being loop which cause some unnecessary cycle
           
           3rd approach is using the `urlSanitizer`, not working
 
-          so, in short, i can only set the `src` attribute, I can't add like `alt`, let alone the `data-` attribute
+          so, in short, i can only set the `src` attribute, I can't add like attribute `alt`, let alone the `data-` attribute
         */
         if(op.insert.type==="image"){
           // console.log("found an image")
           // console.log(op)
-
-          const src = articleAsset.content[imgIdxs[0]].insert.image.src
+          const imgObj = articleAsset.content[imgIdxs[0]] as {[key: string]: any}
+          const src = imgObj.insert.image.src
           // const dataFilename = articleAsset.content.quill[imgIdxs[0]].insert.image["data-filename"]
           // console.log("idx=",imgIdxs[0])
           // console.log("dataFilename=",dataFilename)
@@ -192,8 +194,8 @@ export default async function Page({
               date:convertDate(article.publishedDate),
               category:article.category,
               author:article.author,
-              wordCount:0,
-              readingTime:"_"
+              wordCount:articleAsset.totalWordCounts,
+              readingTime:getReadEstimation(articleAsset.totalWordCounts)
             }}
           />
 

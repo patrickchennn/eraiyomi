@@ -21,6 +21,10 @@ const articleAssetSchema = new Schema({
     type : Schema.Types.Mixed,
     required: true,
   },
+  totalWordCounts:{
+    type: Number,
+    required: true,
+  }
 },{ minimize: false })
 
 export const articleAssetModel = model('article-asset', articleAssetSchema)
