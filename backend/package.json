@@ -2,15 +2,14 @@
   "name": "eraiyomi-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "./build/server.js",
+  "main": "./build/index.js",
   "type": "module",
   "scripts": {
-    "watch:server": "nodemon ./build/backend/server.js -V --delay 1",
+    "watch:server": "nodemon ./build/backend/index.js -V --delay 1",
     "watch:build": "tsc --watch",
     "server": "rimraf ./build && tsc && concurrently npm:watch:build npm:watch:server",
-    "build-prod": "rimraf ./build-prod && tsc -p tsconfig.prod.json && npm run start",
-    "build": "npm run build-prod",
-    "start": "node ./build-prod/server.js",
+    "build-prod": "rimraf ./build-prod && tsc -p tsconfig.prod.json",
+    "start": "node ./build-prod/index.js",
     "test": "jest"
   },
   "nodemonConfig": {},
@@ -47,10 +46,8 @@
     "ts-node": "^10.9.1"
   },
   "dependencies": {
-    "@colors/colors": "^1.6.0",
     "@google-analytics/data": "^3.2.0",
     "@google-cloud/local-auth": "^2.1.1",
-    "@netlify/functions": "^2.5.1",
     "@types/lodash.isempty": "^4.4.9",
     "@types/validator": "^13.11.5",
     "bcrypt": "^5.1.1",
@@ -72,7 +69,6 @@
     "mongoose": "^6.8.1",
     "multer": "^1.4.5-lts.1",
     "rimraf": "^5.0.5",
-    "serverless-http": "^3.2.0",
     "typescript": "^5.3.3",
     "uuid": "^9.0.1",
     "validator": "^13.11.0"

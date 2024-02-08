@@ -2,7 +2,7 @@ import chalk from "chalk"
 import { Request,Response } from "express"
 import { articleModel } from "../../schema/articleSchema.js"
 import { articleAssetModel } from "../../schema/articleAssetSchema.js"
-import { parentDirectory } from "../../server.js"
+import { parentDirectory } from "../../index.js"
 import { existsSync, rmSync } from "fs"
 
 /**

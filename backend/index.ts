@@ -5,13 +5,6 @@ dotenv.config()
 import chalk from 'chalk'
 import mongoose from 'mongoose'
 
-// import {GoogleAuth, OAuth2Client} from 'google-auth-library'
-// import {google} from 'googleapis';
-// import { authenticate } from '@google-cloud/local-auth'
-// import process from 'process';
-import serverless from "serverless-http";
-
-
 // middleware
 import bodyParser from 'body-parser'
 import cors from "cors"
@@ -50,12 +43,7 @@ mongoose.set('strictQuery', true);
 connectDB()
 
 const app = express()
-export const handler = serverless(app);
-
-
-
 const port = process.env.PORT as string // PORT=8000
-
 
 app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json({strict:false}))
@@ -94,7 +82,6 @@ app.use(routerArticle)
 
 // article-asset
 app.use(routerArticleAsset)
-
 
 // article analytic
 app.use(routerArticleAnalytic)

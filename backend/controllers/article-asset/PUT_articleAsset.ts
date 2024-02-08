@@ -4,7 +4,7 @@ import { isValidObjectId } from "mongoose"
 import { articleAssetModel } from "../../schema/articleAssetSchema.js"
 import { existsSync, mkdirSync, readdirSync, renameSync, unlink } from "fs"
 import { writeFile } from "fs/promises"
-import { parentDirectory } from "../../server.js"
+import { parentDirectory } from "../../index.js"
 import { articleModel } from "../../schema/articleSchema.js"
 import { downloadImage } from "../../utils/downloadImage.js"
 

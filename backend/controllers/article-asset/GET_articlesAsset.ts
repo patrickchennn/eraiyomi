@@ -3,7 +3,7 @@ import { Request,Response } from "express"
 import { articleAssetModel } from "../../schema/articleAssetSchema.js"
 import isEmpty from "lodash.isempty"
 import { readFileSync } from "fs"
-import { parentDirectory } from "../../server.js"
+import { parentDirectory } from "../../index.js"
 import { articleModel } from "../../schema/articleSchema.js"
 
 /**

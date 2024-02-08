@@ -5,7 +5,7 @@ import { articleModel } from "../../schema/articleSchema.js";
 import { Request,Response } from "express"
 import { articleAssetModel } from "../../schema/articleAssetSchema.js";
 import { existsSync, mkdirSync } from "fs";
-import { parentDirectory } from "../../server.js";
+import { parentDirectory } from "../../index.js";
 
 
 /**

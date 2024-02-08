@@ -4,7 +4,7 @@ import { Request,Response } from "express"
 import { User } from "@patorikkuuu/eraiyomi-types"
 import isEmpty from "lodash.isempty"
 import { renameSync } from "fs"
-import { parentDirectory } from "../../server.js"
+import { parentDirectory } from "../../index.js"
 
 interface PUT_articleReqBody{
   title?: string,
