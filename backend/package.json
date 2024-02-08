@@ -5,9 +5,9 @@
   "main": "./build/index.js",
   "type": "module",
   "scripts": {
-    "watch:server": "nodemon ./build/backend/index.js -V --delay 1",
+    "watch:dev": "nodemon ./build/backend/index.js -V --delay 1",
     "watch:build": "tsc --watch",
-    "server": "rimraf ./build && tsc && concurrently npm:watch:build npm:watch:server",
+    "dev": "rimraf ./build && tsc && concurrently npm:watch:build npm:watch:dev",
     "build-prod": "rimraf ./build-prod && tsc -p tsconfig.prod.json",
     "start": "node ./build-prod/index.js",
     "test": "jest"

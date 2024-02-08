@@ -31,4 +31,3 @@ export default function api_or_user_auth(APIAuth:Function,authVerify:Function){
     }
   };
 }
-// asdx

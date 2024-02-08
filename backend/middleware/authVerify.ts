@@ -67,7 +67,7 @@ async function authVerify(
 
   // TRY: Google verification
   try {
-    const data = await Gverify(token)
+    // const data = await Gverify(token)
     // console.log(data)
 
     req.body.user = await Gverify(token)

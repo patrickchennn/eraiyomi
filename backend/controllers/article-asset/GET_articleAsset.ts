@@ -79,7 +79,7 @@ export const GET_articleAsset =  async (
       console.log(chalk.magenta.bgBlack("IF: found image at index: "),i)
       console.log(`[${i}]:`,data)
 
-      const imgSrc = data.insert.image.src
+      // const imgSrc = data.insert.image.src
 
       const contentImgPath = `${articleImagesFullPath}/${data.insert.image["data-filename"]}`
       console.log("contentImgPath=",contentImgPath)

@@ -1,7 +1,6 @@
 import chalk from "chalk"
 import { Request,Response } from "express"
 import { articleModel } from "../../schema/articleSchema.js"
-import isEmpty from "lodash.isempty"
 
 /**
  * @desc Get all article datas

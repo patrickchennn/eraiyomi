@@ -72,7 +72,7 @@ export const getReport = async (): Promise<GetReportRes> => {
   });
   // console.log('Report result:');
   // console.log("response=",response)
-  const rows = response.rows![0]
+  // const rows = response.rows![0]
   // console.log("rows=",rows)
 
 

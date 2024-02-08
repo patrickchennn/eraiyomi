@@ -1,4 +1,3 @@
-import chalk from "chalk"
 import { Request,Response } from "express"
 import { getReport } from "./GAUtils.js"
 
