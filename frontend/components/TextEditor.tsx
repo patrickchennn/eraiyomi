@@ -162,7 +162,7 @@ export default function TextEditor({contentState,textEditorRef}: TextEditorProps
     // console.log("source=",source)
     // console.log("editor.getSelection()=",editor.getSelection())
     // console.log("editor.getContents()=",editor.getContents())
-    console.log("editor.getLength=",editor.getLength())
+    // console.log("editor.getLength=",editor.getLength())
 
 
     setContent(val)

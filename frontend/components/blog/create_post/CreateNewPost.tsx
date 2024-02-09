@@ -175,7 +175,7 @@ export default function CreateNewPost(){
       </div>
 
       {/* preview section, grid (container) */}
-      <div ref={onPreviewRefSet} data-cy="preview-article-section">
+      <div ref={onPreviewRefSet} data-cy="preview-article-section" className='w-full'>
         {
           previewRef && createPortal(previewElem,previewRef)
         }

@@ -8,6 +8,7 @@ import ReactQuill from 'react-quill';
 import { postArticle } from '@/services/article/postArticle';
 import { PUT_articleAsset } from '@/services/article-asset/PUT_articleAsset';
 import calculateWordCount from '@/utils/calculateWordCount';
+import chalk from 'chalk';
 
 
 
@@ -24,7 +25,8 @@ export default function PostBtn({
   const [userInfo] = useUserInfo()
 
   const handlePost = async () => {
-  
+    console.log(chalk.yellow("@handlePost()"))
+
     // console.log(previewSectionRef.current)
 
     // IF the user have not login --> login first
@@ -35,6 +37,10 @@ export default function PostBtn({
     // IF have not preview the writing --> must have preview it first in order to post the writing
     if(!previewElem){
       return alert("preview it first in order to post your work")
+    }
+
+    if(!API_key){
+      return alert("API key is needed for creating an article.")
     }
   
     
@@ -53,8 +59,8 @@ export default function PostBtn({
     }
     console.log("reqBodyPostArticle=",reqBodyPostArticle)
 
-    // const textEditorElem = document.querySelector(".ql-editor")
-    // console.log("textEditorElem=",textEditorElem)
+    const textEditorElem = document.querySelector(".ql-editor")
+    console.log("textEditorElem=",textEditorElem)
     
     const postArticleRes = await postArticle(reqBodyPostArticle,API_key)
     console.log("postArticleRes=",postArticleRes)
@@ -65,16 +71,15 @@ export default function PostBtn({
       postArticleRes!==undefined &&
       (articleMetadata.thumbnail||articleMetadata.content)
     ){
-      const formData = new FormData();
-      
-      formData.append('thumbnail', articleMetadata.thumbnail as File);
-      formData.append('content', JSON.stringify(articleMetadata.content));
-      formData.append('totalWordCounts', calculateWordCount(".ql-editor").toString());
+      const putArticleAssetReqBody = new FormData();
+      console.log("articleAsset.content=",articleMetadata.content)
+      putArticleAssetReqBody.append('thumbnail', articleMetadata.thumbnail as File);
+      putArticleAssetReqBody.append('content', JSON.stringify(articleMetadata.content));
+      putArticleAssetReqBody.append('totalWordCounts', calculateWordCount(".ql-editor").toString());
 
-      console.log("putArticleAssetReqBody=",...formData)
       await PUT_articleAsset(
         postArticleRes.data._id, 
-        formData, 
+        putArticleAssetReqBody, 
         API_key
       )
     }
