@@ -8,7 +8,7 @@
     "watch:dev": "nodemon ./build/backend/index.js -V --delay 1",
     "watch:build": "tsc --watch",
     "dev": "rimraf ./build && tsc && concurrently npm:watch:build npm:watch:dev",
-    "build-prod": "rimraf ./build-prod && tsc -p tsconfig.prod.json",
+    "build": "rimraf ./build-prod && tsc -p tsconfig.prod.json",
     "start": "node ./build-prod/index.js",
     "test": "jest"
   },
@@ -53,6 +53,7 @@
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.1",
     "chalk": "^5.3.0",
+    "cloudinary": "^2.0.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",

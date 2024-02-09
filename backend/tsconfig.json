@@ -1,19 +1,26 @@
 {
   "compilerOptions": {
+    // basic options
     "target": "ES6",
     "module": "ES2020",
-    "lib": ["ES2022", "DOM","DOM.Iterable"],
-    "outDir": "build",
+    "strict": true,
+    "esModuleInterop": true,      
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,    
+    // module resolution options
     "moduleResolution": "node",
     "isolatedModules": true,
-    "sourceMap": true,
+    "lib": ["ES2022", "DOM","DOM.Iterable"],
     "allowJs": true, // Allow importing JavaScript files
-    "esModuleInterop": true,      
-    "forceConsistentCasingInFileNames": true,    
+    // source map options
+    "outDir": "build",
+    "sourceMap": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
+
+
+    "noUnusedLocals": true // TypeScript compiler will report an error for local variables that are declared but never used in your code
+
   },
-  "skipLibCheck": true,
   "include": ["./**/*","declaration.d.ts"],
   "exclude": [
     "./node_modules",
