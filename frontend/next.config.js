@@ -21,7 +21,7 @@ module.exports = (phase, { defaultConfig }) => {
   
   return {
     env:{
-      URL_API:"https://eraiyomi-server-e4508e46cd86.herokuapp.com/api"
+      URL_API:"https://eraiyomi-server.up.railway.app/api"
     },
     images: {
       domains: ['source.unsplash.com','lh3.googleusercontent.com'],
