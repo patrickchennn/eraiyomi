@@ -2,9 +2,6 @@ import chalk from "chalk"
 import { Request,Response } from "express"
 import { isValidObjectId } from "mongoose"
 import { articleAssetModel } from "../../schema/articleAssetSchema.js"
-import { readFileSync } from "fs"
-import { parentDirectory } from "../../index.js"
-import isEmpty from "lodash.isempty"
 import { articleModel } from "../../schema/articleSchema.js"
 
 /**
@@ -47,55 +44,7 @@ export const GET_articleAsset =  async (
     return res.status(404).json({"message":msg})
   }
 
-  const articleImagesFullPath = `${parentDirectory}/article-images/${article.titleArticle.URLpath}`
-  console.log("articleImagesFullPath=",articleImagesFullPath)
-
-  // START: thumbnail img logic
-  if(!isEmpty(articleAsset.thumbnail)){
-    console.log(chalk.magenta.bgBlack("IF: found image thumbnail"))
-
-    const thumbnailImgPath = `${articleImagesFullPath}/${articleAsset.thumbnail.filename}`
-
-    // console.log("thumbnailImgPath=",thumbnailImgPath)
-
-    const imageBinary = readFileSync(thumbnailImgPath);
-    // console.log(imageBinary)
-
-    // Convert binary data to a data URL
-    const dataURL = `data:image/jpeg;base64,${imageBinary.toString('base64')}`;
-
-    // Place it into the res body
-    articleAsset.thumbnail.dataURL = dataURL
-  }
-  // END: thumbnail img logic
-
-  // START: content images logic
-  for(let i=0; i<articleAsset.content.length; i++){
-
-    const data = articleAsset.content[i]
-    // console.log(`[${i}]:`,data)
-
-    if(Object.hasOwn(data.insert,"image")){
-      console.log(chalk.magenta.bgBlack("IF: found image at index: "),i)
-      console.log(`[${i}]:`,data)
-
-      // const imgSrc = data.insert.image.src
-
-      const contentImgPath = `${articleImagesFullPath}/${data.insert.image["data-filename"]}`
-      console.log("contentImgPath=",contentImgPath)
-
-      const imageBinary = readFileSync(contentImgPath);
-      // console.log("imageBinary=",imageBinary)
-
-      // Convert binary data to a data URL
-      const dataURL = `data:image/png;base64,${imageBinary.toString('base64')}`;
-      // console.log("dataURL=",dataURL)
-
-      // Place it into the res body
-      data.insert.image.src = dataURL
-    }
-  }
-  // END: content images logic
+  // TODO: handle when the external URL is fail
 
   console.log(chalk.green(`[API] GET /api/article-asset/?id=${id}&title=${title} 200\n`))
   return res.status(200).json(articleAsset)

@@ -4,8 +4,6 @@ import mongoose from "mongoose";
 import { articleModel } from "../../schema/articleSchema.js";
 import { Request,Response } from "express"
 import { articleAssetModel } from "../../schema/articleAssetSchema.js";
-import { existsSync, mkdirSync } from "fs";
-import { parentDirectory } from "../../index.js";
 
 
 /**
@@ -72,12 +70,8 @@ export const POST_article =  async (
     articleIdRef:articleId,
     thumbnail:{},
     content:[],
+    totalWordCounts:0
   })
-
-  const articleImagesFullPath = `${parentDirectory}/article-images/${URLpathMod}`
-  console.log("articleImagesFullPath=",articleImagesFullPath)
-  
-  if(!existsSync(articleImagesFullPath)) mkdirSync(articleImagesFullPath)
 
 
   console.log(chalk.green.bgBlack(`[201] success creating a new article with title "${body.title}"\n`))

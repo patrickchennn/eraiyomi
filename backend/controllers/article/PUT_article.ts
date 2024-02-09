@@ -3,8 +3,6 @@ import { articleModel } from "../../schema/articleSchema.js"
 import { Request,Response } from "express"
 import { User } from "@patorikkuuu/eraiyomi-types"
 import isEmpty from "lodash.isempty"
-import { renameSync } from "fs"
-import { parentDirectory } from "../../index.js"
 
 interface PUT_articleReqBody{
   title?: string,
@@ -121,10 +119,6 @@ export const PUT_article =  async (
       let URLpathMod = body.title.toLocaleLowerCase().split(" ").join("-")
       URLpathMod = URLpathMod.replace(/[^A-Za-z0-9-]/g, '');
 
-      renameSync(
-        `${parentDirectory}/article-images/${article.titleArticle.URLpath}`,
-        `article-images/${URLpathMod}`
-      )
 
       article.titleArticle.title = body.title
       article.titleArticle.URLpath = URLpathMod

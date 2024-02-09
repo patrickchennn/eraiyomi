@@ -13,8 +13,6 @@ import rateLimit from 'express-rate-limit'
 import errorHandler from './middleware/errorHandler.js'
 
 import connectDB from './config/db.js'
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 // ./routes
 import { routerArticle } from './routes/articleRoute.js'
@@ -22,18 +20,14 @@ import { routerUser } from './routes/userRoute.js'
 import { routerArticleAsset } from './routes/articleAssetRoute.js'
 import { routerArticleAnalytic } from './routes/articleAnalytic.js'
 
+import { v2 as cloudinary } from 'cloudinary'
 
-// we need to change up how __dirname is used for ES6 purposes
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// console.log("__dirname=",__dirname)
-
-// Navigate up 2 level to get the parent directory `backend`
-// to illustrate: build/backend/server.js/../../backend
-// we need to reach the `backend` real directory
-// when the typescript project get compiled, this file `server.ts` will be on `./build/server.js` so we need to go back twice
-export const parentDirectory = path.join(__dirname, '..');
-console.log("parentDirectory=",parentDirectory)
-
+          
+cloudinary.config({ 
+  cloud_name: "eraiyomi-server-images", 
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret:  process.env.CLOUDINARY_API_SECRET
+})
 
 
 mongoose.set('strictQuery', true);
@@ -67,7 +61,7 @@ const limiter = rateLimit({
 })
 
 // Apply the rate limiting middleware to all requests
-// app.use(limiter)
+app.use(limiter)
 
 
 

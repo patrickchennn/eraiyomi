@@ -2,8 +2,6 @@ import chalk from "chalk"
 import { Request,Response } from "express"
 import { articleModel } from "../../schema/articleSchema.js"
 import { articleAssetModel } from "../../schema/articleAssetSchema.js"
-import { parentDirectory } from "../../index.js"
-import { existsSync, rmSync } from "fs"
 
 /**
  * @desc delete a article. If an article is deleted, 'comments' document must be also deleted
@@ -19,18 +17,12 @@ export const DELETE_article =  async (req: Request, res: Response) => {
 
 
   // console.log("article=",article)
-  // console.log("commentsDoc=",commentsDoc)
-  // console.log("replyDoc=",replyDoc)
   // console.log("articleAsset=",articleAsset)
 
 
   
   if(article && articleAsset){
-    const articleImagesFullPath = `${parentDirectory}/article-images/${article.titleArticle.URLpath}`;
 
-    if (existsSync(articleImagesFullPath)) {
-      rmSync(articleImagesFullPath, { recursive: true, force: true });
-    }
     await article.remove();
     await articleAsset.remove();
 
