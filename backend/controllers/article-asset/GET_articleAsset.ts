@@ -6,22 +6,22 @@ import { articleModel } from "../../schema/articleSchema.js"
 
 /**
  * @desc get an article asset
- * @route GET /api/article-asset/?id=${articleId}&title=${title}
+ * @route GET /api/article-asset/?id=${articleId}}
  * @access public
  */
 export const GET_articleAsset =  async (
   req: Request<{}, {}, {title: string},{id:string,title:string}>,
   res: Response
 ) => {
-  const {id,title} = req.query
+  const {id} = req.query
 
-  console.log(chalk.yellow(`[API] GET /api/article-asset?id=${id}&title=${title}`))
+  console.log(chalk.yellow(`[API] GET /api/article-asset?id=${id}`))
 
   const isValid = isValidObjectId(id)
   // console.log("isValid=",isValid)
 
   if(!isValid){
-    const msg = `404 Bad Request. Article with id "${id}" is not found`
+    const msg = `400 Bad Request. Article with id "${id}" is not found`
     console.log(chalk.red.bgBlack(msg))
     return res.status(400).json({"message":msg})
   }
@@ -46,6 +46,6 @@ export const GET_articleAsset =  async (
 
   // TODO: handle when the external URL is fail
 
-  console.log(chalk.green(`[API] GET /api/article-asset/?id=${id}&title=${title} 200\n`))
+  console.log(chalk.green(`[API] GET /api/article-asset/?id=${id}} 200\n`))
   return res.status(200).json(articleAsset)
 }

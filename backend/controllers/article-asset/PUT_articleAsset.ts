@@ -33,7 +33,7 @@ export const PUT_articleAsset =  async (
   console.log("isArticleIdValid=",isArticleIdValid)
 
   if(!isArticleIdValid){
-    const msg = `404 Bad Request. Article with id "${articleId}" is invalid.`
+    const msg = `400 Bad Request. Article with id "${articleId}" is invalid.`
     console.log(chalk.red.bgBlack(msg))
     return res.status(400).json({"message":msg})
   }
@@ -43,7 +43,7 @@ export const PUT_articleAsset =  async (
   if(!articleAsset){
     const msg = `404 Bad Request. Article with id "${articleId}" is not found`
     console.log(chalk.red.bgBlack(msg))
-    return res.status(400).json({"message":msg})
+    return res.status(404).json({"message":msg})
   }
 
   const article = await articleModel.findOne({articleId}, 'titleArticle.URLpath')
@@ -131,7 +131,6 @@ export const PUT_articleAsset =  async (
         catch (error: UploadApiErrorResponse) {
           console.error(error);
           return res.status(500).send({
-            statusCode:"500 Server Internal Error",
             message:error
           });
 
@@ -190,9 +189,8 @@ export const PUT_articleAsset =  async (
 
   await articleAsset.save()
 
-  console.log(chalk.green.bgBlack(`[API] PUT /api/article-asset/${articleId} 200; success editing article asset\n`))
-  return res.status(201).json({
-    message:`success editing article asset`,
-    data: articleAsset
+  console.log(chalk.green.bgBlack(`[API] PUT /api/article-asset/${articleId} 200\n`))
+  return res.status(200).json({
+    message:`success editing article asset. article's title ${article.titleArticle.title}`,
   })
 }

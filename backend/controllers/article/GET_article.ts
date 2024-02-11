@@ -19,9 +19,9 @@ export const GET_article = async (req: Request, res:Response) => {
   // // console.log("isValid=",isValid)
 
   if(!isValid){
-    const msg = `404 Not Found. Article with id "${id}" is an invalid id.\n`
+    const msg = `400 Bad Request. Article with id "${id}" is an invalid id.\n`
     console.log(chalk.red.bgBlack(msg))
-    return res.status(404).json({message:msg})
+    return res.status(400).json({message:msg})
   }
 
   

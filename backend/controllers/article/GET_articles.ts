@@ -63,7 +63,7 @@ export const GET_articles = async (
   // eventhough `articleDatas` is empty `[]` it shouldn't be null.
   if(articleDatas===null){
     console.log(chalk.red(`[API] GET /api/articles?sort=${sort}&status=${status}&search=${search} 500\n`))
-    return res.status(500).json({message:"Internal Server Error"})
+    return res.status(500).json({message:"fail on fetching data article from database"})
   }
 
   console.log(chalk.green(`[API] GET /api/articles?sort=${sort}&status=${status}&search=${search} 200\n`))
