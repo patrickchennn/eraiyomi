@@ -19,8 +19,8 @@ export const PUT_articleAsset =  async (
   res: Response
 ) => {
   const {articleId} = req.params
-
   console.log(chalk.yellow(`[API] PUT /api/article-asset/${articleId}`))
+  
   
   const {body} = req
   // console.log("body=",body)
@@ -39,15 +39,15 @@ export const PUT_articleAsset =  async (
   }
 
   const articleAsset = await articleAssetModel.findOne({articleIdRef:articleId})
-
+  
   if(!articleAsset){
     const msg = `404 Bad Request. Article with id "${articleId}" is not found`
     console.log(chalk.red.bgBlack(msg))
     return res.status(404).json({"message":msg})
   }
 
-  const article = await articleModel.findOne({articleId}, 'titleArticle.URLpath')
-  // console.log("article=",article)
+  const article = await articleModel.findOne({_id: articleId}, 'titleArticle.URLpath')
+  console.log("article=",article)
   if(article===null){
     const msg = `404 Not Found. article with id "${articleId} is not found"`
     console.log(chalk.red(msg))
@@ -191,6 +191,6 @@ export const PUT_articleAsset =  async (
 
   console.log(chalk.green.bgBlack(`[API] PUT /api/article-asset/${articleId} 200\n`))
   return res.status(200).json({
-    message:`success editing article asset. article's title ${article.titleArticle.title}`,
+    message:`success editing article asset. article's title ${article.titleArticle.URLpath}`,
   })
 }
