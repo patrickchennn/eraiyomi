@@ -27,7 +27,7 @@ export default function DisqusEmbed({articleId}: {articleId: string}) {
     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables 
   */
   var disqus_config = function (this: DisqusConfig) {
-    this.page.url = pathname;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.url = fullUrl;  // Replace PAGE_URL with your page's canonical URL variable
     this.page.identifier = articleId; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
   };
 

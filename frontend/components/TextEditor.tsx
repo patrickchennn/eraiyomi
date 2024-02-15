@@ -142,7 +142,7 @@ export default function TextEditor({contentState,textEditorRef}: TextEditorProps
       },
       syntax: {
         highlight: (text: string) => {
-          // console.log("text=",text)
+          // console.log("@highlight(): text=",text)
           return hljs.highlightAuto(text).value
         }
       },
