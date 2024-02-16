@@ -40,7 +40,21 @@ const getArticles = async (
       }
     )
 
-    dataRes = await res.json()
+    // Check if the response is JSON by looking at the Content-Type header
+    const contentType = res.headers.get('content-type');
+    if(contentType && contentType.includes('application/json')){
+      // If the Content-Type header indicates JSON, parse the response as JSON
+      dataRes = await res.json()
+      // Your code to handle the parsed JSON data
+    } else {
+      // If the Content-Type header does not indicate JSON, handle it accordingly
+      console.error('Response is not JSON:',res)
+      ;
+      // Additional error handling if needed
+      throw new Error("Response is not JSON");
+
+    }
+
     status = `${res.status} ${res.statusText}`
 
     if(!res.ok){

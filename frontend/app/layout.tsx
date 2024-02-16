@@ -5,10 +5,13 @@ import GoogleAnalytics from "@/components/GoogleAnalytics";
 import TopNav from "@/components/top-nav/TopNav"
 
 import { AppContextProvider } from "@/hooks/appContext";
+import { Metadata } from "next";
 
 
 
-
+export const metadata: Metadata = {
+  title: 'Eraiyomi',
+}
 interface RootLayoutProps {
   children: React.ReactNode
 }

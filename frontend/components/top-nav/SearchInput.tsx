@@ -21,23 +21,11 @@ export default function SearchInput({}: SearchInputProps){
 
   const searchResultContainerRef = useRef<HTMLUListElement>(null)
 
-  interface ArticleSearchResultRef{
-    [key: string]:{
-      articleTitle:HTMLHeadingElement|null,
-      articleContainer:HTMLLIElement|null
-    }
-  }
-  const articleSearchResultRef = useRef<ArticleSearchResultRef>({})
-
   const searchIsUnavailable = useRef<HTMLLIElement>(null)
 
 
 
   // methods
-  const handleKeyPress =  (e: React.ChangeEvent) => {
-
-  }
-
   const handleChange =  (e: React.ChangeEvent) => {
     if(typingTimer.current) clearTimeout(typingTimer.current);
 
@@ -61,10 +49,6 @@ export default function SearchInput({}: SearchInputProps){
         setArticles(articles.data)
       }
     }, 300);
-  }
-
-  const handleKeyRelease = () => {
-
   }
 
 
@@ -134,11 +118,3 @@ export default function SearchInput({}: SearchInputProps){
     </div>
   )
 }
-
-
-/*
-The search algorithm is always running when the search input bar changed (onChange behavior).
-It always run for n times, n is the length of the list, and k times where k is the length of the string.
-Thus, the worstcase for this algo is O(n*k).
-It could be O(n*1) or reduced to O(n), iif the input value is only 1.
-*/
