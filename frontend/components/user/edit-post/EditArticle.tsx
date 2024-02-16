@@ -48,6 +48,8 @@ export default function EditArticle({
 
   // hooks
   // const [content, setContent] = useState(initContent);
+  const [isMounted, setIsMounted] = useState(false)
+
   const [content, setContent] = useState("");
 
   const [API_key,set_API_key] = useState<string>("")
@@ -83,9 +85,11 @@ export default function EditArticle({
     textEditorRef.current?.editor?.setContents(
       articleAsset.content as any
     )
-  },[articleAsset.content])
+  },[articleAsset.content,isMounted])
 
-
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // methods
   const handleSave = async () => {
@@ -191,7 +195,11 @@ export default function EditArticle({
       <EditInputThumbnail defaultThumbnail={articleAssetDefaultDataRef.current.thumbnail} setArticleAssetData={setArticleAssetData}/>
 
       <label htmlFor="">content</label>
-      <TextEditor contentState={[content, setContent]} textEditorRef={textEditorRef}/>
+      {
+        isMounted ? <TextEditor contentState={[content, setContent]} textEditorRef={textEditorRef}/> : null // `TextEditor` will not be rendered on the server. Only on the client after hydration
+
+      }
+      
     </>
   )
 }
