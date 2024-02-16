@@ -68,6 +68,7 @@ export default function HomeTemplate ({
     // console.log(articlesSorted)
 
     return whichOne.map(article => {
+        const pagePath = `/post/${article.titleArticle.URLpath}`
         // TODO: convert this logic into server component
         if(article.status==="unpublished") return <></>
         return (
@@ -93,7 +94,7 @@ export default function HomeTemplate ({
                     {/* get the view counter from google analytics. */}
                     {
                       articlesAnalytic &&
-                      Object.hasOwn(articlesAnalytic,article.titleArticle.title) ? articlesAnalytic[article.titleArticle.title].screenPageViews : '-'
+                      Object.hasOwn(articlesAnalytic,pagePath) ? articlesAnalytic[pagePath].screenPageViews : '-'
                     }
                   </div>
                   <div>

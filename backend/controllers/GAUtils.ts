@@ -36,81 +36,94 @@ const analyticsDataClient = new BetaAnalyticsDataClient(
 
 
 interface GetReportRes{
-  [pageTitle: string]:{
-    pagePath:string,
-    screenPageViews:string,
+  [pagePath: string]:{
+    hostName: string
+    pageTitle: string
+    screenPageViews: string
+    country: string
+    region: string
+    city: string
   }
 }
 /**
  * Currently this getReport() will only get the "activeUsers" and "screenPageViews" reports.
  */
 // @ts-ignore
-export const getReport = async (): Promise<GetReportRes> => {
+export const getPostReport = async (): Promise<GetReportRes> => {
   let dataAnalytics: GetReportRes = {}
   const [response] = await analyticsDataClient.runReport({
     property: `properties/${propertyId}`,
     dateRanges: [
       {
-        startDate: '7daysAgo', // it starts with this particular date because at that time I posted my first article
+        startDate: '2024-02-09', // it starts with this particular date because at that time I posted my first article
         endDate: 'today',
       },
     ],
     dimensions: [
+      {
+        name:"hostName"
+      },
       {
         name: 'pagePath',
       },
       {
         name:"pageTitle"
       },
+      {
+        "name": "country"
+      },
+      {
+        "name": "region"
+      },
+      {
+        "name": "city"
+      }
     ],
+    dimensionFilter: {
+      // filter by hostName, if env variable `NODE_ENV` is equal to "production", then giving the real values is the right approach. By saying real values, it refers to production deployed app
+      filter: {
+        fieldName: "hostName",
+        stringFilter: {
+          value: process.env.NODE_ENV==="production"?"eraiyomi.netlify.app":"localhost"
+        }
+      }
+    },
     metrics: [
       {
         name: 'screenPageViews', // This is the metric for the total page views.
       },
     ],
-// x
   });
   // console.log('Report result:');
   // console.log("response=",response)
-  // const rows = response.rows![0]
+  const rows = response.rows
   // console.log("rows=",rows)
 
+  if(rows!==undefined && rows!==null){
 
-  response.rows!.forEach(row => {
-    const dimensionValues = row.dimensionValues
-    const metricValues = row.metricValues
-    dataAnalytics = {
-      ...dataAnalytics,
-      [dimensionValues![1].value as string]:{
-        pagePath:dimensionValues![0].value as string,
-        screenPageViews:metricValues![0].value as string
+    rows.forEach(row => {
+      const dimensionValues = row.dimensionValues!
+      const metricValues = row.metricValues!
+      // console.log("dimensionValues=",dimensionValues)
+      // console.log("metricValues=",metricValues)
+
+      // NOTE: only getting the `/post/*` analytics data
+      // this prevents the other path such as `{userName}/*` to be included
+      if(dimensionValues[1].value?.startsWith("/post/")){
+        dataAnalytics = {
+          ...dataAnalytics,
+          [dimensionValues[1].value]:{
+            hostName:dimensionValues[0].value!,
+            pageTitle:dimensionValues[2].value!,
+            screenPageViews:metricValues[0].value!,
+            country:dimensionValues[3].value!,
+            region:dimensionValues[4].value!,
+            city:dimensionValues[5].value!,
+          }
+        }
       }
-    }
-  });
+    });
+  }
   return dataAnalytics
 }
 
-    // dimensionFilter: {
-    //   // Filter hostname such name is not started with eraiyomi. In other word, just get the analytics data either from "eraiyomi.web.app" or "eraiyomi.firebaseapp.com".
-    //   //  This filters the localhost (local ip address) analytics. I do not want that data because localhost is not a real views it is just for testing (development) purpose.
-    //   orGroup:{
-    //     expressions:[
-    //       {
-    //         filter: {
-    //           fieldName: "hostName",
-    //           stringFilter: {
-    //             value: "eraiyomi.web.app"
-    //           }
-    //         },
-    //       },
-    //       {
-    //         filter: {
-    //           fieldName: "hostName",
-    //           stringFilter: {
-    //             value: "eraiyomi.firebaseapp.com"
-    //           }
-    //         },
-    //       }
-    //     ]
-    //   }
-    // },
