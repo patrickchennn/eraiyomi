@@ -14,7 +14,7 @@ export const GET_user = async (
   res:Response
 ) => {
   const {username,email} = req.query
-  console.log(chalk.blue(`[API] GET /api/user?username=${username}|email=${email}`))
+  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
 
   // IF: both email AND username do NOT exist
   if(!email && !username){

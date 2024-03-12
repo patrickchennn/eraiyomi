@@ -21,7 +21,7 @@ export const GET_articles = async (
   res:Response
 ) => {
   const {sort,status,search} = req.query
-  console.log(chalk.yellow(`[API] executing GET /api/articles?sort=${sort}&status=${status}&search=${search}`))
+  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
   
   
   const articleDatasOnQuery = articleModel.find({})

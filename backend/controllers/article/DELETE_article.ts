@@ -10,7 +10,7 @@ import { articleAssetModel } from "../../schema/articleAssetSchema.js"
  */
 export const DELETE_article =  async (req: Request, res: Response) => {
   const {articleId} = req.params
-  console.log(chalk.yellow(`[API] DELETE /api/article/${articleId}`))
+  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
 
   const article = await articleModel.findById(articleId)
   const articleAsset = await articleAssetModel.findOne({articleIdRef:articleId})

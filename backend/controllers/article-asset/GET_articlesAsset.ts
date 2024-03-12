@@ -9,7 +9,7 @@ import { articleAssetModel } from "../../schema/articleAssetSchema.js"
  * @access public
  */
 export const GET_articlesAsset = async (req: Request, res:Response) => {
-  console.log(chalk.yellow(`[API] GET /api/articles-asset`))
+  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
   
   
   const articlesAsset = await articleAssetModel.find({}).lean()

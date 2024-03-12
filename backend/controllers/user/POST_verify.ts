@@ -9,7 +9,7 @@ interface ReqBodyVerify {
   token: string
 }
 export const POST_verify = async (req: Request<{}, {}, ReqBodyVerify>, res: Response) => {
-  console.log(chalk.yellow(`[API] POST /api/user/verify`))
+  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
   
   // console.log("req.body=",req.body)
 

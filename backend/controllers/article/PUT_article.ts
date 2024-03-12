@@ -23,7 +23,7 @@ export const PUT_article =  async (
   const {articleId} = req.params
   const {action} = req.query
 
-  console.log(chalk.yellow(`[API] PUT /api/article/${articleId}?action=${action}`))
+  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
   
   const article = await articleModel.findById(articleId)
   if(article===null){

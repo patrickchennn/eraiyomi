@@ -15,7 +15,7 @@ export const GET_articleAsset =  async (
 ) => {
   const {id} = req.query
 
-  console.log(chalk.yellow(`[API] GET /api/article-asset?id=${id}`))
+  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
 
   const isValid = isValidObjectId(id)
   // console.log("isValid=",isValid)

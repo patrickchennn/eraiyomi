@@ -11,7 +11,7 @@ export const DELETE_user = async (
 ) => {
   const {userId} = req.params
 
-  console.log(chalk.blue(`[API] DELETE /api/user/${userId}`))
+  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
 
   const deletedUser = await userModel.findOneAndDelete({userId})
   if(deletedUser===null){

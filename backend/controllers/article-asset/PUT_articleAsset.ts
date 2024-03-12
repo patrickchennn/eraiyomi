@@ -19,7 +19,7 @@ export const PUT_articleAsset =  async (
   res: Response
 ) => {
   const {articleId} = req.params
-  console.log(chalk.yellow(`[API] PUT /api/article-asset/${articleId}`))
+  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
   
   
   const {body} = req

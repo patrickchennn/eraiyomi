@@ -9,7 +9,7 @@ import { userModel } from "../../schema/userSchema.js"
  * @access private
  */
 export const GET_users = async (req:Request,res:Response) => {
-  console.log(chalk.blue(`[API] GET /api/users`))
+  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
   const users = await userModel.find({})
   console.log("users=",users)
 

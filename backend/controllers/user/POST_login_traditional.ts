@@ -11,7 +11,7 @@ import generateToken from "../../utils/generateJWT.js";
  * @access private
  */
 export const POST_loginTraditional = async (req: Request<{}, {}, ReqBodyLoginTraditional>, res: Response) => {
-  console.log(chalk.yellow(`[API] executing POST /api/user/login-traditional`))
+  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
   const {username,email,password} = req.body;
 
   // IF: both username AND email does NOT exist OR password does NOT exist

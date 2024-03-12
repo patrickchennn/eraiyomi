@@ -13,7 +13,7 @@ export const GET_article = async (req: Request, res:Response) => {
   let {id,title} = req.query
   
 
-  console.log(chalk.yellow(`[API] GET /api/article/?id=${id}&title=${title}`))
+  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
 
   const isValid = isValidObjectId(id)
   // // console.log("isValid=",isValid)

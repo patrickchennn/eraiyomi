@@ -24,7 +24,7 @@ export const POST_Register = async (
   req: Request<{}, {}, ReqBodyRegisterUser>, 
   res: Response
 ) => {
-  console.log(chalk.blue(`[API] POST /api/user`))
+  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
 
   const {username,email,password,name,profilePictureUrl,registerationMethod} = req.body;
 

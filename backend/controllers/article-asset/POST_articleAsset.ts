@@ -11,7 +11,7 @@ export const POST_articleAsset =  async (
   req: Request<{}, {}, POST_ReqBodyArticle>,
   res: Response
 ) => {
-  console.log(chalk.yellow("[API] POST /api/article-asset"))
+  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
 
 
 }
