@@ -235,7 +235,7 @@ export default async function Page({
           ></main>
 
           {/* like or dislike the article, client component */}
-          <LikeDislikeArticle articleInit={article}/>
+          {/* <LikeDislikeArticle articleInit={article}/> */}
         </div>
 
         {/* table of content (>1024px), client component*/}

@@ -48,8 +48,9 @@ const getArticles = async (
       // Your code to handle the parsed JSON data
     } else {
       // If the Content-Type header does not indicate JSON, handle it accordingly
-      console.error('Response is not JSON:',res)
-      ;
+      console.error(chalk.red.bgBlack('Response is not JSON:'),res);
+      console.error(chalk.red.bgBlack("res.status=",res.status));
+
       // Additional error handling if needed
       throw new Error("Response is not JSON");
 

@@ -122,7 +122,8 @@ export default function ArticleOverview({
                 }
               </div>
               <div>
-                <div className="flex">
+
+                <div className="flex justify-between">
                   <Link 
                     href={{
                       pathname:"post/"+article.titleArticle.URLpath,
@@ -133,22 +134,27 @@ export default function ArticleOverview({
                   >
                     {article.titleArticle.title}
                   </Link>
-                  <Link
-                    data-cy="edit-article"
-                    href={{
-                      pathname:userInfo.username+"/edit/post/"+article.titleArticle.URLpath,
-                      query: { id: article._id },
-                    }} 
-                    target="_blank" 
-                    className="text-xs font-light align-top"
-                  >
-                    <span>Edit </span><AiOutlineEdit className="inline"/>
-                  </Link>
-                  <button data-cy="delete-article" onClick={()=>handleDelArticle(article._id)}>
-                    <IoTrashOutline className="inline peer hover:hidden"/>
-                    <IoTrashSharp className="text-red-500 hidden peer-hover:inline"/>
-                  </button>
+                  
+                  <div>
+                    <Link
+                      data-cy="edit-article"
+                      href={{
+                        pathname:userInfo.username+"/edit/post/"+article.titleArticle.URLpath,
+                        query: { id: article._id },
+                      }} 
+                      target="_blank" 
+                      className="text-xs font-light align-top"
+                    >
+                      <span>Edit </span><AiOutlineEdit className="inline"/>
+                    </Link>
+
+                    <button data-cy="delete-article" onClick={()=>handleDelArticle(article._id)}>
+                      <IoTrashOutline className="inline peer hover:hidden"/>
+                      <IoTrashSharp className="text-red-500 hidden peer-hover:inline"/>
+                    </button>
+                  </div>
                 </div>
+                
                 <div className="indent-4 text-gray-500">
                   {article.shortDescription}
                 </div>

@@ -38,8 +38,11 @@ export default function RootLayout({children}: RootLayoutProps){
         <AppContextProvider>
           <>
             <TopNav />
-            <div className='min-h-screen h-full light-theme-bg dark:dark-theme-bg relative max-[640px]:font-sm '>
-              {children}
+            <div className='min-h-screen h-full light-theme-bg dark:dark-theme-bg relative max-[640px]:font-sm'>
+              {/* Wrap children in a container that applies the dark background to all its children */}
+              <div className='dark:dark-component'>
+                {children}
+              </div>
             </div>
             <Footer />
           

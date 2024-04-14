@@ -5,7 +5,7 @@ import { Article } from "@patorikkuuu/eraiyomi-types"
 import chalk from "chalk"
 import isEmpty from "lodash.isempty"
 import Link from "next/link"
-import { useState, useRef, useEffect, useLayoutEffect } from "react"
+import { useState, useRef } from "react"
 import {FcSearch} from "react-icons/fc"
 import {ImSearch} from "react-icons/im"
 
