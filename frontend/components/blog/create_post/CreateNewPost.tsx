@@ -21,6 +21,7 @@ import TitleInput from './create-new-post-components/TitleInput';
 import APIKeyInput from './create-new-post-components/APIKeyInput';
 import ReactQuill from 'react-quill';
 import dynamic from 'next/dynamic';
+import MdFileInput from './create-new-post-components/MdFileInput';
 
 // https://stackoverflow.com/questions/69386843/nextjs-referrenceerror-document-is-not-defined
 const ReactQuillWithNoSSR = dynamic(
@@ -34,6 +35,7 @@ const ReactQuillWithNoSSR = dynamic(
 export interface ArticleMetadataType{
   title:string,
   shortDescription:string,
+  contentStuctureType:string|"quilljs"|"markdown"
   category:Array<string>,
   thumbnail:File|string|null,
   content:[]
@@ -56,6 +58,7 @@ export default function CreateNewPost(){
   const [articleMetadata,setArticleMetadata] = useState<ArticleMetadataType>({
     title:"",
     shortDescription:"",
+    contentStuctureType:"",
     category:[],
     thumbnail:null,
     content:[]
@@ -170,6 +173,9 @@ export default function CreateNewPost(){
         <APIKeyInput API_keyState={[API_key,set_API_key]}/>
 
         <ThumbnailInput articleMetadataState={[articleMetadata,setArticleMetadata]}/>
+
+        {/* upload file */}
+        <MdFileInput contentStuctureType={articleMetadata.contentStuctureType} setArticleData={setArticleMetadata}/>
 
         <ReactQuillWithNoSSR contentState={[content, setContent]} textEditorRef={textEditorRef}/>
       </div>

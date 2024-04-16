@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { AiOutlineFileAdd, AiFillFileAdd } from 'react-icons/ai'
 import { ArticleMetadataType } from '../CreateNewPost'
 import Image from 'next/image'

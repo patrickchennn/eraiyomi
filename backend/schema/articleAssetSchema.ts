@@ -17,6 +17,11 @@ const articleAssetSchema = new Schema({
     dataURL: String,
     default:{}
   },
+  contentStuctureType:{
+    type: String,
+    enum : ["quilljs","mardown"],
+    required: true,
+  },
   content:{
     type : [{}],
     required: true,
