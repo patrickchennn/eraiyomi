@@ -22,6 +22,7 @@ import APIKeyInput from './create-new-post-components/APIKeyInput';
 import ReactQuill from 'react-quill';
 import dynamic from 'next/dynamic';
 import MdFileInput from './create-new-post-components/MdFileInput';
+import useDidMountEffect from '@/hooks/useDidMountEffect';
 
 // https://stackoverflow.com/questions/69386843/nextjs-referrenceerror-document-is-not-defined
 const ReactQuillWithNoSSR = dynamic(
@@ -48,7 +49,6 @@ export default function CreateNewPost(){
   const previewSectionRef = useRef<HTMLDivElement>(null)
   const editorSectionRef = useRef<HTMLDivElement>(null)
   const textEditorRef = useRef<ReactQuill>(null)
-  const firstTimeRender = useRef(true)
 
   const [previewElem,setPreviewElem] = useState<JSX.Element>()
   const [previewRef, setPreviewRef] = useState<HTMLDivElement>();
@@ -85,14 +85,10 @@ export default function CreateNewPost(){
   },[])
 
 
-  useEffect(() => {
+  useDidMountEffect(() => {
     // console.log("articleMetadata=",articleMetadata)
     // console.log("firstTimeRender=",firstTimeRender)
-    if(firstTimeRender.current){
-      firstTimeRender.current = false
-      return
-    }
-
+ 
     const { content, thumbnail, ...rest } = articleMetadata;
     window.localStorage.setItem("article-metadata",JSON.stringify(rest))
     
@@ -103,12 +99,7 @@ export default function CreateNewPost(){
     articleMetadata.title
   ])
 
-  useEffect(() => {
-    if(firstTimeRender.current){
-      firstTimeRender.current = false
-      return
-    }
-    
+  useDidMountEffect(() => {
     const deltaContents = textEditorRef.current?.editor?.getContents()
     // console.log("deltaContents=",deltaContents)
 
