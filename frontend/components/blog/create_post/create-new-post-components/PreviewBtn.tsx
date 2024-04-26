@@ -1,95 +1,72 @@
 "use client"
 
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useContext } from 'react'
 import CreateTitle from '../../CreateTitle';
 import GeneratePreview from './GeneratePreview';
-import { ArticleMetadataType } from '../CreateNewPost';
 import { useUserInfo } from '@/hooks/appContext';
-import ReactQuill from 'react-quill';
 import convertDate from '@/utils/convertDate';
 import chalk from 'chalk';
 import getReadEstimation from '@/utils/getReadEstimation';
-import calculateWordCount from '@/utils/calculateWordCount';
+import { CreateNewPostStateCtx } from '../CreateNewPost';
+import {MarkdownRenderer} from '@/utils/MarkdownRenderer';
+import Link from "next/link";
 
 
 interface PreviewBtnProps{
-  textEditorRef: React.RefObject<ReactQuill>
   setPreviewElem: Dispatch<SetStateAction<JSX.Element | undefined>>
-  articleMetadata: ArticleMetadataType
-  content: string,
 }
 export default function PreviewBtn({
-  textEditorRef,
-  setPreviewElem,
-  articleMetadata,
-  content,
+  setPreviewElem
 }: PreviewBtnProps) {
-  // hooks
 
+  // hooks
   const [userInfo] = useUserInfo()
-  
+  const c = useContext(CreateNewPostStateCtx)
+  const [articleData] = c.articleDataState
+  const [content] = c.contentMDState
+  const [contentMD] = c.contentMDState
+
 
   // method
   const handlePreview = () => {
     console.log(chalk.yellow.bgBlack("@handlePreview"))
+    console.log("contentMD=",contentMD)
+    console.log("articleData=",articleData)
 
-    // console.log("content=",content)
+    // @TODO: give for each headings a some sort of "table of contents" like
+    const TOCData: {[key: string]:HTMLHeadingElement} = {};
 
-    // IF the user have not login --> login first
-    if(!userInfo.email.trim()){
-      return alert("login first in order to post your work (only the admin/dev are allowed)")
+
+    let TempMainContent!: JSX.Element
+    if(articleData.contentStructureType==="markdown"){
+      TempMainContent = <MarkdownRenderer markdownText={contentMD}/>
+
+    }else if(articleData.contentStructureType==="quilljs"){
+      TempMainContent = <div dangerouslySetInnerHTML={{__html: content}}></div>
     }
 
-    const TOCData: {[key: string]:HTMLHeadingElement} = {};
-  
-    // hide the editor area because I just want to highlight the preview area
-    // editorSectionRef.current.classList.add("hidden")
-    // previewSectionRef.current.classList.remove("!hidden")
-  
-    // console.log("preview")
-    const textEditorElem = document.querySelector<HTMLDivElement>(".ql-editor")
-    if(!textEditorElem) return console.error("textEditorElem=",textEditorElem)
-    if(!textEditorRef.current) return console.error("textEditorRef.current=",textEditorRef)
 
-
-    const wordCount = calculateWordCount(textEditorElem)
-    console.log("wordCount=",wordCount)
-
-    const readingTime = getReadEstimation(wordCount)
+    const readingTime = getReadEstimation(articleData.wordCounts)
     // console.log("readingTime=",readingTime)
 
     const TitleContent = <CreateTitle
-      titlePage={articleMetadata.title}
+      titlePage={articleData.title}
       miscInfo={{
         date: convertDate(new Date().toISOString().slice(0, 10)),
-        wordCount,
+        wordCount:articleData.wordCounts,
         author: userInfo.username,
         readingTime,
-        category: articleMetadata.category,
+        category: articleData.category,
       }}
     />
 
-    // console.log("textEditorElem=",textEditorElem)
-
-    const headings = textEditorElem.querySelectorAll<HTMLHeadingElement>("h2, h3")
-    // console.log("headings=",headings)
-
-    const TempMainContent = <div dangerouslySetInnerHTML={{__html: content}}></div>
-    // console.log("TempMainContent=",TempMainContent)
-
-    for(const heading of headings){
-      // console.log("heading=",heading)
-      TOCData[heading.textContent as string] = heading
-    }
-    // console.log("TOCData=",TOCData)
-
-    setPreviewElem(
-      <GeneratePreview 
-        MainContent={TempMainContent} 
-        TitleContent={TitleContent}
-        TOCData={TOCData}
-      />
-    )
+    const PrevElem = <GeneratePreview 
+      MainContent={TempMainContent} 
+      TitleContent={TitleContent}
+      TOCData={TOCData}
+    />
+    setPreviewElem(PrevElem)
+    // localStorage.setItem('article-content-md', JSON.stringify(PrevElem));
   }
 
 
@@ -102,6 +79,14 @@ export default function PreviewBtn({
       onClick={handlePreview} 
       className='border rounded py-1 px-2 bg-zinc-50 shadow-inner text-sm hover:shadow'
     >
+      {/* <Link
+        href={{
+          pathname:"post/compose/preview"
+        }} 
+        target="_blank" 
+      >
+        Preview
+      </Link> */}
       Preview
     </button>
   )

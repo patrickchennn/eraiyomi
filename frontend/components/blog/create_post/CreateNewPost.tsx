@@ -7,9 +7,9 @@ The reason it is limited because to implement for global users, I guess, it need
 
 
 // react
-import {useState, useRef, useCallback, useEffect} from 'react'
-import { createPortal } from 'react-dom';
-
+import {useState, useRef, useEffect, createContext} from 'react'
+import ReactQuill from 'react-quill';
+import useDidMountEffect from '@/hooks/useDidMountEffect';
 
 import PostBtn from './create-new-post-components/PostBtn';
 import PreviewBtn from './create-new-post-components/PreviewBtn';
@@ -19,28 +19,30 @@ import ThumbnailInput from './create-new-post-components/ThumbnailInput';
 import DescInput from './create-new-post-components/DescInput';
 import TitleInput from './create-new-post-components/TitleInput';
 import APIKeyInput from './create-new-post-components/APIKeyInput';
-import ReactQuill from 'react-quill';
-import dynamic from 'next/dynamic';
-import MdFileInput from './create-new-post-components/MdFileInput';
-import useDidMountEffect from '@/hooks/useDidMountEffect';
+import EditorChoice from './create-new-post-components/EditorChoice';
+import chalk from 'chalk';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/atom-one-dark.css';
 
-// https://stackoverflow.com/questions/69386843/nextjs-referrenceerror-document-is-not-defined
-const ReactQuillWithNoSSR = dynamic(
-  () => import('@/components/TextEditor'),
-  { 
-    ssr: false, // <-- not including this component on server-side
-    loading:()=><div className='loader'></div>
-  } 
-)
-
-export interface ArticleMetadataType{
+export interface ArticleDataType{
   title:string,
   shortDescription:string,
-  contentStuctureType:string|"quilljs"|"markdown"
   category:Array<string>,
   thumbnail:File|string|null,
-  content:[]
+  content:string
+  contentStructureType:string|"quilljs"|"markdown"
+  wordCounts:number
 }
+
+interface CreateNewPostStateCtxType{
+  articleDataState: [ArticleDataType,React.Dispatch<React.SetStateAction<ArticleDataType>>]
+  contentState:[string,React.Dispatch<React.SetStateAction<string>>]
+  contentMDState:[string,React.Dispatch<React.SetStateAction<string>>]
+
+  textEditorRef: React.RefObject<ReactQuill>
+}
+export const CreateNewPostStateCtx = createContext<CreateNewPostStateCtxType|null>(null);
+
 
 
 export default function CreateNewPost(){
@@ -51,140 +53,120 @@ export default function CreateNewPost(){
   const textEditorRef = useRef<ReactQuill>(null)
 
   const [previewElem,setPreviewElem] = useState<JSX.Element>()
-  const [previewRef, setPreviewRef] = useState<HTMLDivElement>();
   const [API_key,set_API_key] = useState<string>("")
   const [content, setContent] = useState('');
+  const [contentMD, setContentMD] = useState('');
 
-  const [articleMetadata,setArticleMetadata] = useState<ArticleMetadataType>({
+
+  const [articleData,setArticleData] = useState<ArticleDataType>({
     title:"",
     shortDescription:"",
-    contentStuctureType:"",
+    contentStructureType:"",
     category:[],
     thumbnail:null,
-    content:[]
+    content:"",
+    wordCounts:0
   })
 
 
-  const onPreviewRefSet = useCallback((e:HTMLDivElement) => {
-    // console.log(e)
-    setPreviewRef(e);
-  },[]);
-  
 
   useEffect(()=>{
-    const articleMetadataLS = window.localStorage.getItem("article-metadata")
-    if(!articleMetadataLS) return console.warn("articleMetadataLS is ",articleMetadataLS)
+    const articleDataLS = window.localStorage.getItem("article-data")
+    if(!articleDataLS) return console.warn("articleDataLS is ",articleDataLS)
 
-    // console.log("articleMetadataLS=",articleMetadataLS)
+    console.log("articleDataLS=",articleDataLS)
 
-    const parsedData = JSON.parse(articleMetadataLS)
-    // console.log("parsedData=",parsedData)
+    const parsedData = JSON.parse(articleDataLS)
+    console.log("parsedData=",parsedData)
 
-    setArticleMetadata(parsedData)
+    setArticleData(parsedData)
 
   },[])
 
 
   useDidMountEffect(() => {
-    // console.log("articleMetadata=",articleMetadata)
+    // console.log("articleData=",articleData)
     // console.log("firstTimeRender=",firstTimeRender)
  
-    const { content, thumbnail, ...rest } = articleMetadata;
-    window.localStorage.setItem("article-metadata",JSON.stringify(rest))
+    const { content, thumbnail, ...rest } = articleData;
+    window.localStorage.setItem("article-data",JSON.stringify(rest))
     
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[
-    articleMetadata.category,
-    articleMetadata.shortDescription,
-    articleMetadata.title
+    articleData.category,
+    articleData.shortDescription,
+    articleData.title
   ])
 
+  // @todo: is this necessary though?
   useDidMountEffect(() => {
     const deltaContents = textEditorRef.current?.editor?.getContents()
-    // console.log("deltaContents=",deltaContents)
+    console.log("deltaContents=",deltaContents)
 
-    setArticleMetadata(prev=>({
+
+    const txt = textEditorRef.current?.editor?.getText().trim()
+    setArticleData(prev=>({
       ...prev,
-      content:deltaContents?.ops as []
+      contentStuctureType:"quilljs",
+      content:JSON.stringify(deltaContents?.ops as []),
+      wordCounts:txt ? txt.split(/\s+/).length : 0
     }))
   },[content])
 
 
-
-
-
-
-  // methods
-
-
-  const handleEditorView = () => {
-    // console.log(previewSectionRef.current)
-    editorSectionRef.current!.classList.remove("hidden")
-    previewSectionRef.current!.classList.add("!hidden")
-  }
-
+  useEffect(() => {
+    console.log(chalk.yellow.bgBlack("@useEffect(Function,[previewElem])"))
+    // @TODO: this breaks the react rules: do not directly manipulate the DOM
+    hljs.highlightAll()
+  },[previewElem])
 
 
 
 
   // render
   return (
-    <div className='w-full flex items-center flex-col'>
-      <div className='[&>button]:mx-1'>
-        {/* TODO: all of these button have the same class, try to simplify it */}
-        {/* <button className='border rounded py-1 px-2 bg-zinc-50 shadow-inner text-sm hover:shadow' onClick={handleEditorView}>Editor</button> */}
+    <CreateNewPostStateCtx.Provider 
+      value={{
+        articleDataState:[articleData,setArticleData],
+        contentState:[content, setContent],
+        textEditorRef,
+        contentMDState:[contentMD,setContentMD]
+      }}
+    >
+      <div className='w-full flex items-center flex-col'>
+        <div className='[&>button]:mx-1'>
 
-        <PreviewBtn 
-          textEditorRef={textEditorRef}
-          setPreviewElem={setPreviewElem}
-          articleMetadata={articleMetadata}
-          content={content}
-        />
+          <PreviewBtn setPreviewElem={setPreviewElem}/>
 
-        <PostBtn 
-          textEditorRef={textEditorRef}
-          articleMetadata={articleMetadata} 
-          API_key={API_key} 
-          previewElem={previewElem}
-        />
+          <PostBtn 
+            API_key={API_key} 
+            previewElem={previewElem}
+          />
 
-        <SaveDraftBtn articleMetadata={articleMetadata} API_key={API_key}/>
+          <SaveDraftBtn articleData={articleData} API_key={API_key}/>
 
+        </div>
+
+        {/* editor section */}
+        <div className='my-3 p-5 border rounded-xl w-3/4 bg-slate-100 flex flex-col gap-y-5 dark:bg-zinc-900' ref={editorSectionRef}>
+        
+          <TitleInput title={articleData.title} setArticleData={setArticleData}/>
+
+          <DescInput desc={articleData.shortDescription} setArticleData={setArticleData}/>
+
+          <CategoryInput category={articleData.category} setArticleData={setArticleData}/>
+
+          <APIKeyInput API_keyState={[API_key,set_API_key]}/>
+
+          <ThumbnailInput articleDataState={[articleData,setArticleData]}/>
+
+          <EditorChoice />
+        </div>
+
+        {/* preview section, grid (container) */}
+        <div data-cy="preview-article-section" className='w-full'>
+          {previewElem && previewElem}
+        </div>
       </div>
-
-      {/* editor section */}
-      <div className='my-3 p-5 border rounded-xl w-3/4 bg-slate-100 flex flex-col gap-y-5 dark:bg-zinc-900' ref={editorSectionRef}>
-      
-        <TitleInput title={articleMetadata.title} setArticleData={setArticleMetadata}/>
-
-        <DescInput desc={articleMetadata.shortDescription} setArticleData={setArticleMetadata}/>
-
-        <CategoryInput category={articleMetadata.category} setArticleData={setArticleMetadata}/>
-
-        <APIKeyInput API_keyState={[API_key,set_API_key]}/>
-
-        <ThumbnailInput articleMetadataState={[articleMetadata,setArticleMetadata]}/>
-
-        {/* upload file */}
-        <MdFileInput contentStuctureType={articleMetadata.contentStuctureType} setArticleData={setArticleMetadata}/>
-
-        <ReactQuillWithNoSSR contentState={[content, setContent]} textEditorRef={textEditorRef}/>
-      </div>
-
-      {/* preview section, grid (container) */}
-      <div ref={onPreviewRefSet} data-cy="preview-article-section" className='w-full'>
-        {
-          previewRef && createPortal(previewElem,previewRef)
-        }
-      </div>
-    </div>
+    </CreateNewPostStateCtx.Provider>
   )
 }
-
-
-/**
- * reference
- * https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand
- * c) bugs on execCommand() and queryCommandState() when the, in this case I was using <sup> and <sub> element, <sup> and <sub> were styled. Those two were getting styled default(-ly) by the tailwind.
- * - https://stackoverflow.com/questions/17166103/document-execcommand-to-execute-superscript-and-subscript-doesnt-work-in-firefo
- */

@@ -18,6 +18,8 @@ import { getArticle } from "@/services/article/getArticle";
 import DisqusEmbed from "@/components/blog/DisqusEmbed";
 import getReadEstimation from "@/utils/getReadEstimation";
 import dynamic from "next/dynamic";
+import {MarkdownRenderer,markdownRenderStr} from "@/utils/MarkdownRenderer";
+import { ArticleAsset } from "@patorikkuuu/eraiyomi-types";
 
 // solve the problem `ReferenceError: window is not defined on client component`
 const DynamicDisqusEmbed = dynamic(
@@ -100,8 +102,71 @@ export default async function Page({
   const articleAsset = articleAssetRes.data
   const article = articleRes.data
   
-  
-  
+  let MainContent = <></>
+  if(articleAsset.contentStructureType==="markdown"){
+    markdownRenderStr
+    const content = markdownRenderStr(articleAsset.content)
+    
+    // MainContent = <div dangerouslySetInnerHTML={{ __html: content }} />;
+    
+    MainContent = <MarkdownRenderer markdownText={articleAsset.content}/>
+  }else if(articleAsset.contentStructureType===undefined||articleAsset.contentStructureType==="quilljs"){
+    
+    const content = handleQuilljs(articleAsset)
+
+    // Assuming content is sanitized and safe to use
+    MainContent = <div dangerouslySetInnerHTML={{ __html: content }} />;
+
+  }
+
+
+
+  return (
+    <>
+      <div className="px-16 py-5 relative max-[576px]:px-1">
+        {/* other posts/content, server component */}
+        {/* <OtherPosts 
+          style="p-5 border border-zinc-300 rounded-xl h-fit bg-[#F7F9FA] shadow-inner dark:bg-zinc-900 dark:border-stone-800 max-[1024px]:hidden" 
+          currArticleId={article._id}
+        /> */}
+
+        {/* main content (write here) and header (thumbnail)*/}
+        <div className="border border-zinc-300 dark:border-[midnightblue] rounded-xl post-glass dark:bg-[rgba(0,0,0,0.6)]">
+
+          {/* header (thumbnail), supposed to be server component */}
+          <HeaderSection pict={articleAsset.thumbnail.dataURL} caption=""/>
+
+          <CreateTitle 
+            titlePage={article.titleArticle.title}
+            miscInfo={{
+              date:convertDate(article.publishedDate),
+              category:article.category,
+              author:article.author,
+              wordCount:articleAsset.totalWordCounts,
+              readingTime:getReadEstimation(articleAsset.totalWordCounts)
+            }}
+          />
+
+          <main
+            id="main-content"
+            className="px-16 py-8 transition-all duration-250 ease-[linear] max-[1024px]:px-14 max-[576px]:px-8"
+          >{MainContent}</main>
+
+          {/* like or dislike the article, client component */}
+          {/* <LikeDislikeArticle articleInit={article}/> */}
+        </div>
+
+        {/* table of content (>1024px), client component*/}
+        {/* <TableOfContents /> */}
+
+        {/* Disqus library, client component */}
+        <DynamicDisqusEmbed articleId={article._id}/>
+      </div>
+    </>
+  )
+}
+
+function handleQuilljs(articleAsset: ArticleAsset){
   let imgIdxs: number[] =[]
   // FOR: search all imgs and keep the index
   for(let i=0; i<articleAsset.content.length; i++){
@@ -190,60 +255,11 @@ export default async function Page({
         // console.log("highlightedCode=",highlightedCode)
 
         const autoHighlightCode = hljs.highlightAuto(codeContent)
+        console.log("autoHighlightCode=",autoHighlightCode)
+        return `<pre><code class="hljs">${autoHighlightCode.value}</code></pre>`;
 
-        return `<pre class="hljs"><code>${autoHighlightCode.value}</code></pre>`;
       }
     }
   });
-  
-  
-  const content = converter.convert(); 
-  // console.log("content=",content)
-
-
-
-  return (
-    <>
-      <div className="px-16 py-5 relative max-[576px]:px-1">
-        {/* other posts/content, server component */}
-        {/* <OtherPosts 
-          style="p-5 border border-zinc-300 rounded-xl h-fit bg-[#F7F9FA] shadow-inner dark:bg-zinc-900 dark:border-stone-800 max-[1024px]:hidden" 
-          currArticleId={article._id}
-        /> */}
-
-        {/* main content (write here) and header (thumbnail)*/}
-        <div className="border border-zinc-300 dark:border-[midnightblue] rounded-xl post-glass dark:bg-[rgba(0,0,0,0.6)]">
-
-          {/* header (thumbnail), supposed to be server component */}
-          <HeaderSection pict={articleAsset.thumbnail.dataURL} caption=""/>
-
-          <CreateTitle 
-            titlePage={article.titleArticle.title}
-            miscInfo={{
-              date:convertDate(article.publishedDate),
-              category:article.category,
-              author:article.author,
-              wordCount:articleAsset.totalWordCounts,
-              readingTime:getReadEstimation(articleAsset.totalWordCounts)
-            }}
-          />
-
-          <main
-            id="main-content"
-            className="px-16 py-8 transition-all duration-250 ease-[linear] max-[1024px]:px-14 max-[576px]:px-8"
-            dangerouslySetInnerHTML={{__html:content}}
-          ></main>
-
-          {/* like or dislike the article, client component */}
-          {/* <LikeDislikeArticle articleInit={article}/> */}
-        </div>
-
-        {/* table of content (>1024px), client component*/}
-        {/* <TableOfContents /> */}
-
-        {/* Disqus library, client component */}
-        <DynamicDisqusEmbed articleId={article._id}/>
-      </div>
-    </>
-  )
+  return converter.convert(); 
 }

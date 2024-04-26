@@ -9,11 +9,13 @@ const useDidMountEffect = (
   const firstTimeRender = useRef(true)
 
   useEffect(() => {
-    if(firstTimeRender.current){
-      if (firstTimeRender.current) func();
-      else firstTimeRender.current = true;
+    if (firstTimeRender.current) {
+      firstTimeRender.current = false;
+      return
+    }else{
+      func();
     }
-  },...depArr)
+  },depArr)
 
 }
 
