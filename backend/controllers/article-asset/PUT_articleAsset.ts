@@ -6,6 +6,7 @@ import { articleModel } from "../../schema/articleSchema.js"
 import { UploadApiErrorResponse, UploadApiResponse, v2 as cloudinary } from 'cloudinary'
 
 interface ReqBodyPutArticleAsset{
+  contentStructureType: string
   content?:string
   totalWordCounts: number
 }
@@ -19,11 +20,11 @@ export const PUT_articleAsset =  async (
   res: Response
 ) => {
   const {articleId} = req.params
-  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
+  console.log(chalk.yellow.bgBlack(`[API] ${req.method} ${req.originalUrl}`))
   
   
   const {body} = req
-  // console.log("body=",body)
+  console.log("body=",body)
   // console.log("body.title=",body.title)
   // console.log("body.content=",body.content)
 
@@ -48,6 +49,7 @@ export const PUT_articleAsset =  async (
 
   const article = await articleModel.findOne({_id: articleId}, 'titleArticle.URLpath')
   console.log("article=",article)
+
   if(article===null){
     const msg = `404 Not Found. article with id "${articleId} is not found"`
     console.log(chalk.red(msg))
@@ -61,11 +63,45 @@ export const PUT_articleAsset =  async (
   // console.log("existingFiles=",existingFiles)
 
   if(body.content){
-    console.log(chalk.yellow.bgBlack("section: editing the quill content"))
+    if(body.contentStructureType=="quilljs"){
+      console.log(chalk.yellow.bgBlack(`body.contentStructureType=="quilljs"`))
+      await handleQuill(req,res,article,articleAsset)
 
-    /* Purpose of `imgsToDelete` set container
-      The purpose of this `imgsToDelete` is to track some files that are needed to be deleted or not. If some existed on that set, it means that files need to be deleted.
-    */
+    }else if(body.contentStructureType=="markdown"){
+      console.log(chalk.yellow.bgBlack(`body.contentStructureType=="markdown"`))
+      articleAsset.contentStructureType = "markdown"
+      // TODO: assuming no images assset
+      articleAsset.content = body.content
+    }
+
+    // update the word counter
+    articleAsset.totalWordCounts = body.totalWordCounts
+  }
+
+
+    
+  // console.log("articleAsset.save()=",articleAsset)
+
+  await articleAsset.save()
+
+  console.log(chalk.green.bgBlack(`[API] ${req.method} ${req.originalUrl}`))
+  return res.status(200).json({
+    message:`success editing article asset. article's title ${article.titleArticle.URLpath}`,
+  })
+}
+
+// @TODO: change `any` to appropriate type
+async function handleQuill(
+  req: Request, 
+  res: Response, 
+  article:any,
+  articleAsset:any
+){
+  const {body} = req
+
+  /* Purpose of `imgsToDelete` set container
+    The purpose of this `imgsToDelete` is to track some files that are needed to be deleted or not. If some existed on that set, it means that files need to be deleted.
+  */
     const imgsToDelete = new Set<string>()
 
     // loop the previous `articleAsset.content`. Mainly, we are looking for image object, and if found, store it to the set `imgsToDelete` for later checking whether we should delete the image or not.
@@ -179,18 +215,9 @@ export const PUT_articleAsset =  async (
       }
     }
     // END: content images logic
-  }
-
-
-  // update the word counter
-  articleAsset.totalWordCounts = body.totalWordCounts
-    
-  // console.log("articleAsset.save()=",articleAsset)
-
-  await articleAsset.save()
-
-  console.log(chalk.green.bgBlack(`[API] PUT /api/article-asset/${articleId} 200\n`))
-  return res.status(200).json({
-    message:`success editing article asset. article's title ${article.titleArticle.URLpath}`,
-  })
 }
+
+
+// async function handleMD(){
+// // xx
+// }

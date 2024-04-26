@@ -22,6 +22,6 @@ export const GET_articlesAsset = async (req: Request, res:Response) => {
   }
   
 
-  console.log(chalk.green(`[API] GET /api/articles-asset 200\n`))
+  console.log(chalk.green(`[API] ${req.method} ${req.originalUrl}`))
   return res.status(200).json(articlesAsset)
 }

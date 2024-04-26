@@ -58,7 +58,7 @@ export const GET_articles = async (
   }
 
   const articleDatas = await articleDatasOnQuery.exec()
-  console.log("articleDatas=",articleDatas)
+  // console.log("articleDatas=",articleDatas)
 
   // eventhough `articleDatas` is empty `[]` it shouldn't be null.
   if(articleDatas===null){
@@ -66,6 +66,6 @@ export const GET_articles = async (
     return res.status(500).json({message:"fail on fetching data article from database"})
   }
 
-  console.log(chalk.green(`[API] GET /api/articles?sort=${sort}&status=${status}&search=${search} 200\n`))
+  console.log(chalk.green(`[API] ${req.method} ${req.originalUrl}`))
   return res.status(200).json(articleDatas)
 }

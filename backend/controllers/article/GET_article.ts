@@ -35,6 +35,6 @@ export const GET_article = async (req: Request, res:Response) => {
     return res.status(404).json({"message":msg})
   }
 
-  console.log(chalk.green(`[200] GET /api/article/?id=${id}&title=${title}\n`))
+  console.log(chalk.green(`[API] ${req.method} ${req.originalUrl}`))
   return res.status(200).json(articleData)
 }

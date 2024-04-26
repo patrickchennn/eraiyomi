@@ -9,7 +9,7 @@ export const GET_articlesAnalytic = async (
   res:Response
 ) => {
   const reportRes = await getPostReport()
-  console.log("reportRes=",reportRes)
+  // console.log("reportRes=",reportRes)
   return res.status(200).json(reportRes)
 }
 

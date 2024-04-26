@@ -17,13 +17,12 @@ const articleAssetSchema = new Schema({
     dataURL: String,
     default:{}
   },
-  contentStuctureType:{
+  contentStructureType:{
     type: String,
-    enum : ["quilljs","mardown"],
-    required: true,
+    default:"",
   },
   content:{
-    type : [{}],
+    type : Schema.Types.Mixed,
     required: true,
   },
   totalWordCounts:{

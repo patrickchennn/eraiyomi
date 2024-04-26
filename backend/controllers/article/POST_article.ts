@@ -63,13 +63,18 @@ export const POST_article =  async (
   // console.log("createdArticle=",createdArticle)
 
   if(createdArticle===null){
-    return res.status(500).send("Error during articleModel.create(). Error during article creation")
+    return res.status(500)
+    .json({
+      message:`"Error during articleModel.create(). Error during article creation"`,
+      data:null
+    })
   };
 
   await articleAssetModel.create({
     _id: articleAssetId,
     articleIdRef:articleId,
     thumbnail:{},
+    contentStuctureType:"",
     content:[],
     totalWordCounts:0
   })
