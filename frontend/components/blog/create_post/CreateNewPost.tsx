@@ -142,22 +142,22 @@ export default function CreateNewPost(){
             previewElem={previewElem}
           />
 
-          <SaveDraftBtn articleData={articleData} API_key={API_key}/>
+          <SaveDraftBtn API_key={API_key}/>
 
         </div>
 
         {/* editor section */}
         <div className='my-3 p-5 border rounded-xl w-3/4 bg-slate-100 flex flex-col gap-y-5 dark:bg-zinc-900' ref={editorSectionRef}>
         
-          <TitleInput title={articleData.title} setArticleData={setArticleData}/>
+          <TitleInput />
 
-          <DescInput desc={articleData.shortDescription} setArticleData={setArticleData}/>
+          <DescInput />
 
-          <CategoryInput category={articleData.category} setArticleData={setArticleData}/>
+          <CategoryInput />
 
           <APIKeyInput API_keyState={[API_key,set_API_key]}/>
 
-          <ThumbnailInput articleDataState={[articleData,setArticleData]}/>
+          <ThumbnailInput />
 
           <EditorChoice />
         </div>

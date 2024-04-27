@@ -1,17 +1,15 @@
-import React from 'react'
+import {useContext} from 'react'
 import { AiOutlineFileAdd, AiFillFileAdd } from 'react-icons/ai'
-import { ArticleMetadataType } from '../CreateNewPost'
 import Image from 'next/image'
+import { CreateNewPostStateCtx } from '../CreateNewPost'
 
 interface ThumbnailInputProps{
-  articleMetadataState: [ArticleMetadataType,React.Dispatch<React.SetStateAction<ArticleMetadataType>>
-  ]
 }
 export default function ThumbnailInput({
-  articleMetadataState
 }: ThumbnailInputProps) {
 
-  const [articleMetadata,setArticleMetadata] = articleMetadataState
+  const c = useContext(CreateNewPostStateCtx)!
+  const [articleMetadata,setArticleMetadata] = c.articleDataState
 
 
 

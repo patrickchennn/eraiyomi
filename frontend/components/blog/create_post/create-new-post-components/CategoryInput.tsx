@@ -1,14 +1,14 @@
-import { Dispatch, SetStateAction, useState } from 'react'
+import { useContext, useState } from 'react'
 import { BsPlus } from 'react-icons/bs';
 import { IoIosClose } from 'react-icons/io';
-import { ArticleMetadataType } from '../CreateNewPost';
+import { CreateNewPostStateCtx } from '../CreateNewPost';
 
 interface CategoryInputProps{
-  category: string[]
-  setArticleData:Dispatch<SetStateAction<ArticleMetadataType>>
 }
-export default function CategoryInput({category,setArticleData}: CategoryInputProps) {
+export default function CategoryInput({}: CategoryInputProps) {
   // hooks
+  const c = useContext(CreateNewPostStateCtx)!
+  const [articleData,setArticleData] = c.articleDataState
   const [categoryTxt,setCategoryTxt] = useState<string>("")
 
 
@@ -26,7 +26,7 @@ export default function CategoryInput({category,setArticleData}: CategoryInputPr
 
   const handleRemoveCategory = (indexToRemove: number) => {
     // Use filter to create a new array without the category to be removed
-    const newcategory = category.filter((_, index: number) => index !== indexToRemove);
+    const newcategory = articleData.category.filter((_, index: number) => index !== indexToRemove);
     
     setArticleData(prev=>({
       ...prev,
@@ -52,7 +52,7 @@ export default function CategoryInput({category,setArticleData}: CategoryInputPr
         <button className='bg-neutral-100' onClick={handleSetCategoryBtn}><BsPlus/></button>
       </div>
       <div className='text-sm	flex flex-wrap'>
-      {category.map((category,i: number) => {
+      {articleData.category.map((category,i: number) => {
         return (
           <div key={i} className='px-2 rounded-full flex'>
             {category}

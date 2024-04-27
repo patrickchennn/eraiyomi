@@ -1,21 +1,22 @@
-import React from 'react'
-import {ArticleMetadataType} from "../CreateNewPost"
+import {useContext} from 'react'
 import { useUserInfo } from '@/hooks/appContext'
 import { POST_ReqBodyArticle } from '@patorikkuuu/eraiyomi-types'
 import { postArticle } from '@/services/article/postArticle'
+import { CreateNewPostStateCtx } from '../CreateNewPost'
 
 interface SaveDraftBtnProps{
-  articleMetadata: ArticleMetadataType
   API_key: string
 }
 export default function SaveDraftBtn({
-  articleMetadata,API_key
+  API_key
 }: SaveDraftBtnProps) {
   const [userInfo] = useUserInfo()
 
   // method
   const handleSaveDraft = async () => {
     // in order to able "save to draft", one is required to input the title,shortDescription, and its categories. Also login for information like 'author'
+    const c = useContext(CreateNewPostStateCtx)!
+    const [articleMetadata] = c.articleDataState
     const {title,shortDescription,category} = articleMetadata
     // console.log(title,shortDescription,categories)
     // console.log(!title.length, !shortDescription.length, categories.length===0)

@@ -1,31 +1,29 @@
-import { useContext, useRef } from "react"
-import { CreateNewPostStateCtx } from "../CreateNewPost"
+import { Dispatch, SetStateAction, useRef } from "react"
 import chalk from "chalk"
 import { BsTrash3 } from "react-icons/bs";
 import words from "lodash.words";
-import MarkdownEditor from "@uiw/react-markdown-editor";
-import debounce from 'lodash.debounce';
 
-function MdFileInput() {
+interface MdFileInputInputProps{
+  setArticleData:Dispatch<SetStateAction<ArticleDataType>>
+  setContent: Dispatch<SetStateAction<string>>
+}
+function EditMdFileInput({
+  setArticleData,setContent
+}: MdFileInputInputProps) {
   
-  const fileInputRef = useRef(null)
-  const c = useContext(CreateNewPostStateCtx)!
-  const [articleData,setArticleData] = c.articleDataState
-  const [contentMD,setContentMD] = c.contentMDState
+  const fileInputRef = useRef(null);
 
   // methods
   const resetInputFile = () => {
-    console.log(chalk.yellow.bgBlack("@resetInputFile"))
     // Check if the file input is not null
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
       setArticleData(prev=>({
         ...prev,
-        contentStructureType:"",
+        contentStuctureType:"",
+        content:"",
         wordCounts:0
       }))
-      setContentMD("")
-
     }
   };
 
@@ -54,7 +52,7 @@ function MdFileInput() {
       reader.onload = (readEvent) => {
         // The result attribute contains the contents of the file as a text string
         const content = readEvent.target.result;
-        // console.log("File content:", content);
+        console.log("File content:", content);
 
         if (typeof content === 'string') { // Confirming it's a string
           console.log("File content:", content);
@@ -62,13 +60,10 @@ function MdFileInput() {
           // e.g., setting it to state, parsing it, etc.
           setArticleData(prev=>({
             ...prev,
-            contentStructureType:"markdown",
+            contentStuctureType:"markdown",
+            content,
             wordCounts:words(content).length
           }))
-
-          setContentMD(content)
-
-
         } else {
           console.log("Expected string, received different type or null");
         }
@@ -79,46 +74,28 @@ function MdFileInput() {
     }
   }
 
-  // Update the content in the editor after a delay
-  const debouncedSetContent = debounce(setContentMD, 500);
-
-  const handleEditorChange = (value: string) => {
-    debouncedSetContent(value);
-  };
-
-
-
-
 
   // render
   return (
-    <div>
-      <form
-        encType="multipart/form-data" 
-        method='post'
-        className='w-fit'
-      >
-        <label htmlFor="doc_file_upload" className="block">upload a file:</label>
-        <input
-          type="file"
-          id="doc_file_upload"
-          name="doc_file_upload"
-          accept="text/markdown, text/plain"
-          onChange={handleMarkdownFile}
-          ref={fileInputRef}  // Attach the ref to the file input
-        />
-        <button type="button" onClick={resetInputFile}>
-          <BsTrash3 className="inline"/>
-        </button>
+    <form
+      encType="multipart/form-data" 
+      method='post'
+      className='w-fit'
+    >
+      <label htmlFor="doc_file_upload" className="block">upload a file:</label>
+      <input
+        type="file"
+        id="doc_file_upload"
+        name="doc_file_upload"
+        accept="text/markdown, text/plain"
+        onChange={handleMarkdownFile}
+        ref={fileInputRef}  // Attach the ref to the file input
+      />
+      <button type="button" onClick={resetInputFile}>
+        <BsTrash3 className="inline"/>
+      </button>
 
-      </form>
-
-      {/* @TODO: still laggy for large input like 700+ lines of text, temporarily off */}
-      {/* <MarkdownEditor
-        value={contentMD}
-        onChange={handleEditorChange}
-      /> */}
-    </div>
+    </form>
   )
 }
 

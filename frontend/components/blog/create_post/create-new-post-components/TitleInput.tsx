@@ -1,12 +1,11 @@
-import { Dispatch, SetStateAction } from 'react'
-import { ArticleMetadataType } from '../CreateNewPost'
-import { Article } from '@patorikkuuu/eraiyomi-types'
+import { useContext } from 'react'
+import { CreateNewPostStateCtx } from '../CreateNewPost'
 
 interface TitleInputProps{
-  title: string
-  setArticleData:Dispatch<SetStateAction<ArticleMetadataType>>
 }
-export default function TitleInput({title,setArticleData}: TitleInputProps) {
+export default function TitleInput({}: TitleInputProps) {
+  const c = useContext(CreateNewPostStateCtx)!
+  const [articleData,setArticleData] = c.articleDataState
 
   return (
     <div>
@@ -17,7 +16,7 @@ export default function TitleInput({title,setArticleData}: TitleInputProps) {
         className="px-2 border w-full bg-slate-50 valid:bg-slate-100 focus:bg-white font-bold" 
         type="text" 
         placeholder='Insert a title...'
-        value={title}
+        value={articleData.title}
         data-cy="title-input"
         onChange={e=>{
           setArticleData(prev=>({...prev,title:e.target.value}))

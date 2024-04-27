@@ -21,7 +21,7 @@ export default function PreviewBtn({
 
   // hooks
   const [userInfo] = useUserInfo()
-  const c = useContext(CreateNewPostStateCtx)
+  const c = useContext(CreateNewPostStateCtx)!
   const [articleData] = c.articleDataState
   const [content] = c.contentMDState
   const [contentMD] = c.contentMDState

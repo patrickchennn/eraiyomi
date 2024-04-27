@@ -17,7 +17,7 @@ interface PostBtnProps{
 export default function PostBtn({API_key,previewElem}: PostBtnProps) {
   // hooks
   const [userInfo] = useUserInfo()
-  const c = useContext(CreateNewPostStateCtx)
+  const c = useContext(CreateNewPostStateCtx)!
   const [articleData] = c.articleDataState
   const [contentMD] = c.contentMDState
   const [content] = c.contentState

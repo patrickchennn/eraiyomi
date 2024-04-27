@@ -7,10 +7,9 @@
     "build": "next build",
     "start": "next start -p 8080",
     "lint": "next lint",
-    "cy:open":"cypress open"
+    "cy:open": "cypress open"
   },
   "dependencies": {
-    "@patorikkuuu/eraiyomi-types": "^2.0.0",
     "@types/node": "20.5.9",
     "@types/quill": "^2.0.13",
     "@types/react": "^18.2.22",
@@ -46,6 +45,7 @@
   },
   "devDependencies": {
     "@netlify/plugin-nextjs": "^4.41.3",
+    "@patorikkuuu/eraiyomi-types": "^3.0.0",
     "@types/google-one-tap": "^1.2.2",
     "@types/google.analytics": "^0.0.45",
     "@types/gtag.js": "^0.0.18",

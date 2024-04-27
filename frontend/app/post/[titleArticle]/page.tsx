@@ -104,16 +104,17 @@ export default async function Page({
   
   let MainContent = <></>
   if(articleAsset.contentStructureType==="markdown"){
-    markdownRenderStr
-    const content = markdownRenderStr(articleAsset.content)
-    
-    // MainContent = <div dangerouslySetInnerHTML={{ __html: content }} />;
-    
+    if(typeof articleAsset.content !== "string"){
+      return alert("error: typeof articleAsset.content !== 'string'")
+    }
     MainContent = <MarkdownRenderer markdownText={articleAsset.content}/>
   }else if(articleAsset.contentStructureType===undefined||articleAsset.contentStructureType==="quilljs"){
     
-    const content = handleQuilljs(articleAsset)
+    if(!Array.isArray(articleAsset.content)){
+      return alert("error: `articleAsset.content` is not an array")
+    }
 
+    const content = handleQuilljs(articleAsset.content)
     // Assuming content is sanitized and safe to use
     MainContent = <div dangerouslySetInnerHTML={{ __html: content }} />;
 
@@ -166,18 +167,18 @@ export default async function Page({
   )
 }
 
-function handleQuilljs(articleAsset: ArticleAsset){
+function handleQuilljs(content: []){
   let imgIdxs: number[] =[]
   // FOR: search all imgs and keep the index
-  for(let i=0; i<articleAsset.content.length; i++){
-    const data = articleAsset.content[i] as {[key: string]: any}
+  for(let i=0; i<content.length; i++){
+    const data = content[i] as {[key: string]: any}
     if(Object.hasOwn(data.insert,"image")){
       imgIdxs.push(i)
     }
   }
 
   // documentation: https://github.com/nozer/quill-delta-to-html#readme
-  const converter = new QuillDeltaToHtmlConverter(articleAsset.content);
+  const converter = new QuillDeltaToHtmlConverter(content);
 
   // this function is supposed to return a `string` type. But I had no idea what to return, I did not understand the doc
   // currently, it returns void, obviously, an error type. So to simplify task, I just add `@ts-ignore`
@@ -211,7 +212,7 @@ function handleQuilljs(articleAsset: ArticleAsset){
 
           // console.log("idx=",imgIdxs[0])
 
-          const imgObj = articleAsset.content[imgIdxs[0]] as {[key: string]: any}
+          const imgObj = content[imgIdxs[0]] as {[key: string]: any}
           // console.log("imgObj=",imgObj)
 
           const src = imgObj.insert.image.src
@@ -255,7 +256,7 @@ function handleQuilljs(articleAsset: ArticleAsset){
         // console.log("highlightedCode=",highlightedCode)
 
         const autoHighlightCode = hljs.highlightAuto(codeContent)
-        console.log("autoHighlightCode=",autoHighlightCode)
+        // console.log("autoHighlightCode=",autoHighlightCode)
         return `<pre><code class="hljs">${autoHighlightCode.value}</code></pre>`;
 
       }

@@ -33,7 +33,9 @@ export const postArticle = async (
   // @ts-ignore
   catch(err: Error){
     console.error(err)
-    return undefined
+    return  {
+      message:err,data: null
+    }
   }
   console.log(chalk.green.bgBlack(`POST ${res.url} ${res.status}`) )
 

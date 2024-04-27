@@ -14,17 +14,17 @@ const ReactQuillWithNoSSR = dynamic(
 )
 
 function EditorChoice() {
-  const c = useContext(CreateNewPostStateCtx)
+  const c = useContext(CreateNewPostStateCtx)!
   const [content,setContent] = c.contentState
 
-  const [selectedEditor, setSelectedEditor] = useState(null); // New state for tracking the selected editor
+  const [selectedEditor, setSelectedEditor] = useState(""); // New state for tracking the selected editor
 
-  const handleEditorChoice = (e) => {
+  const handleEditorChoice = (e: React.MouseEvent) => {
     console.log(chalk.yellow.bgBlack("@handleEditorChoice"))
     const target = e.target as HTMLElement
     console.log("target=",target)
     
-    setSelectedEditor(target.textContent); // Update the selected editor based on button text
+    setSelectedEditor(target.textContent as string); // Update the selected editor based on button text
 
   }
 

@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "concurrently --names 'server,client' -c 'bgBlue.bold,bgMagenta.bold' \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\""
+    "dev": "concurrently --names 'server,client' -c 'bgBlue.bold,bgMagenta.bold' \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "build": "concurrently --names 'server,client' -c 'bgBlue.bold,bgMagenta.bold' \"npm run build --prefix backend\" \"npm run build --prefix frontend\""
   },
   "repository": {
     "type": "git",
