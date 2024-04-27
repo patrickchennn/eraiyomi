@@ -1,27 +1,25 @@
 "use client"
 
-import TextEditor from '@/components/TextEditor';
+import React, { createContext, useEffect, useRef, useState } from 'react'
+import ReactQuill from 'react-quill';
+import isEqual from 'lodash.isequal';
+import chalk from 'chalk';
+
 import APIKeyInput from '@/components/blog/create_post/create-new-post-components/APIKeyInput';
 
 import { Article } from '@patorikkuuu/eraiyomi-types';
 import { ArticleAsset } from '@patorikkuuu/eraiyomi-types';
 
-import React, { useEffect, useRef, useState } from 'react'
-import ReactQuill from 'react-quill';
-
 import EditInputTitle from './edit-article-utils/EditInputTitle';
 import EditInputDesc from './edit-article-utils/EditInputDesc';
 import EditInputCategory from './edit-article-utils/EditInputCategory';
 import EditInputThumbnail from './edit-article-utils/EditInputThumbnail';
-
-
 import EditSelectStatus from './edit-article-utils/EditSelectStatus';
+import EditEditorChoice from './edit-article-utils/EditEditorChoice';
 
-import isEqual from 'lodash.isequal';
 import { PUT_articleAsset } from '@/services/article-asset/PUT_articleAsset';
 import { PUT_thumbnail } from '@/services/article-asset/PUT_thumbnail';
 import { putArticle } from '@/services/article/putArticle';
-import chalk from 'chalk';
 import calculateWordCount from '@/utils/calculateWordCount';
 
 export interface ArticleData{
@@ -29,28 +27,36 @@ export interface ArticleData{
   shortDescription:string
   category:string[]
   status:"published"|"unpublished"
-}
-export interface ArticleAssetData{
-  thumbnail: File|null|"default"
+  thumbnail: File|null|"default"|ArticleAsset["thumbnail"]
+  wordCounts:number
+  content:ArticleAsset["content"]
+  contentStructureType:ArticleAsset["contentStructureType"]
+
 }
 
+interface EditArticleDataCxtType {
+  articleDataState: [ArticleData,React.Dispatch<React.SetStateAction<ArticleData>>]
+  articleDefaultDataRef:React.MutableRefObject<ArticleData>
+  contentState:[string,React.Dispatch<React.SetStateAction<string>>]
+  contentMDState:[string,React.Dispatch<React.SetStateAction<string>>]
+  textEditorRef: React.RefObject<ReactQuill>
+
+}
+export const EditArticleDataCxt = createContext<EditArticleDataCxtType|null>(null);
+
+const buttonClass = 'border hover:border-white rounded-md px-2 py-1 bg-slate-50 hover:bg-white';
+
+const RedStar = <span className='text-gray-600'>*</span>
+
 interface EditArticleProps{
-  // initContent: string
   article: Article
   articleAsset: ArticleAsset
 }
-export default function EditArticle({
-  // initContent,
-  article,
-  articleAsset
-}: EditArticleProps){
-  // console.log("initContent=",initContent)
+export default function EditArticle({article,articleAsset}: EditArticleProps){
 
   // hooks
-  // const [content, setContent] = useState(initContent);
-  const [isMounted, setIsMounted] = useState(false)
-
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState('');
+  const [contentMD, setContentMD] = useState('');
 
   const [API_key,set_API_key] = useState<string>("")
 
@@ -60,23 +66,23 @@ export default function EditArticle({
     title:article.titleArticle.title,
     shortDescription:article.shortDescription,
     category:article.category,
-    status:article.status
-
+    status:article.status,
+    thumbnail:"default",
+    wordCounts:articleAsset.totalWordCounts,
+    content:articleAsset.content,
+    contentStructureType:articleAsset.contentStructureType,
   })
   const articleDefaultDataRef = useRef<ArticleData>({
     title:article.titleArticle.title,
     shortDescription:article.shortDescription,
     category:article.category,
-    status:article.status
+    status:article.status,
+    thumbnail:articleAsset.thumbnail,
+    wordCounts:articleAsset.totalWordCounts,
+    content:articleAsset.content,
+    contentStructureType:articleAsset.contentStructureType,
   })
 
-  const [articleAssetData,setArticleAssetData] = useState<ArticleAssetData>({
-    thumbnail:"default",
-  })
-
-  const articleAssetDefaultDataRef = useRef({
-    thumbnail:articleAsset.thumbnail.dataURL,
-  })
 
   useEffect(() => {
     // console.log("content=",content)
@@ -85,11 +91,8 @@ export default function EditArticle({
     textEditorRef.current?.editor?.setContents(
       articleAsset.content as any
     )
-  },[articleAsset.content,isMounted])
+  },[articleAsset.content])
 
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
 
   // methods
   const handleSave = async () => {
@@ -117,10 +120,11 @@ export default function EditArticle({
     const articleAssetForm = new FormData()
 
     // IF the thumbnail is changed
-    if(articleAssetData.thumbnail!=="default" && articleAssetData.thumbnail!==null){
-      console.log("articleAssetData.thumbnail=",articleAssetData.thumbnail,articleAssetData.thumbnail instanceof File)
+    const {thumbnail} = articleData
+    if(thumbnail instanceof File){
+      console.log("thumbnail=",thumbnail,thumbnail instanceof File)
 
-      articleAssetForm.append('thumbnail', articleAssetData.thumbnail);
+      articleAssetForm.append('thumbnail', thumbnail);
 
       const updatedThumbnail = await PUT_thumbnail(article._id,articleAssetForm,API_key)
       console.log("updatedThumbnail=",updatedThumbnail)
@@ -176,30 +180,31 @@ export default function EditArticle({
 
   // render
   return(
-    <>
+    <EditArticleDataCxt.Provider value={{
+      articleDataState:[articleData,setArticleData],
+      contentMDState:[contentMD,setContentMD],
+      contentState:[content, setContent],
+      articleDefaultDataRef,
+      textEditorRef,
+    }}>
       <div>
-        <button onClick={handleSave} className='border hover:border-white rounded-md px-2 py-1 bg-slate-50 hover:bg-white'>Save</button>
-        <button className='border hover:border-white rounded-md px-2 py-1 bg-slate-50 hover:bg-white'>Reset</button>
+        <button onClick={handleSave} className={buttonClass}>Save</button>
+        <button className={buttonClass}>Reset All</button>
       </div>
 
       <APIKeyInput API_keyState={[API_key,set_API_key]}/>
 
-      <EditInputTitle defaultTitle={articleDefaultDataRef.current.title} title={articleData.title} setArticleData={setArticleData}/>
+      <EditInputTitle />
 
-      <EditInputDesc defaultDesc={articleDefaultDataRef.current.shortDescription} desc={articleData.shortDescription} setArticleData={setArticleData}/>
+      <EditInputDesc />
 
-      <EditInputCategory defaultCategory={articleDefaultDataRef.current.category} category={articleData.category} setArticleData={setArticleData}/>
+      <EditInputCategory />
 
-      <EditSelectStatus articleStatus={articleData.status} defaultArticleStatus={articleDefaultDataRef.current.status} setArticleData={setArticleData}/>
+      <EditSelectStatus />
 
-      <EditInputThumbnail defaultThumbnail={articleAssetDefaultDataRef.current.thumbnail} setArticleAssetData={setArticleAssetData}/>
+      <EditInputThumbnail />
 
-      <label htmlFor="">content</label>
-      {
-        isMounted ? <TextEditor contentState={[content, setContent]} textEditorRef={textEditorRef}/> : null // `TextEditor` will not be rendered on the server. Only on the client after hydration
-
-      }
-      
-    </>
+      <EditEditorChoice />
+    </EditArticleDataCxt.Provider>
   )
 }

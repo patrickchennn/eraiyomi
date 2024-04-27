@@ -11,13 +11,13 @@ export default function SaveDraftBtn({
   API_key
 }: SaveDraftBtnProps) {
   const [userInfo] = useUserInfo()
+  const c = useContext(CreateNewPostStateCtx)!
+  const [articleMetadata] = c.articleDataState
+  const {title,shortDescription,category} = articleMetadata
 
   // method
   const handleSaveDraft = async () => {
     // in order to able "save to draft", one is required to input the title,shortDescription, and its categories. Also login for information like 'author'
-    const c = useContext(CreateNewPostStateCtx)!
-    const [articleMetadata] = c.articleDataState
-    const {title,shortDescription,category} = articleMetadata
     // console.log(title,shortDescription,categories)
     // console.log(!title.length, !shortDescription.length, categories.length===0)
     if(

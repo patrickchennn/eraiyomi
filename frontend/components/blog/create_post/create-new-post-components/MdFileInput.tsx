@@ -8,10 +8,10 @@ import debounce from 'lodash.debounce';
 
 function MdFileInput() {
   
-  const fileInputRef = useRef(null)
+  const fileInputRef = useRef<null|HTMLInputElement>(null)
   const c = useContext(CreateNewPostStateCtx)!
-  const [articleData,setArticleData] = c.articleDataState
-  const [contentMD,setContentMD] = c.contentMDState
+  const [,setArticleData] = c.articleDataState
+  const [,setContentMD] = c.contentMDState
 
   // methods
   const resetInputFile = () => {
@@ -52,6 +52,9 @@ function MdFileInput() {
 
       // Define what happens when the reading succeeds
       reader.onload = (readEvent) => {
+        if (readEvent.target === null) {
+          return 
+        }
         // The result attribute contains the contents of the file as a text string
         const content = readEvent.target.result;
         // console.log("File content:", content);

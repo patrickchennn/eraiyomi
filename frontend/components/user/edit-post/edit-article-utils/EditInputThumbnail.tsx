@@ -1,20 +1,22 @@
 import { AiOutlineFileAdd, AiFillFileAdd } from 'react-icons/ai'
-import { Dispatch, SetStateAction, useRef, useState } from 'react'
-import { ArticleAssetData } from '../EditArticle'
 import { BsTrash3, BsTrash3Fill } from 'react-icons/bs'
 import {LiaUndoAltSolid} from "react-icons/lia"
 import Image from 'next/image'
+import { useState, useContext } from 'react'
+import { EditArticleDataCxt } from '../EditArticle'
+import { ArticleAsset } from '@patorikkuuu/eraiyomi-types'
 
 interface EditInputThumbnailProps{
-  defaultThumbnail: string
-  setArticleAssetData:Dispatch<SetStateAction<ArticleAssetData>>
 }
 export default function EditInputThumbnail({
-  defaultThumbnail,setArticleAssetData,
 }: EditInputThumbnailProps) {
 
-  const [currImg,setCurrImg] = useState(defaultThumbnail)
+  const c = useContext(EditArticleDataCxt)!
+  const [,setArticleData] = c.articleDataState
+  const {articleDefaultDataRef} = c
+  const {thumbnail:defaultThumbnail} = articleDefaultDataRef.current
 
+  const [currImg,setCurrImg] = useState<string>((defaultThumbnail as ArticleAsset["thumbnail"]).dataURL)
 
   const handleThumbnail = (e: React.ChangeEvent) => {
     const target = e.target as HTMLInputElement
@@ -28,7 +30,7 @@ export default function EditInputThumbnail({
       const thumbnailImgSrc = URL.createObjectURL(thumbnailImgFile)
       // console.log("thumbnailImgSrc=",thumbnailImgSrc)
 
-      setArticleAssetData(prev=>({
+      setArticleData(prev=>({
         ...prev,
         thumbnail:thumbnailImgFile
       }))
@@ -37,7 +39,7 @@ export default function EditInputThumbnail({
   }
 
   const handleRemoveImg = () => {
-    setArticleAssetData(prev=>({
+    setArticleData(prev=>({
       ...prev,
       thumbnail:null
     }))
@@ -45,11 +47,11 @@ export default function EditInputThumbnail({
   }
 
   const handleResetDefault = () => {
-    setArticleAssetData(prev=>({
+    setArticleData(prev=>({
       ...prev,
       thumbnail:"default"
     }))
-    setCurrImg(defaultThumbnail)
+    setCurrImg((defaultThumbnail as ArticleAsset["thumbnail"]).dataURL)
   }
 
 

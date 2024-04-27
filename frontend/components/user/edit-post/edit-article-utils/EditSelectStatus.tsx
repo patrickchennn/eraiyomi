@@ -1,12 +1,13 @@
-import { ArticleData } from "../EditArticle"
+import { useContext } from "react"
+import { EditArticleDataCxt } from "../EditArticle"
 
 interface EditSelectStatusProps{
-  articleStatus: "published"|"unpublished"
-  defaultArticleStatus:"published"|"unpublished"
-  setArticleData: React.Dispatch<React.SetStateAction<ArticleData>>
 }
-export default function EditSelectStatus({articleStatus,defaultArticleStatus,setArticleData}: EditSelectStatusProps) {
-
+export default function EditSelectStatus({}: EditSelectStatusProps) {
+  const c = useContext(EditArticleDataCxt)!
+  const [articleData,setArticleData] = c.articleDataState
+  const {articleDefaultDataRef} = c
+  
   const handleChange = (e: React.ChangeEvent) => {
     const target = e.target as HTMLSelectElement
     console.log("target=",target)
@@ -21,8 +22,8 @@ export default function EditSelectStatus({articleStatus,defaultArticleStatus,set
   // render
   return (
     <div>
-      <label htmlFor="status">Article status{articleStatus!==defaultArticleStatus?<span className='text-gray-600'>*</span>:null}</label>
-      <select name="status" id="status" onChange={handleChange} value={articleStatus} data-cy="edit-status">
+      <label htmlFor="status">Article status{articleData.status!==articleDefaultDataRef.current.status?<span className='text-gray-600'>*</span>:null}</label>
+      <select name="status" id="status" onChange={handleChange} value={articleData.status} data-cy="edit-status">
         <option value="published">published</option>
         <option value="unpublished">unpublished</option>
       </select>

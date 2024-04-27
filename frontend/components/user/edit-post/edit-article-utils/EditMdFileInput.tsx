@@ -1,17 +1,21 @@
-import { Dispatch, SetStateAction, useRef } from "react"
+import { useContext, useRef, useState } from "react"
 import chalk from "chalk"
 import { BsTrash3 } from "react-icons/bs";
 import words from "lodash.words";
+import { EditArticleDataCxt } from "../EditArticle";
+import MarkdownEditor from "@uiw/react-markdown-editor";
+import debounce from "lodash.debounce";
 
 interface MdFileInputInputProps{
-  setArticleData:Dispatch<SetStateAction<ArticleDataType>>
-  setContent: Dispatch<SetStateAction<string>>
 }
 function EditMdFileInput({
-  setArticleData,setContent
 }: MdFileInputInputProps) {
+  const c = useContext(EditArticleDataCxt)!
+  const [articleData,setArticleData] = c.articleDataState
   
-  const fileInputRef = useRef(null);
+  const [contentMD_local,setContentMD_local] = useState<string>(articleData.content as string)
+
+  const fileInputRef = useRef<null|HTMLInputElement>(null);
 
   // methods
   const resetInputFile = () => {
@@ -50,6 +54,9 @@ function EditMdFileInput({
 
       // Define what happens when the reading succeeds
       reader.onload = (readEvent) => {
+        if (readEvent.target === null) {
+          return 
+        }
         // The result attribute contains the contents of the file as a text string
         const content = readEvent.target.result;
         console.log("File content:", content);
@@ -73,7 +80,13 @@ function EditMdFileInput({
       reader.readAsText(mdFile);
     }
   }
+  
+  // Update the content in the editor after a delay
+  const debouncedSetContent = debounce(setContentMD_local, 500);
 
+  const handleEditorChange = (value: string) => {
+    debouncedSetContent(value);
+  };
 
   // render
   return (
@@ -95,8 +108,12 @@ function EditMdFileInput({
         <BsTrash3 className="inline"/>
       </button>
 
+      <MarkdownEditor
+        value={contentMD_local}
+        onChange={handleEditorChange}
+      />
     </form>
   )
 }
 
-export default MdFileInput
+export default EditMdFileInput
