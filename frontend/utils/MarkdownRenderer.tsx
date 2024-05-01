@@ -23,15 +23,20 @@ marked.use(
   // breaks: false,
   renderer:{
     list: (body: string, ordered: boolean, start: number | "") => {
-      console.log(chalk.yellow.bgBlack("@list()"))
-      console.log("body=",body)
-      console.log("ordered=",ordered)
-      console.log("start=",start)
+      // console.log(chalk.yellow.bgBlack("@list()"))
+      // console.log("body=",body)
+      // console.log("ordered=",ordered)
+      // console.log("start=",start)
       const listType = ordered ? "ol" : "ul";
       const listStyle = ordered ? "list-decimal" : "list-disc";
 
       return `<${listType} class="pl-10 ${listStyle}">${body}</${listType}>`;
       
+    },
+    codespan: (text) => {
+      console.log(chalk.yellow.bgBlack("@codespan()"))
+      console.log("text=",text)
+      return `<code class="rounded-sm px-0.5 bg-gray-200">${text}</code>`
     },
   }
 })
