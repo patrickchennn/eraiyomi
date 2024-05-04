@@ -34,8 +34,8 @@ marked.use(
       
     },
     codespan: (text) => {
-      console.log(chalk.yellow.bgBlack("@codespan()"))
-      console.log("text=",text)
+      // console.log(chalk.yellow.bgBlack("@codespan()"))
+      // console.log("text=",text)
       return `<code class="rounded-sm px-0.5 bg-gray-200">${text}</code>`
     },
   }
