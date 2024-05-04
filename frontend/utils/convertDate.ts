@@ -31,7 +31,7 @@ const convertDate = (date: string) => {
   }
 
   if(date[5]==='0'){
-    res += months_id[Number(date[6])]+" "
+    res += months_id[Number(date[6])-1]+" "
   }else{
     res += months_id[Number(monthNumber)-1]+" "
   }
