@@ -51,7 +51,10 @@ export default async function App(){
     // console.log(articlesState,components)
   return (
     <>
-      <HomeTemplate initArticles={articles.data} articlesAnalytic={articlesAnalyticData}/>
+      <HomeTemplate 
+        initArticles={articles.data} 
+        articlesAnalytic={articlesAnalyticData}
+      />
     </>
   )
 }

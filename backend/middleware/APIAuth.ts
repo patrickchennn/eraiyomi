@@ -29,6 +29,7 @@ export default function APIAuth(req: Request, res: Response, next: NextFunction,
     const msg = `You are not allowed to do anything with: ${req.method} ${req.path}. API key is invalid`
 
     console.error(chalk.red(`[middleware] 403 Forbidden. ${msg}\n`))
+    console.error(chalk.red(`[middleware] provided API key: ${providedApiKey}\n`))
 
     res.header('WWW-Authenticate', 'Bearer realm="Restricted Area"');
     res.status(403)

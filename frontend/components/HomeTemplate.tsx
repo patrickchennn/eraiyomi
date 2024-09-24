@@ -23,8 +23,10 @@ export default function HomeTemplate ({
   initArticles,articlesAnalytic
 }: HomeTemplateProps){
   console.log("@HomeTemplate")
-  // hooks
 
+
+
+  // hooks
   const [showArrow,setShowArrow] = useState(true) 
   const ulRef = useRef<HTMLUListElement>(null)
   // first idx is for sort by latest date, second idx is sort for earliest date
@@ -41,6 +43,8 @@ export default function HomeTemplate ({
     "unpopular":[]
   })
   const sortByTitleRef = useRef(null)
+
+  
 
   // methods
   const handleSortMenuClick = () => {

@@ -1,7 +1,7 @@
 node_modules
 build*
 .env
-/backend/credentials.json
+/backend/GA4-credentials.json
 /backend/article-images
 # Local Netlify folder
 .netlify

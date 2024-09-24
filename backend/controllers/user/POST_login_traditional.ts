@@ -57,7 +57,7 @@ export const POST_loginTraditional = async (req: Request<{}, {}, ReqBodyLoginTra
   )
 
   // return res.status(200).send("succuessfully logged in")
-  console.log(chalk.green(`[API]: POST /api/user/login-traditional 200; successfully logged in for "${username||email}" \n`));
+  console.log(chalk.green(`[API]: ${req.method} ${req.originalUrl}; successfully logged in for "${username||email}" \n`));
   return res.status(200).json({
     message:"successfully logged in",
     _id: user._id,

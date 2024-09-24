@@ -132,7 +132,7 @@ export default async function Page({
         /> */}
 
         {/* main content (write here) and header (thumbnail)*/}
-        <div className="border border-zinc-300 dark:border-[midnightblue] rounded-xl post-glass dark:bg-[rgba(0,0,0,0.6)]">
+        <div className="border border-zinc-300 dark:border-[rgb(21,7,53)] rounded-xl post-glass dark:bg-[rgba(0,0,0,0.6)]">
 
           {/* header (thumbnail), supposed to be server component */}
           <HeaderSection pict={articleAsset.thumbnail.dataURL} caption=""/>

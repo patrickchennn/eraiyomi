@@ -3,8 +3,9 @@ import { Request,Response } from "express"
 import { articleModel } from "../../schema/articleSchema.js"
 
 /**
+ * @htttp_verb GET
+ * @route `/api/articles?sort=${sort}&status=${status}`
  * @desc Get all article datas
- * @route GET /api/articles?sort=${sort}&status=${status}`
  * @access Private
  */
 export const GET_articles = async (
@@ -62,7 +63,7 @@ export const GET_articles = async (
 
   // eventhough `articleDatas` is empty `[]` it shouldn't be null.
   if(articleDatas===null){
-    console.log(chalk.red(`[API] GET /api/articles?sort=${sort}&status=${status}&search=${search} 500\n`))
+    console.log(chalk.red(`[API] GET ${req.method} ${req.originalUrl} 500\n`))
     return res.status(500).json({message:"fail on fetching data article from database"})
   }
 

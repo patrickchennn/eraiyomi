@@ -6,7 +6,10 @@ import isEmail from 'validator/lib/isEmail.js';
 
 /**
  * @desc get all users or individual user
- * @route GET /api/user?username=""|email=""
+ * @http_verb GET
+ * @route `/api/user`
+ * @full_route `/api/user?username=""|email=""`
+ * @queries username: string; email=string
  * @access private
  */
 export const GET_user = async (
@@ -42,4 +45,3 @@ export const GET_user = async (
 
   return res.status(200).json(user)
 }
-// adssfsdf

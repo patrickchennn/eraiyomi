@@ -17,7 +17,7 @@ const CreateTitle = ({titlePage, miscInfo}: CreateTitleProps) =>{
   console.log("miscInfo=",miscInfo)
   
   return (
-    <div>
+    <div className="p-4">
       <h1 className='font-roboto'>
         {titlePage}
       </h1>

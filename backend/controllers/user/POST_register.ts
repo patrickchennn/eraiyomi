@@ -15,18 +15,28 @@ interface ReqBodyRegisterUser {
   registerationMethod: "traditional"|"google"
 }
 /**
- * @desc create an account 
- * @route POST /api/user
+ * @desc Create an account
+ * @HTTP_request_method POST
+ * @route `/api/user`
+ * @query method="traditional"
  * @access private
  * @todo the `registerationMethod` intially received from `req.body`, and I think it's weird. Planning to change it by using the query params
  */
 export const POST_Register = async (
-  req: Request<{}, {}, ReqBodyRegisterUser>, 
+  req: Request<{}, {}, ReqBodyRegisterUser, {method:string}>, 
   res: Response
 ) => {
   console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
+  const {method: registrationMethod} = req.query
 
-  const {username,email,password,name,profilePictureUrl,registerationMethod} = req.body;
+
+  const {
+    username,
+    email,
+    password,
+    name,
+    profilePictureUrl,
+  } = req.body;
 
   // IF: the user did not provide any of these data
   if(!username || !email){
@@ -61,17 +71,9 @@ export const POST_Register = async (
   
   
   let user;
-  // IF: registeration method using google
-  if(registerationMethod==="google"){
-    user = await userModel.create({
-      userId:uuidv4(),
-      username,
-      name,
-      email,
-      profilePictureUrl
-    })
-  }else if(registerationMethod==="traditional"){
+  if(registrationMethod==="traditional"){
 
+    // IF: password does not exist
     if(!password){
       const msg = "Password field must not be empty."
 
@@ -80,8 +82,8 @@ export const POST_Register = async (
       return res.status(400).json({message:msg});
     }
 
-    // it's not the client fault if the password is entered is not a literally a string type because the user did not know anything, they are just given a form in the UI and demanded to input in it. 
-    // If this error happens, there is something wrong with the conversion datatype. Offically server error
+    // It's not the client fault if the password is entered is not a literally a string type because the user did not know anything, they are just given a form in the UI and demanded to input in it. 
+    // If this error happens, there is something wrong with the conversion datatype. Offically considered as a server error
     // also that `bcrypt` argument expect to be either "string" or "Buffer"
     if(!isString(password)){
       const msg = `password is not a string`
@@ -102,6 +104,19 @@ export const POST_Register = async (
       profilePictureUrl:profilePictureUrl?profilePictureUrl:"https://www.gravatar.com/avatar/?d=mp"
     });
   }
+  // ELSE IF: registration method using google
+  // NOTE: this registration method currently (Sep 2024) disabled
+  // else if(registrationMethod==="google"){
+  //   user = await userModel.create({
+  //     userId:uuidv4(),
+  //     username,
+  //     name,
+  //     email,
+  //     profilePictureUrl
+  //   })
+  // }
+  
+
 
   if(!user){
     return res.status(500).json({
@@ -114,4 +129,3 @@ export const POST_Register = async (
     message:"success creating a new user",
   })
 }
-// asd

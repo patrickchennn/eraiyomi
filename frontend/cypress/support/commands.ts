@@ -39,14 +39,25 @@
 
 
 Cypress.Commands.add("login",()=>{
-  cy.contains('button', "Sign In")
-    .wait(4000)
+  cy.intercept({
+    method: 'POST',
+    url: '/api/user/login-traditional',
+    hostname: 'localhost',
+  }).as('loginTraditional')
+
+  cy.contains('button',"Sign In")
+    .wait(2000)
     .click()
-    .next().should('be.visible');
-  
+    .next().should('be.visible')
+  ;
+
   cy.get("#login-uName-or-email").type(Cypress.env('u_name'))
   cy.get("#login-pass").type(Cypress.env('password'))
-  cy.contains('button[type="submit"]', "Sign In")
+  cy.contains('button[type="submit"]',"Sign In")
     .click()
-  ;
+  ;  
+
+  cy.wait('@loginTraditional').then((xhr) => {
+    expect(xhr.response?.statusCode).to.eq(200);
+  });
 })
