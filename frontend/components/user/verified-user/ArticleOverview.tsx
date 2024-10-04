@@ -2,7 +2,6 @@
 
 import { Article, ArticlesAnalytic } from "@patorikkuuu/eraiyomi-types"
 import { useState } from "react"
-import { Sono } from 'next/font/google'
 import {AiOutlineEdit,AiTwotoneEdit} from "react-icons/ai"
 import Link from "next/link"
 import { ArticleAsset } from "@patorikkuuu/eraiyomi-types"
@@ -15,11 +14,6 @@ import { ImSearch } from "react-icons/im"
 import { deleteArticle } from "@/services/article/deleteArticle"
 import getArticles from "@/services/article/getArticles"
 
-const sono = Sono({
-  weight: '400',
-  subsets: ['latin'],
-  display: 'swap',
-})
 interface ArticleOverviewProps{
   initArticles:Article[]|undefined
   initArticlesAnalytic: ArticlesAnalytic|undefined
@@ -93,7 +87,7 @@ export default function ArticleOverview({
           <ImSearch className='self-center'/>
         </button>
       </form>
-      <div className={sono.className+" mt-4 mb-2"}>
+      <div className="mt-4 mb-2">
         <button onClick={handleGetAll} className="p-1 rounded-full bg-slate-300 hover:bg-slate-800 shadow-md font-semibold hover:text-white text-sm active:text-[13.5px]">all</button>
         <button onClick={handleGetPublished} className="p-1 rounded-full bg-slate-300 hover:bg-slate-800 shadow-md font-semibold hover:text-white text-sm active:text-[13.5px]">published</button>
         <button onClick={handleGetUnpublished} className="p-1 rounded-full bg-slate-300 hover:bg-slate-800 shadow-md font-semibold hover:text-white text-sm active:text-[13.5px]">unpublished</button>
