@@ -1,6 +1,5 @@
 import chalk from "chalk"
-
-const url = process.env.URL_API
+import { baseURL } from "../config"
 
 export const PUT_thumbnail = async (
   articleId: string,
@@ -13,7 +12,7 @@ export const PUT_thumbnail = async (
 
   try{
     res = await fetch(
-      `${url}/article-asset/${articleId}/thumbnail`,
+      `${baseURL}/article-asset/${articleId}/thumbnail`,
       {
         headers: {
           // "Content-Type": "multipart/form-data",

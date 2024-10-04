@@ -1,4 +1,4 @@
-const url = process.env.URL_API
+import { baseURL } from "../config"
 
 export const POST_user = async (
   bodyInit:{username:string,email:string,password:string},
@@ -9,7 +9,7 @@ export const POST_user = async (
 
   try {
     res = await fetch(
-      `${url}/user`,
+      `${baseURL}/user`,
       {
         headers:{
           "Content-Type":"application/json",

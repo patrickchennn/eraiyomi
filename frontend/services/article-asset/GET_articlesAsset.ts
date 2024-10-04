@@ -1,7 +1,7 @@
 import { ArticleAsset } from "@patorikkuuu/eraiyomi-types"
 import chalk from "chalk"
+import { baseURL } from "../config"
 
-const url = process.env.URL_API
 
 export const GET_articlesAsset = async () => {
   let res!: Response
@@ -10,7 +10,7 @@ export const GET_articlesAsset = async () => {
 
   try{
     res = await fetch(
-      `${url}/articles-asset`,
+      `${baseURL}/articles-asset`,
     )
     data = await res.json()
     

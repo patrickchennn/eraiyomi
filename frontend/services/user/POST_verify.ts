@@ -1,5 +1,6 @@
 import { UserRes } from "@patorikkuuu/eraiyomi-types";
 import chalk from "chalk";
+import { baseURL } from "../config";
 
 export const POST_verify = async (userCredToken: string) => {
   let res!: Response
@@ -13,7 +14,7 @@ export const POST_verify = async (userCredToken: string) => {
 
   try{
     res = await fetch(
-      `${process.env.URL_API}/user/verify`,
+      `${baseURL}/user/verify`,
       {
         headers: {
           'Authorization': `Bearer ${userCredToken}`

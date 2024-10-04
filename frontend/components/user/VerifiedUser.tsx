@@ -1,7 +1,7 @@
 import { User } from "@patorikkuuu/eraiyomi-types"
 
 
-import { getArticlesAnalytic } from "@/services/articleAnalyticService"
+import { getArticlesAnalytic } from "@/services/analytics/articleAnalyticService"
 import chalk from "chalk"
 import UserBtns from "./verified-user/UserBtns"
 import { GET_articlesAsset } from "@/services/article-asset/GET_articlesAsset"

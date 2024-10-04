@@ -1,7 +1,6 @@
 import { ArticlesAnalytic } from "@patorikkuuu/eraiyomi-types"
 import chalk from "chalk"
-
-const url = process.env.URL_API
+import { baseURL } from "../config"
 
 export const getArticlesAnalytic = async () => {
   let res!: Response
@@ -9,7 +8,7 @@ export const getArticlesAnalytic = async () => {
   const httpMethod = "GET"
 
   try{
-    res = await fetch(`${url}/articles/analytic`)
+    res = await fetch(`${baseURL}/articles/analytic`)
     data = await res.json()
     if(!res.ok){
       const errorMessage = data?.message || 'An error occurred';

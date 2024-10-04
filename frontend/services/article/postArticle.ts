@@ -1,6 +1,6 @@
 import { POST_ReqBodyArticle, Article } from "@patorikkuuu/eraiyomi-types"
 import chalk from "chalk"
-const url = process.env.URL_API
+import { baseURL } from "../config"
 
 export const postArticle = async (
   reqBody: POST_ReqBodyArticle,
@@ -11,7 +11,7 @@ export const postArticle = async (
 
   try{
     res = await fetch(
-      `${url}/article`,
+      `${baseURL}/article`,
       {
         headers: {
           "Content-Type": "application/json",

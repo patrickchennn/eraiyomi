@@ -1,8 +1,6 @@
 import { Article } from "@patorikkuuu/eraiyomi-types"
 import chalk from "chalk"
-
-const url = process.env.URL_API
-
+import { baseURL } from "../config"
 
 const getArticles = async (
   queryParams:{
@@ -12,6 +10,8 @@ const getArticles = async (
   },
   reqCache: RequestCache="default"
 ) => {
+  console.trace();
+
   let res!: Response
   let dataRes
   let status
@@ -34,18 +34,18 @@ const getArticles = async (
   
   try{
     res = await fetch(
-      `${url}/articles?${params.toString()}`,
+      `${baseURL}/articles?${params.toString()}`,
       {
         cache:reqCache
       }
     )
+    // console.log("res=",res)
 
     // Check if the response is JSON by looking at the Content-Type header
     const contentType = res.headers.get('content-type');
     if(contentType && contentType.includes('application/json')){
       // If the Content-Type header indicates JSON, parse the response as JSON
       dataRes = await res.json()
-      // Your code to handle the parsed JSON data
     } else {
       // If the Content-Type header does not indicate JSON, handle it accordingly
       console.error(chalk.red.bgBlack('Response is not JSON:'),res);

@@ -1,7 +1,6 @@
 import { Article } from "@patorikkuuu/eraiyomi-types"
 import chalk from "chalk"
-
-const url = process.env.URL_API
+import { baseURL } from "../config"
 
 export const getArticle = async (
   articleId: string,
@@ -11,7 +10,7 @@ export const getArticle = async (
   let data
   let status
   try{
-    res = await fetch(`${url}/article/?id=${articleId}&title=${title}`)
+    res = await fetch(`${baseURL}/article/?id=${articleId}&title=${title}`)
     data = await res.json()
     status = `${res.status} ${res.statusText}`
     

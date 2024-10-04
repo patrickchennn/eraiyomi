@@ -1,7 +1,6 @@
 import { ArticleAsset } from "@patorikkuuu/eraiyomi-types"
 import chalk from "chalk"
-
-const url = process.env.URL_API
+import { baseURL } from "../config"
 
 export const PUT_articleAsset = async (
   articleId: string,
@@ -14,7 +13,7 @@ export const PUT_articleAsset = async (
 
   try{
     res = await fetch(
-      `${url}/article-asset/${articleId}`,
+      `${baseURL}/article-asset/${articleId}`,
       {
         headers: {
           // "Content-Type": "multipart/form-data",

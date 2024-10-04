@@ -1,7 +1,7 @@
 import "@/assets/globals.css"
 import { GoogleIdentityRes } from "@patorikkuuu/eraiyomi-types";
 import HomeTemplate from "@/components/HomeTemplate";
-import { getArticlesAnalytic } from "@/services/articleAnalyticService";
+import { getArticlesAnalytic } from "@/services/analytics/articleAnalyticService";
 import chalk from "chalk";
 import getArticles from "@/services/article/getArticles";
 

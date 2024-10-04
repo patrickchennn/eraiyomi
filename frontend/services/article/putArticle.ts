@@ -1,6 +1,5 @@
 import chalk from "chalk"
-
-const url = process.env.URL_API
+import { baseURL } from "../config"
 
 export const putArticle = async (
   some_key: string,
@@ -14,7 +13,7 @@ export const putArticle = async (
 
   try {
     res = await fetch(
-      `${url}/article/${articleId}?action=${action}`,
+      `${baseURL}/article/${articleId}?action=${action}`,
       {
         method: httpMethod,
         headers: {

@@ -1,5 +1,6 @@
 import { UserRes } from "@patorikkuuu/eraiyomi-types"
 import chalk from "chalk"
+import { baseURL } from "../config"
 
 export const GET_user = async (username: string) => {
   let res!: Response
@@ -7,7 +8,7 @@ export const GET_user = async (username: string) => {
 
   try{
     res = await fetch(
-      `${process.env.URL_API}/user/?username=${username}`
+      `${baseURL}/user/?username=${username}`
     )
 
     data = await res.json()

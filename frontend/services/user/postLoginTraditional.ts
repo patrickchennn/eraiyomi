@@ -1,12 +1,12 @@
 import { ReqBodyLoginTraditional, UserRes } from "@patorikkuuu/eraiyomi-types"
-const url = process.env.URL_API
+import { baseURL } from "../config"
 
 export const postLoginTraditional = async (loginData: ReqBodyLoginTraditional) => {
   let res!: Response
   let data
   try{
     res = await fetch(
-      `${url}/user/login-traditional`,
+      `${baseURL}/user/login-traditional`,
       {
         headers:{
           'Content-Type': 'application/json'
