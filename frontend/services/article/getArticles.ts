@@ -13,8 +13,8 @@ const getArticles = async (
   console.trace();
 
   let res!: Response
-  let dataRes
-  let status
+  let dataRes=null;
+  let status=null;
   const params = new URLSearchParams();
 
   // Add 'sort' parameter.
@@ -69,8 +69,8 @@ const getArticles = async (
     console.error(err)
     return { 
       status,
-      errMsg: err.message, 
-      data: undefined 
+      msg: err, 
+      data:dataRes 
     };
   }
 
@@ -78,7 +78,7 @@ const getArticles = async (
   console.log(chalk.green.bgBlack(`GET ${res.url} ${status}`))
   return { 
     status,
-    errMsg: "", 
+    msg: "", 
     data: dataRes as Article[]
   };
 }

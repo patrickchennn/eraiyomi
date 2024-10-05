@@ -17,10 +17,9 @@ export default async function OtherPosts({style,currArticleId}: OtherPostsProps)
   const articlesRes = await getArticles({sort:"newest"})
   if(!articlesRes.data){
     return(
-      <>
-        <h1>{articlesRes.status}</h1>
-        <p>{articlesRes.errMsg}</p>
-      </>
+      <pre>
+        {JSON.stringify(articlesRes, null, 2)}
+      </pre>
     )
   }
   const articles = articlesRes.data

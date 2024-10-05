@@ -18,10 +18,9 @@ export default async function VerifiedUser({user}:VerifiedUserProps){
 
   if(!articles.data){
     return (
-      <>
-        <h1>{articles.status}</h1>
-        <p>{articles.errMsg}</p>
-      </>
+      <pre>
+        {JSON.stringify(articles, null, 2)}
+      </pre>
     )
   }
 

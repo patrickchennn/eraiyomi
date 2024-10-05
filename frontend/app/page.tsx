@@ -5,9 +5,7 @@ import { getArticlesAnalytic } from "@/services/analytics/articleAnalyticService
 import chalk from "chalk";
 import getArticles from "@/services/article/getArticles";
 
-declare global {
-  const google: typeof import('google-one-tap');
-}
+
 declare global{
   interface Window { 
     urlAPI:string; 
@@ -33,10 +31,9 @@ export default async function App(){
   
   if(!articles.data){
     return (
-      <>
-        <h1>{articles.status}</h1>
-        <p>{articles.errMsg}</p>
-      </>
+      <pre>
+        {JSON.stringify(articles, null, 2)}
+      </pre>
     )
   }
 
