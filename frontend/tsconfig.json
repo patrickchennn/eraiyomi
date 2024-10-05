@@ -25,15 +25,18 @@
       "@/*": [
         "./*"
       ],
-      "@eraiyomi/types/*": ["../types/*"]
+      "@eraiyomi/types/*": [
+        "../types/*"
+      ]
     },
-    "strict": true,
+    "strict": true
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "build/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
