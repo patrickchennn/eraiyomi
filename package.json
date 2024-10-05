@@ -17,9 +17,6 @@
     "url": "https://github.com/patrickchennn/eraiyomi/issues"
   },
   "homepage": "https://github.com/patrickchennn/eraiyomi#readme",
-  "engines": {
-    "node": "18.17.1"
-  },
   "devDependencies": {
     "concurrently": "^7.6.0"
   }
