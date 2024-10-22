@@ -1,2 +1,2 @@
 ## Demo
-https://eraiyomi.netlify.app
+https://blog.eraiyomi.com
