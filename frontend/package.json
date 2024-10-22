@@ -1,11 +1,11 @@
 {
   "name": "frontend",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p 3009",
+    "start": "next start -p 3999",
     "lint": "next lint",
     "cy:open": "cypress open",
     "checktype": "tsc --noEmit"

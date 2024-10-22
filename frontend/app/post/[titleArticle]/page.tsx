@@ -1,10 +1,6 @@
 import { BlockGroup, InlineGroup, QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 
 import HeaderSection from "@/components/blog/HeaderSection";
-import LikeDislikeArticle from "@/components/blog/LikeDislikeArticle";
-import OtherPosts from "@/components/blog/OtherPosts";
-import { TableOfContents } from "@/components/blog/TableOfContents";
-
 import convertDate from "@/utils/convertDate";
 
 import hljs from 'highlight.js'
@@ -15,11 +11,9 @@ import { Metadata, ResolvingMetadata } from "next";
 import CreateTitle from "@/components/blog/CreateTitle";
 import { GET_articleAsset } from "@/services/article-asset/GET_articleAsset";
 import { getArticle } from "@/services/article/getArticle";
-import DisqusEmbed from "@/components/blog/DisqusEmbed";
 import getReadEstimation from "@/utils/getReadEstimation";
 import dynamic from "next/dynamic";
 import {MarkdownRenderer,markdownRenderStr} from "@/utils/MarkdownRenderer";
-import { ArticleAsset } from "@patorikkuuu/eraiyomi-types";
 
 // solve the problem `ReferenceError: window is not defined on client component`
 const DynamicDisqusEmbed = dynamic(

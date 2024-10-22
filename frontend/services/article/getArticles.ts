@@ -10,7 +10,6 @@ const getArticles = async (
   },
   reqCache: RequestCache="default"
 ) => {
-  console.trace();
 
   let res!: Response
   let dataRes=null;
@@ -67,6 +66,7 @@ const getArticles = async (
   // @ts-ignore
   catch(err: Error){
     console.error(err)
+    console.trace();
     return { 
       status,
       msg: err, 

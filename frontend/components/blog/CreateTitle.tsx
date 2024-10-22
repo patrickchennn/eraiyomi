@@ -14,7 +14,7 @@ interface CreateTitleProps{
 }
 const CreateTitle = ({titlePage, miscInfo}: CreateTitleProps) =>{
   console.log(chalk.yellow("@CreateTitle()"))
-  console.log("miscInfo=",miscInfo)
+  // console.log("miscInfo=",miscInfo)
   
   return (
     <div className="p-4">
