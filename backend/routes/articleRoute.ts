@@ -8,23 +8,29 @@ import authVerify from "../middleware/authVerify.js";
 
 import { GET_articles } from "../controllers/article/GET_articles.js"
 import api_or_user_auth from "../middleware/api_or_user_auth.js";
+import isValidMongoId from "../middleware/isValidMongoId.js"
 
 export const routerArticle = Router()
 
 routerArticle.route("/api/article")
-  .get(GET_article)
+  .get(
+    isValidMongoId,
+    GET_article
+  )
   .post(
-    (req,res,next)=>APIAuth(req,res,next,true), 
+    APIAuth,
     POST_article
   )
 ;
   
 routerArticle.route("/api/article/:articleId")
   .put(
-    (req,res,next)=>APIAuth(req,res,next,true),
+    isValidMongoId,
+    APIAuth,
     PUT_article
   )
   .delete(
+    isValidMongoId,
     api_or_user_auth(APIAuth,authVerify),
     DELETE_article
   )

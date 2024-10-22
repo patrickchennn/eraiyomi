@@ -31,7 +31,6 @@ const articleSchema = new Schema({
   editHistory:{
     date:{
       type:[String],
-      required:true
     }
   },
   likeDislike: {

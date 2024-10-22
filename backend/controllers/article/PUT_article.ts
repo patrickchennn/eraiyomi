@@ -1,20 +1,21 @@
-import chalk from "chalk"
 import { articleModel } from "../../schema/articleSchema.js"
 import { Request,Response } from "express"
 import { User } from "@patorikkuuu/eraiyomi-types"
 import isEmpty from "lodash.isempty"
+import { isValidObjectId } from "mongoose"
+import retResErrJson from "../../utils/retResErrJson.js"
 
 interface PUT_articleReqBody{
-  title?: string,
-  shortDescription?: string
-  category?: string[]
-  status?: "published"|"unpublished"
+  title: string,
+  shortDescription: string
+  category: string[]
+  status: "published"|"unpublished"
   user: User
 }
 /**
  * @desc Like an article
  * @route PUT /api/article/:articleId?action=like|dislike
- * @access -For like and dislike an article is public but login required. -For modifying the article.content is private
+ * @access 
  */
 export const PUT_article =  async (
   req: Request<{articleId: string}, {}, PUT_articleReqBody>, 
@@ -23,11 +24,15 @@ export const PUT_article =  async (
   const {articleId} = req.params
   const {action} = req.query
 
-  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
+  const isValid = isValidObjectId(articleId)
+
+  if(!isValid){
+    return retResErrJson(res,400,`Article with \`id=${articleId}\` is an invalid id.`)
+  }
   
   const article = await articleModel.findById(articleId)
   if(article===null){
-    return res.status(404).send("404 Not Found")
+    return retResErrJson(res,404,`article with id ${articleId} is not found`)
   }
 
   // Like and dislike an article logic
@@ -135,6 +140,5 @@ export const PUT_article =  async (
 
   // console.log("updatedArticle=",article)
   
-  console.log(chalk.green(`[API] PUT /api/article/${articleId}?action=${action} 201\n`))
-  return res.status(201).json(article)
+  return res.status(201).json({message:"",data:article})
 }

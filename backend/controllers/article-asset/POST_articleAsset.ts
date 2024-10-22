@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import { Request,Response } from "express"
 import {POST_ReqBodyArticle} from "@patorikkuuu/eraiyomi-types"
 
@@ -11,7 +10,6 @@ export const POST_articleAsset =  async (
   req: Request<{}, {}, POST_ReqBodyArticle>,
   res: Response
 ) => {
-  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
 
 
 }

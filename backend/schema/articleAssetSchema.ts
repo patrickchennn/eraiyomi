@@ -23,11 +23,9 @@ const articleAssetSchema = new Schema({
   },
   content:{
     type : Schema.Types.Mixed,
-    required: true,
   },
   totalWordCounts:{
     type: Number,
-    required: true,
   }
 },{ minimize: false })
 

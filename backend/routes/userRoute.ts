@@ -12,7 +12,7 @@ export const routerUser = Router()
 
 routerUser.route("/api/users")
   .get(
-    (req,res,next)=>APIAuth(req,res,next,true),
+    APIAuth,
     GET_users
   )
 ;
@@ -20,18 +20,23 @@ routerUser.route("/api/users")
 routerUser.route("/api/user")
   .get(GET_user)
   .post(
-    (req,res,next)=>APIAuth(req,res,next,true),
+    APIAuth,
     POST_Register
   )
 ;
 
 routerUser.route("/api/user/:userId")
-  .delete(DELETE_user)
+  .delete(
+    APIAuth,
+    DELETE_user
+  )
 ;
 
 
 routerUser.route("/api/user/login-traditional")
-  .post(POST_loginTraditional)
+  .post(
+    POST_loginTraditional
+  )
 ;
 
 routerUser.route("/api/user/verify")

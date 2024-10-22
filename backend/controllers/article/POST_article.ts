@@ -1,34 +1,29 @@
 import { POST_ReqBodyArticle } from "@patorikkuuu/eraiyomi-types";
-import chalk from "chalk";
 import mongoose from "mongoose";
 import { articleModel } from "../../schema/articleSchema.js";
 import { Request,Response } from "express"
 import { articleAssetModel } from "../../schema/articleAssetSchema.js";
+import retResErrJson from "../../utils/retResErrJson.js";
 
 
 /**
  * @desc Create an article. All basic information are necessary to fill such as author and published date.
  * @route POST /api/article
- * @access private, login required and is an admin
+ * @access private, login required as an admin
  */
 export const POST_article =  async (
   req: Request<{}, {}, POST_ReqBodyArticle>,
   res: Response
 ) => {
-  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
-
 
   const {body} = req
   // console.log("body=",body)
 
   const isExist = await articleModel.findOne({"titleArticle.title":body.title})
   if(isExist){
-    const msg = `title "${body.title}" was already used. Please try another title.`
-    console.warn(chalk.red.bgBlack("[409]:",msg))
-    return res.status(409).json({
-      message: msg,
-      data:isExist
-    })
+
+    return retResErrJson(res,409,`title \`${body.title}\` was already used. Please try another title.`)
+
   }
 
   const articleId = new mongoose.Types.ObjectId();
@@ -63,11 +58,7 @@ export const POST_article =  async (
   // console.log("createdArticle=",createdArticle)
 
   if(createdArticle===null){
-    return res.status(500)
-    .json({
-      message:`"Error during articleModel.create(). Error during article creation"`,
-      data:null
-    })
+    return retResErrJson(res,500,`Error during articleModel.create(). Error during article creation`)
   };
 
   await articleAssetModel.create({
@@ -80,7 +71,6 @@ export const POST_article =  async (
   })
 
 
-  console.log(chalk.green.bgBlack(`[201] success creating a new article with title "${body.title}"\n`))
 
   return res.status(201).json({
     message:`success creating a new article with title "${body.title}"`,

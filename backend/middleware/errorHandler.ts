@@ -9,11 +9,12 @@ const errorHandler = (err: any, req: Request,res: Response, next: any) => {
   console.error(chalk.red("[@errorHandler]: ",stack));
   // console.log(process.env.NODE_ENV)
 
-  res.status(statusCode);
-  return res.status(statusCode).json({
+  res.status(statusCode).json({
     message: err.message,
     stack: process.env.NODE_ENV==="development" ? stack : null
   })
+
+  next(err)
 };
 
 export default errorHandler

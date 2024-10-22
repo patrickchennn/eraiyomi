@@ -1,9 +1,9 @@
-import chalk from "chalk";
 import { Request,Response } from "express"
 import { ReqBodyLoginTraditional } from "@patorikkuuu/eraiyomi-types";
 import { userModel } from "../../schema/userSchema.js";
 import bcrypt from "bcrypt"
 import generateToken from "../../utils/generateJWT.js";
+import retResErrJson from "../../utils/retResErrJson.js";
 
 /**
  * @desc login
@@ -11,15 +11,11 @@ import generateToken from "../../utils/generateJWT.js";
  * @access private
  */
 export const POST_loginTraditional = async (req: Request<{}, {}, ReqBodyLoginTraditional>, res: Response) => {
-  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
   const {username,email,password} = req.body;
 
   // IF: both username AND email does NOT exist OR password does NOT exist
   if(!username && !email || !password){
-    const msg = "Please fill in the gap to login"
-
-    console.error(chalk.red(`[401]: ${msg}`))
-    return res.status(401).json({message:msg});
+    return retResErrJson(res,401,"Please fill in the gap to login")
   }
   
   // get the user account data by either 'username' or 'email'
@@ -28,18 +24,13 @@ export const POST_loginTraditional = async (req: Request<{}, {}, ReqBodyLoginTra
 
   // IF: the user does not exist
   if(!user){
-    const msg = `${username||email} does not exist. Please register to login.`
-
-    console.error(chalk.red(`[401]: ${msg}`));
-    return res.status(401).json({message: msg});
+    return retResErrJson(res,401,`${username||email} does not exist. Please register to login.`)
   }
 
   // IF: the password is incorrect
   // TODO: fix the type conversion
   if(!await bcrypt.compare(password,user.password as string)){
-    const msg = "Incorrect password"
-    console.error(chalk.red(`[401]: ${msg}`));
-    return res.status(401).json({message: msg});
+    return retResErrJson(res,401,"Incorrect password")
   }
 
 
@@ -57,7 +48,6 @@ export const POST_loginTraditional = async (req: Request<{}, {}, ReqBodyLoginTra
   )
 
   // return res.status(200).send("succuessfully logged in")
-  console.log(chalk.green(`[API]: ${req.method} ${req.originalUrl}; successfully logged in for "${username||email}" \n`));
   return res.status(200).json({
     message:"successfully logged in",
     _id: user._id,

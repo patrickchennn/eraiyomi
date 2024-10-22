@@ -1,7 +1,7 @@
-import chalk from "chalk"
 import { Request,Response } from "express"
 import { userModel } from "../../schema/userSchema.js"
 import isEmail from 'validator/lib/isEmail.js';
+import retResErrJson from "../../utils/retResErrJson.js";
 
 
 /**
@@ -17,20 +17,15 @@ export const GET_user = async (
   res:Response
 ) => {
   const {username,email} = req.query
-  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
 
   // IF: both email AND username do NOT exist
   if(!email && !username){
-    const msg = `Either email or username is needed`
-    console.error(chalk.red.bgBlack(msg))
-    return res.status(400).json({message: msg})
+    return retResErrJson(res,400,`Email or username is not provided. Either email or username is needed`)
   }
 
   // IF: email exist AND the given email address format does NOT appropriate
   if(email && !isEmail(email)){
-    const msg = `"${email}" is detected as not a proper email address`
-    console.error(chalk.red.bgBlack(msg))
-    return res.status(400).json({message: msg})
+    return retResErrJson(res,400,`"${email}" is detected as not a proper email address`)
   }
 
   const user = await userModel.findOne({ $or: [{ username }, { email }] },"-password");
@@ -38,9 +33,7 @@ export const GET_user = async (
 
   // IF: user does NOT exist
   if(!user){
-    const msg = `"${username||email}" does not exist`
-    console.error(chalk.red.bgBlack(msg))
-    return res.status(404).json({message:msg})
+    return retResErrJson(res,404,`"${username||email}" does not exist`)
   }
 
   return res.status(200).json(user)

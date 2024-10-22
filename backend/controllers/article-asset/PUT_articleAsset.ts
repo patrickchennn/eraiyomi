@@ -1,9 +1,9 @@
 import chalk from "chalk"
 import { Request,Response } from "express"
-import { isValidObjectId } from "mongoose"
 import { articleAssetModel } from "../../schema/articleAssetSchema.js"
 import { articleModel } from "../../schema/articleSchema.js"
 import { UploadApiErrorResponse, UploadApiResponse, v2 as cloudinary } from 'cloudinary'
+import retResErrJson from "../../utils/retResErrJson.js"
 
 interface ReqBodyPutArticleAsset{
   contentStructureType: string
@@ -20,55 +20,77 @@ export const PUT_articleAsset =  async (
   res: Response
 ) => {
   const {articleId} = req.params
-  console.log(chalk.yellow.bgBlack(`[API] ${req.method} ${req.originalUrl}`))
   
   
   const {body} = req
-  console.log("body=",body)
-  // console.log("body.title=",body.title)
-  // console.log("body.content=",body.content)
+  // console.log("body=",body)
+  // console.log("files=",files)
 
-  
-  
-  const isArticleIdValid = isValidObjectId(articleId)
-  console.log("isArticleIdValid=",isArticleIdValid)
-
-  if(!isArticleIdValid){
-    const msg = `400 Bad Request. Article with id "${articleId}" is invalid.`
-    console.log(chalk.red.bgBlack(msg))
-    return res.status(400).json({"message":msg})
-  }
 
   const articleAsset = await articleAssetModel.findOne({articleIdRef:articleId})
   
   if(!articleAsset){
-    const msg = `404 Bad Request. Article with id "${articleId}" is not found`
-    console.log(chalk.red.bgBlack(msg))
-    return res.status(404).json({"message":msg})
+    return retResErrJson(res,404,`Article with id "${articleId}" is not found`)
   }
 
   const article = await articleModel.findOne({_id: articleId}, 'titleArticle.URLpath')
-  console.log("article=",article)
+  // console.log("article=",article)
 
   if(article===null){
-    const msg = `404 Not Found. article with id "${articleId} is not found"`
-    console.log(chalk.red(msg))
-    return res.status(404).json({"message":msg})
+    return retResErrJson(res,500,`Article with id="${articleId} is not found, but article-asset is found, with id=${articleAsset._id}. It's 500 Internal Server Error because article and article-asset suppossed to be exist respectively.`)
+  }
+
+  // IF thumbnail image is provided
+  if(req.files!==undefined && Object.hasOwn(req.files, 'thumbnail')){
+    // @ts-ignore
+    // original error: Element implicitly has an 'any' type because expression of type '"thumbnail"' can't be used to index type '{ [fieldname: string]: File[]; } | File[]'. Property 'thumbnail' does not exist on type '{ [fieldname: string]: File[]; } | File[]'.ts(7053)
+    // TODO: fix this
+    const thumbnail = req.files["thumbnail"][0]
+    // console.log("thumbnail=",thumbnail)
+    // console.log(Buffer.isBuffer(thumbnail.buffer))
+
+
+    let uploadResult!: any;
+    try {
+      uploadResult = await new Promise((resolve) => {
+        cloudinary.uploader.upload_stream(
+          {
+            use_filename:true,
+            filename_override:"thumbnail",
+            unique_filename:false,
+            folder:article.titleArticle.URLpath,
+          },
+          (error, uploadResult) => {
+            return resolve(uploadResult);
+          }).end(thumbnail.buffer);
+      });
+      // console.log("uploadResult=",uploadResult)
+    } 
+    // @ts-ignore
+    catch (error: UploadApiErrorResponse) {
+      return retResErrJson(res,500,error)
+    }
+
+    const thumbnailTemp = {
+      fieldName: thumbnail.fieldname,
+      originalname: thumbnail.originalname,
+      encoding: thumbnail.encoding,
+      mimetype: thumbnail.mimetype,
+      filename: thumbnail.originalname,
+      size: thumbnail.size,
+      dataURL: uploadResult.secure_url,
+    }
+    articleAsset.thumbnail = thumbnailTemp
   }
   
 
-  
-  // FIND: all file that starts with `thumbnail`. IF found it will return its file name, ELSE returning `undefined`
-  // const existingFiles = readdirSync(articleImagesFullPath)
-  // console.log("existingFiles=",existingFiles)
-
   if(body.content){
     if(body.contentStructureType=="quilljs"){
-      console.log(chalk.yellow.bgBlack(`body.contentStructureType=="quilljs"`))
+      // console.log(chalk.yellow.bgBlack(`body.contentStructureType=="quilljs"`))
       await handleQuill(req,res,article,articleAsset)
 
     }else if(body.contentStructureType=="markdown"){
-      console.log(chalk.yellow.bgBlack(`body.contentStructureType=="markdown"`))
+      // console.log(chalk.yellow.bgBlack(`body.contentStructureType=="markdown"`))
       articleAsset.contentStructureType = "markdown"
       // TODO: assuming no images assset
       articleAsset.content = body.content
@@ -82,13 +104,28 @@ export const PUT_articleAsset =  async (
     
   // console.log("articleAsset.save()=",articleAsset)
 
+  // comment this for testing purpose, meaning it won't be actually save on the database. Conversely, umcomment to see the actual changes on database
   await articleAsset.save()
 
-  console.log(chalk.green.bgBlack(`[API] ${req.method} ${req.originalUrl}`))
   return res.status(200).json({
-    message:`success editing article asset. article's title ${article.titleArticle.URLpath}`,
+    message:`success editing article asset. Article's title ${article.titleArticle.URLpath}`,
   })
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // @TODO: change `any` to appropriate type
 async function handleQuill(

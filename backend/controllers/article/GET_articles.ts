@@ -1,6 +1,6 @@
-import chalk from "chalk"
 import { Request,Response } from "express"
 import { articleModel } from "../../schema/articleSchema.js"
+import retResErrJson from "../../utils/retResErrJson.js"
 
 /**
  * @htttp_verb GET
@@ -22,11 +22,9 @@ export const GET_articles = async (
   res:Response
 ) => {
   const {sort,status,search} = req.query
-  console.log(chalk.yellow(`[API] ${req.method} ${req.originalUrl}`))
-  
-  
   const articleDatasOnQuery = articleModel.find({})
   // console.log(articleDatasOnQuery,articleDatasOnQuery instanceof Query)
+
   switch(sort){
     case "newest":
       articleDatasOnQuery.sort('-publishedDate')
@@ -58,15 +56,16 @@ export const GET_articles = async (
     articleDatasOnQuery.regex('titleArticle.title', regex);
   }
 
-  const articleDatas = await articleDatasOnQuery.exec()
+  let articleDatas = await articleDatasOnQuery.exec()
   // console.log("articleDatas=",articleDatas)
 
-  // eventhough `articleDatas` is empty `[]` it shouldn't be null.
+  // eventhough `articleDatas` is empty `[]` (which is valid), it shouldn't be null.
+  // articleDatas = null; // uncomment this to test below condition
   if(articleDatas===null){
-    console.log(chalk.red(`[API] GET ${req.method} ${req.originalUrl} 500\n`))
-    return res.status(500).json({message:"fail on fetching data article from database"})
+
+    return retResErrJson(res,500,"fail on fetching data article from database")
+
   }
 
-  console.log(chalk.green(`[API] ${req.method} ${req.originalUrl}`))
   return res.status(200).json(articleDatas)
 }
