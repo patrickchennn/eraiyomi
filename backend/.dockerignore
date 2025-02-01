@@ -7,3 +7,5 @@ README.md
 build*
 openAPI.json
 logs
+docker_script.sh
+.env_example

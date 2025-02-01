@@ -2,7 +2,6 @@ import { articleModel } from "../../schema/articleSchema.js"
 import { Request,Response } from "express"
 import { User } from "@patorikkuuu/eraiyomi-types"
 import isEmpty from "lodash.isempty"
-import { isValidObjectId } from "mongoose"
 import retResErrJson from "../../utils/retResErrJson.js"
 
 interface PUT_articleReqBody{
@@ -24,12 +23,6 @@ export const PUT_article =  async (
   const {articleId} = req.params
   const {action} = req.query
 
-  const isValid = isValidObjectId(articleId)
-
-  if(!isValid){
-    return retResErrJson(res,400,`Article with \`id=${articleId}\` is an invalid id.`)
-  }
-  
   const article = await articleModel.findById(articleId)
   if(article===null){
     return retResErrJson(res,404,`article with id ${articleId} is not found`)
@@ -140,5 +133,5 @@ export const PUT_article =  async (
 
   // console.log("updatedArticle=",article)
   
-  return res.status(201).json({message:"",data:article})
+  return res.status(201).json({message:`Success editing for article with title: ${req.body.title}`})
 }

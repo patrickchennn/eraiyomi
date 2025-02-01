@@ -19,9 +19,7 @@ const afterResponseLogger = (req: Request, res: Response, next: NextFunction) =>
       "status":res.statusCode + " " + res.statusMessage,
       elapsedTime,
     }
-    if (process.env.NODE_ENV !== 'production') {
-      logMessage["reqHeaders"] = req.headers
-    }
+
     // `${req.method} ${req.originalUrl} ${req.httpVersion} - ${res.statusCode} ${res.statusMessage} - ${elapsedTime}ms`;
 
 

@@ -18,7 +18,7 @@ import { routerArticleAsset } from './routes/articleAssetRoute.js'
 import { routerArticleAnalytic } from './routes/articleAnalytic.js'
 
 // cloud services
-import { v2 as cloudinary } from 'cloudinary'
+import { S3Client } from '@aws-sdk/client-s3'
 
 // db
 import mongoose from 'mongoose'
@@ -31,12 +31,26 @@ import chalk from 'chalk'
 
 
 
-          
-cloudinary.config({ 
-  cloud_name: "eraiyomi-server-images", 
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret:  process.env.CLOUDINARY_API_SECRET
-})
+
+const AWS_ACCESSKEYID = process.env.AWS_ACCESSKEYID
+const AWS_SECRETACCESSKEY = process.env.AWS_SECRETACCESSKEY
+export const AWS_BUCKET_NAME = process.env.AWS_BUCKET_NAME
+const AWS_REGION = process.env.AWS_REGION
+
+// console.log("AWS_ACCESSKEYID=",AWS_ACCESSKEYID)
+// console.log("AWS_SECRETACCESSKEY=",AWS_SECRETACCESSKEY)
+// console.log("AWS_BUCKET_NAME=",AWS_BUCKET_NAME)
+// console.log("AWS_REGION=",AWS_REGION)
+
+// Initialize an S3 client with provided credentials
+// @ts-ignore
+export const s3Client = new S3Client({
+  region: AWS_REGION, // Specify the AWS region from environment variables
+  credentials: {
+    accessKeyId: AWS_ACCESSKEYID, // Access key ID from environment variables
+    secretAccessKey: AWS_SECRETACCESSKEY // Secret access key from environment variables
+  }
+});
 
 
 mongoose.set('strictQuery', true);
@@ -63,7 +77,7 @@ app.set('etag', false); // turn off `etag`
 
 const limiter = rateLimit({
 	windowMs: 10 * 60 * 1000, // 15 minutes
-	max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+	max: 1000, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
 	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 	// store: ... , // Use an external store for more precise rate limiting

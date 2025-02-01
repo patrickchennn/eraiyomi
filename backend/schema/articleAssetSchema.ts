@@ -6,20 +6,20 @@ const articleAssetSchema = new Schema({
     ref: 'articles',
     required:true,
   },
-  thumbnail:{
-    _id:false,
-    fieldName: String,
-    originalname: String,
-    encoding: String,
-    mimetype: String,
-    filename: String,
-    size: Number,
-    dataURL: String,
-    default:{}
+  thumbnail: {
+    type: {
+      _id: { type: Boolean, default: false },
+      fileName: { type: String, required: true },
+      relativePath: { type: String, required: true },
+      mimeType: { type: String, required: true },
+    },
+    default: null, // Set default to `null` if no object is provided
+    required: false,
   },
   contentStructureType:{
     type: String,
-    default:"",
+    enum:["markdown",null],
+    default:null,
   },
   content:{
     type : Schema.Types.Mixed,

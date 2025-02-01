@@ -6,9 +6,21 @@ import { PUT_articleAsset } from "../controllers/article-asset/PUT_articleAsset.
 import APIAuth from "../middleware/APIAuth.js"
 import isValidMongoId from "../middleware/isValidMongoId.js"
 
+
+// import { existsSync, mkdirSync } from "fs"
+
+// const diskStorage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     // console.log("file=",file)
+//     const path = `/tmp/article-images`
+//     if(!existsSync(path)) mkdirSync(path)
+//     cb(null, path)
+//   },
+// })
+const upload = multer({ storage:multer.memoryStorage() })
+
 export const routerArticleAsset = Router()
 
-const upload = multer()
 
 routerArticleAsset.route("/api/articles-asset")
   .get(GET_articlesAsset)
@@ -24,7 +36,7 @@ routerArticleAsset.route("/api/article-asset/:articleId")
     isValidMongoId,
     // upload.single('thumbnail'),
     // upload.any(),
-    upload.fields([{ name: 'thumbnail', maxCount: 1 }, { name: 'content', maxCount: 1 }]),
+    upload.fields([{ name: 'thumbnail', maxCount: 1 }, { name: 'content-files'}]),
     PUT_articleAsset,
   )
 ;

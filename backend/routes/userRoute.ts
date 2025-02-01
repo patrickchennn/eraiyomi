@@ -41,7 +41,7 @@ routerUser.route("/api/user/login-traditional")
 
 routerUser.route("/api/user/verify")
   .post(
-    (req,res,next)=>authVerify(req,res,next,true), 
+    authVerify, 
     POST_verify
   )
 ;

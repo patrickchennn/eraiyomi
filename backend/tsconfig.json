@@ -10,7 +10,7 @@
     // module resolution options
     "moduleResolution": "node",
     "isolatedModules": true,
-    "lib": ["ES2022", "DOM","DOM.Iterable"],
+    "lib": ["ES2022"],
     "allowJs": true, // Allow importing JavaScript files
     // source map options
     "outDir": "build",

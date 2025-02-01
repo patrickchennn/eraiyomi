@@ -2,13 +2,20 @@ import chalk from "chalk"
 import { Request,Response } from "express"
 import { articleAssetModel } from "../../schema/articleAssetSchema.js"
 import { articleModel } from "../../schema/articleSchema.js"
-import { UploadApiErrorResponse, UploadApiResponse, v2 as cloudinary } from 'cloudinary'
 import retResErrJson from "../../utils/retResErrJson.js"
+import { PutObjectCommand } from "@aws-sdk/client-s3"
+import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+import { AWS_BUCKET_NAME, s3Client } from "../../index.js"
+import isEmpty from "lodash.isempty"
+dotenv.config()
+
+
 
 interface ReqBodyPutArticleAsset{
-  contentStructureType: string
+  contentStructureType: "markdown" | ""
   content?:string
   totalWordCounts: number
+  metadataContent:string
 }
 /**
  * @desc edit a particular article asset
@@ -22,9 +29,9 @@ export const PUT_articleAsset =  async (
   const {articleId} = req.params
   
   
-  const {body} = req
-  // console.log("body=",body)
-  // console.log("files=",files)
+  const {body,files} = req
+  console.log("body=",body)
+  console.log("files=",files)
 
 
   const articleAsset = await articleAssetModel.findOne({articleIdRef:articleId})
@@ -40,69 +47,134 @@ export const PUT_articleAsset =  async (
     return retResErrJson(res,500,`Article with id="${articleId} is not found, but article-asset is found, with id=${articleAsset._id}. It's 500 Internal Server Error because article and article-asset suppossed to be exist respectively.`)
   }
 
-  // IF thumbnail image is provided
-  if(req.files!==undefined && Object.hasOwn(req.files, 'thumbnail')){
-    // @ts-ignore
-    // original error: Element implicitly has an 'any' type because expression of type '"thumbnail"' can't be used to index type '{ [fieldname: string]: File[]; } | File[]'. Property 'thumbnail' does not exist on type '{ [fieldname: string]: File[]; } | File[]'.ts(7053)
-    // TODO: fix this
-    const thumbnail = req.files["thumbnail"][0]
-    // console.log("thumbnail=",thumbnail)
-    // console.log(Buffer.isBuffer(thumbnail.buffer))
+  if(files!==undefined){
+    // if(Object.hasOwn(files, 'thumbnail')){
+    //   console.info(chalk.blueBright.bgBlack("[INF] handle thumbnail image upload"))
 
-
-    let uploadResult!: any;
-    try {
-      uploadResult = await new Promise((resolve) => {
-        cloudinary.uploader.upload_stream(
-          {
-            use_filename:true,
-            filename_override:"thumbnail",
-            unique_filename:false,
-            folder:article.titleArticle.URLpath,
-          },
-          (error, uploadResult) => {
-            return resolve(uploadResult);
-          }).end(thumbnail.buffer);
-      });
-      // console.log("uploadResult=",uploadResult)
-    } 
-    // @ts-ignore
-    catch (error: UploadApiErrorResponse) {
-      return retResErrJson(res,500,error)
-    }
-
-    const thumbnailTemp = {
-      fieldName: thumbnail.fieldname,
-      originalname: thumbnail.originalname,
-      encoding: thumbnail.encoding,
-      mimetype: thumbnail.mimetype,
-      filename: thumbnail.originalname,
-      size: thumbnail.size,
-      dataURL: uploadResult.secure_url,
-    }
-    articleAsset.thumbnail = thumbnailTemp
-  }
+    //   // @ts-ignore
+    //   // original error: Element implicitly has an 'any' type because expression of type '"thumbnail"' can't be used to index type '{ [fieldname: string]: File[]; } | File[]'. Property 'thumbnail' does not exist on type '{ [fieldname: string]: File[]; } | File[]'.ts(7053)
+    //   // TODO: fix this
+    //   const thumbnail = files["thumbnail"][0]
+    //   // console.log("thumbnail=",thumbnail)
+    //   // console.log(Buffer.isBuffer(thumbnail.buffer))
   
+  
+    //   let uploadResult!: any;
+    //   try {
+    //     uploadResult = await new Promise((resolve) => {
+    //       cloudinary.uploader.upload_stream(
+    //         {
+    //           use_filename:true,
+    //           filename_override:"thumbnail",
+    //           unique_filename:false,
+    //           folder:article.titleArticle.URLpath,
+    //         },
+    //         (error, uploadResult) => {
+    //           return resolve(uploadResult);
+    //         }).end(thumbnail.buffer);
+    //     });
+    //     // console.log("uploadResult=",uploadResult)
+    //   } 
+    //   // @ts-ignore
+    //   catch (error: UploadApiErrorResponse) {
+    //     return retResErrJson(res,500,error)
+    //   }
+  
+    //   const thumbnailTemp = {
+    //     fieldName: thumbnail.fieldname,
+    //     originalname: thumbnail.originalname,
+    //     encoding: thumbnail.encoding,
+    //     mimetype: thumbnail.mimetype,
+    //     filename: thumbnail.originalname,
+    //     size: thumbnail.size,
+    //     dataURL: uploadResult.secure_url,
+    //   }
+    //   articleAsset.thumbnail = thumbnailTemp
+    // }
 
-  if(body.content){
-    if(body.contentStructureType=="quilljs"){
-      // console.log(chalk.yellow.bgBlack(`body.contentStructureType=="quilljs"`))
-      await handleQuill(req,res,article,articleAsset)
-
-    }else if(body.contentStructureType=="markdown"){
-      // console.log(chalk.yellow.bgBlack(`body.contentStructureType=="markdown"`))
-      articleAsset.contentStructureType = "markdown"
-      // TODO: assuming no images assset
-      articleAsset.content = body.content
+    let metadata;
+    if ('content' in files && Array.isArray(files.content)) {
+      console.info(chalk.blueBright.bgBlack("[INF] handle Markdown upload"))
+      articleAsset.content = []
+  
+      for(let i=0; i<files.content.length; i++){
+        interface ExtendedFile extends Express.Multer.File {
+          webkitRelativePath?: string
+        }
+        const file: ExtendedFile = files['content'][i]
+        // console.info("file=",file)
+  
+        // Parse the metadata JSON
+        try {
+          metadata = JSON.parse(body.metadataContent);
+        } catch (error) {
+          console.error("Error parsing metadata JSON:", error);
+          metadata = [];
+        }
+  
+        // Link each file to its corresponding metadata
+        const fileMetadata = metadata[i];
+        if (fileMetadata) {
+          file.webkitRelativePath = fileMetadata.webkitRelativePath
+        }
+  
+        
+        // Here is where the logic of storing assets happen
+        const cmd = new PutObjectCommand({
+          Bucket: AWS_BUCKET_NAME,
+          Key: file.webkitRelativePath,
+          Body: file.buffer,
+          ContentType: file.mimetype
+        })
+    
+        // for testing purpose: comment these for stop storing files
+        try {
+          console.info(chalk.blueBright.bgBlack("[INF] HTTP Request to S3 for storing our markdown files"))
+          const S3_SendRes = await s3Client.send(cmd);
+          /** Returned data
+           *  {
+            '$metadata': {
+              httpStatusCode: 200,
+              requestId: 'MFCGQF89Z0BR73S1',
+              extendedRequestId: 'Hw6cXBc3axGhMhCtZD2eOk0YJ38XwbSTBIhqUeGx0IlHkm8mYPCBQKpd7t5YzO5zDAhT4d7brxY=',
+              cfId: undefined,
+              attempts: 1,
+              totalRetryDelay: 0
+            },
+            ETag: '"d41d8cd98f00b204e9800998ecf8427e"',
+            ServerSideEncryption: 'AES256'
+          }
+            */
+          console.log("S3_SendRes=",S3_SendRes)
+        } catch (error) {
+          console.error(error)
+          return retResErrJson(res,500,`Error occured when trying to upload files into S3`)
+        } 
+  
+        // Every info/metadata about the files will be recorded on our mongo DB
+        articleAsset.content.push({
+          fileName: file.originalname,
+          relativePath:file.webkitRelativePath,
+          mimeType: file.mimetype,
+        })
+      }
+  
+      console.log(`files['content']=`,files['content'])
     }
-
-    // update the word counter
-    articleAsset.totalWordCounts = body.totalWordCounts
   }
 
+
+  if(!isEmpty(body)){
+    console.info(chalk.blueBright.bgBlack("[INF] handle Request Body"))
+  
+    body.contentStructureType && (articleAsset.contentStructureType = body.contentStructureType)
+
+    body.totalWordCounts && (articleAsset.totalWordCounts = body.totalWordCounts)
+
+  }
 
     
-  // console.log("articleAsset.save()=",articleAsset)
+  console.log("final `articleAsset` to be saved=",articleAsset)
 
   // comment this for testing purpose, meaning it won't be actually save on the database. Conversely, umcomment to see the actual changes on database
   await articleAsset.save()
@@ -111,150 +183,3 @@ export const PUT_articleAsset =  async (
     message:`success editing article asset. Article's title ${article.titleArticle.URLpath}`,
   })
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// @TODO: change `any` to appropriate type
-async function handleQuill(
-  req: Request, 
-  res: Response, 
-  article:any,
-  articleAsset:any
-){
-  const {body} = req
-
-  /* Purpose of `imgsToDelete` set container
-    The purpose of this `imgsToDelete` is to track some files that are needed to be deleted or not. If some existed on that set, it means that files need to be deleted.
-  */
-    const imgsToDelete = new Set<string>()
-
-    // loop the previous `articleAsset.content`. Mainly, we are looking for image object, and if found, store it to the set `imgsToDelete` for later checking whether we should delete the image or not.
-    for(let i=0; i<articleAsset.content.length; i++){
-      const data:{[key: string]: any} = articleAsset.content[i]
-
-      // IF: we found an image among all of these quill data, or also I can say that, IF there is a new image that want to be saved on the database
-      if(Object.hasOwn(data.insert,"image")){
-        imgsToDelete.add(data.insert.image["data-public_id"] as string)
-      }
-    }
-    console.log("initial: imgsToDelete=",imgsToDelete)
-
-
-    // quillData is an array of object
-    const quillData = JSON.parse(body.content) as [{}]
-    // console.log("quillData=",quillData)
-
-    articleAsset.content = quillData
-
-    // START: content images logic
-    console.log(chalk.yellow.bgBlack("section: content images logic"))
-
-
-    for(let i=0; i<quillData.length; i++){
-      const data:{[key: string]: any} = quillData[i]
-      // console.log(`[${i}]:`,data)
-      
-      // IF: we found an image among all of these newly inputted quill data
-      if(Object.hasOwn(data.insert,"image")){
-        console.log(chalk.magenta.bgBlack("IF: found image at index: "),i)
-        // console.log("before: data: ",data)
-
-        // for storing the file name
-        let filename
-
-        // this can be data URL or external resources
-        const imgSrc = data.insert.image.src as string
-        // console.log("imgSrc=",imgSrc)
-
-        // console.log(chalk.magenta.bgBlack("\tIF: img src type is data:image/png;base64"))
-
-        filename = data.insert.image['data-filename']
-
-        // upload to remote/cloud storage
-        // doc for `upload()` method: https://cloudinary.com/documentation/image_upload_api_reference#upload
-        let result!: UploadApiResponse;
-        try {
-          result = await cloudinary.uploader.upload(
-            imgSrc,
-            {
-              use_filename:true,
-              filename_override:filename,
-              unique_filename:false,
-              overwrite: false,
-              folder:article.titleArticle.URLpath
-            }, 
-          );
-
-          console.log("cloudinary.uploader.upload() callback=",result); 
-        } 
-        // @ts-ignore
-        catch (error: UploadApiErrorResponse) {
-          console.error(error);
-          return res.status(500).send({
-            message:error
-          });
-
-        }
-      
-        // the main purpose of this condition is about determining whether we should delete current image or not. False means we are gonna delete it, because we are preserving the set. True means we ain't gonna delete it, because we eventually pop/delete it's value in that set
-        if(result.existing && imgsToDelete.has(result.public_id)){
-          console.log(chalk.magenta.bgBlack(`IF: image ${result.public_id} already exist!`))
-          imgsToDelete.delete(result.public_id)
-        }
-
-        /** after successfuly upload the img to cloud
-         * some modification is needed for the image attributes
-         * `src` is gonna have the https URL for the image
-         * about these three below, currently I have no clear idea what I'm gonna about to use it
-         * `data-filename` is the original filename
-         * `data-public_id` is the `public_id` property in Cloudinary
-         */
-        articleAsset.content[i].insert.image.src = result.secure_url
-        articleAsset.content[i].insert.image["data-public_id"] = result.public_id
-
-        console.log("after: data: ",data)
-      }
-    }
-
-    // actual logic for deleting the files
-    console.log("after: imgsToDelete=",imgsToDelete)
-    for(const img of imgsToDelete){
-      console.log(chalk.magenta.bgBlack("FOR: delete file:"),img)
-      let result;
-
-      try {
-        result = await cloudinary.uploader.destroy(
-          img,
-        );
-
-        console.log("\tcloudinary.uploader.destroy() callback=",result); 
-      } 
-      // @ts-ignore
-      catch (error) {
-        console.error(error);
-        return res.status(500).send({
-          statusCode:"500 Server Internal Error",
-          message:error
-        });
-      }
-    }
-    // END: content images logic
-}
-
-
-// async function handleMD(){
-// // xx
-// }

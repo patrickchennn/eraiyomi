@@ -1,5 +1,4 @@
 import { Request,Response } from "express"
-import {isValidObjectId} from "mongoose"
 import { articleModel } from "../../schema/articleSchema.js"
 import retResErrJson from "../../utils/retResErrJson.js"
 
@@ -10,16 +9,9 @@ import retResErrJson from "../../utils/retResErrJson.js"
  */
 export const GET_article = async (req: Request, res:Response) => {
   let {id,title} = req.query
-
-  const isValid = isValidObjectId(id)
-
-  if(!isValid){
-    return retResErrJson(res,400,`Article with \`id=${id}\` is an invalid id`)
-  }
-
   
   const articleData = await articleModel.findOne({ 
-    $and: [{ "titleArticle.URLpath":title }, { _id:id }] 
+    $or: [{ "titleArticle.URLpath":title }, { _id:id }] 
   });
   
   if(articleData===null){

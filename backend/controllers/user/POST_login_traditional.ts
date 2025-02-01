@@ -49,7 +49,7 @@ export const POST_loginTraditional = async (req: Request<{}, {}, ReqBodyLoginTra
 
   // return res.status(200).send("succuessfully logged in")
   return res.status(200).json({
-    message:"successfully logged in",
+    message:"Successfully logged in",
     _id: user._id,
     userId: user.userId,
     username: user.username,

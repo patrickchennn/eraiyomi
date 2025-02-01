@@ -23,11 +23,11 @@ COPY package*.json ./
 RUN npm install --omit=dev
 
 # Copy the build artifacts
-COPY --from=builder /app/build-prod ./build-prod
+COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/.env ./.env
 
 # Expose the desired port
-EXPOSE 8001
+EXPOSE 8999
 
 # Start the application
 CMD ["npm", "start"]

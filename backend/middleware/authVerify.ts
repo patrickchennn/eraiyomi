@@ -2,6 +2,7 @@ import chalk from "chalk"
 import jwt from 'jsonwebtoken'
 import { NextFunction,Request,Response } from "express"
 import { userModel } from "../schema/userSchema.js"
+import retResErrJson from "../utils/retResErrJson.js"
 
 
 
@@ -9,7 +10,6 @@ async function authVerify(
   req: Request,
   res: Response,
   next: NextFunction,
-  isNext=false,
 ){
   console.log(chalk.yellow(`[middleware]: @authVerify`))
   console.log(chalk.yellow(`[middleware]: Authorizing for request: ${req.method} ${req.path}`))
@@ -18,11 +18,9 @@ async function authVerify(
   let token = req.headers.authorization
 
   // CHECK: token
-  if(
-    !token || !token.startsWith("Bearer")
-  ){
+  if(!token || !token.startsWith("Bearer")){
     console.error(chalk.red("[middleware]: 401 Not authorized; no token provided\n"))
-    return res.status(401).send("Not authorized. No token provided")
+    return retResErrJson(res,401,"Not authorized. No token provided")
   }
   // console.log("token=",token)
 
@@ -41,7 +39,7 @@ async function authVerify(
     req.body["user"] = await tradVerify(token)
     req.body["token"] = token
     console.log(chalk.green(`[middleware]: verify user with "traditional" way is succeed.\n`))
-    if(isNext) next()
+    next()
     return
   } 
   // @ts-ignore
@@ -56,6 +54,7 @@ async function authVerify(
     console.log(chalk.red.bgBlack(`[middleware]: verify user with "traditional" way is failed.\n`))
 
     console.error(chalk.red.bgBlack(error));
+    return retResErrJson(res,403,error)
   }
 
 }
