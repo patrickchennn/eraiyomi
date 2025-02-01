@@ -1,11 +1,15 @@
-import {  useContext } from 'react'
-import { EditArticleDataCxt } from '../EditArticle'
+import { ArticleDataState, ArticleData } from "../EditArticle"
+
 interface EditInputDescProps{
+  articleDataState: ArticleDataState
+  articleDefaultDataRef: React.MutableRefObject<ArticleData>
 }
-export default function EditInputDesc({}: EditInputDescProps) {
-  const c = useContext(EditArticleDataCxt)!
-  const [articleData,setArticleData] = c.articleDataState
-  const {articleDefaultDataRef} = c
+export default function EditInputDesc({
+  articleDataState,
+  articleDefaultDataRef
+}: EditInputDescProps) {
+  const [articleData,setArticleData] = articleDataState
+
 
   return (
     <div>
@@ -13,7 +17,7 @@ export default function EditInputDesc({}: EditInputDescProps) {
       <input 
         required
         id="edit-desc"
-        className="px-2 border w-full bg-slate-50 valid:bg-slate-100 focus:bg-white"
+        className="dark:dark-single-component dark:valid:dark-single-component px-2 border w-full bg-slate-50 valid:bg-slate-100 focus:bg-white"
         type="text" 
         data-cy="edit-desc"
         placeholder='Describe shortly about your works...'

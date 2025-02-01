@@ -1,36 +1,50 @@
-import dynamic from 'next/dynamic'
-import { useContext } from 'react'
+import chalk from 'chalk'
 import EditMdFileInput from './EditMdFileInput'
-import { EditArticleDataCxt } from '../EditArticle'
+import { useState } from 'react'
+import { AiOutlineFileMarkdown } from 'react-icons/ai'
 
-// https://stackoverflow.com/questions/69386843/nextjs-referrenceerror-document-is-not-defined
-const ReactQuillWithNoSSR = dynamic(
-  () => import('@/components/TextEditor'),
-  { 
-    ssr: false, // <-- not including this component on server-side
-    loading:()=><div className='loader'></div>
-  } 
-)
 
-function EditorChoice() {
-  const c = useContext(EditArticleDataCxt)!
-  const [articleData,] = c.articleDataState
-  const [content,setContent] = c.contentState
+interface EditorChoiceProps{
+  articleAssetState: any
+  markdownFilesState:any
+  rawMarkdownStringState:any
+}
+const EditorChoice = ({
+  articleAssetState,
+  markdownFilesState,
+  rawMarkdownStringState
+}: EditorChoiceProps) => {
 
+  const [selectedEditor, setSelectedEditor] = useState(""); // New state for tracking the selected editor
+
+  const handleEditorChoice = (e: React.MouseEvent) => {
+
+    console.log(chalk.blueBright.bgBlack("@handleEditorChoice"))
+    const target = e.target as HTMLElement
+    console.log("target=",target)
+    console.log("target.textContent=",target.textContent)
+    
+    setSelectedEditor(target.textContent as string); // Update the selected editor based on button text
+
+  }
 
   return (
     <>
-      editor type: {articleData.contentStructureType}
-      <button>show editor</button>
-      {articleData.contentStructureType === 'markdown' && (
-        <EditMdFileInput />
-      )}
-      {articleData.contentStructureType === 'quilljs' && (
-        <ReactQuillWithNoSSR 
-          contentState={[content, setContent]} 
-          textEditorRef={c.textEditorRef}
-        />
-      )}
+      <div>
+        <label>Editor:</label>
+        <ul onClick={handleEditorChoice} className='flex'>
+          <button className='px-2 border rounded bg-slate-100 dark:bg-zinc-900'>Markdown<AiOutlineFileMarkdown className='inline'/></button>
+        </ul>
+      </div>
+      <div>
+        {selectedEditor === 'Markdown' && (
+          <EditMdFileInput 
+            articleAssetState={articleAssetState} 
+            markdownFilesState={markdownFilesState}
+            rawMarkdownStringState={rawMarkdownStringState}
+          />
+        )}
+      </div>
     </>
   )
 }

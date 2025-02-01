@@ -1,27 +1,30 @@
 import { ArticlesAnalytic } from "@patorikkuuu/eraiyomi-types"
-import chalk from "chalk"
 import { baseURL } from "../config"
+import axios from "axios"
+import httpResLog from "@/loggers/httpResLog"
 
 export const getArticlesAnalytic = async () => {
-  let res!: Response
-  let data
-  const httpMethod = "GET"
+  let dataRes
+  let status = "";
 
   try{
-    res = await fetch(`${baseURL}/articles/analytic`)
-    data = await res.json()
-    if(!res.ok){
-      const errorMessage = data?.message || 'An error occurred';
-      throw new Error(errorMessage);
+    const res = await axios(`${baseURL}/articles/analytic`)
+    dataRes = res.data
+    status = `${res.status} ${res.statusText}`;
+
+    httpResLog.ok(res.config.method, res.config.url,status)
+  }
+  catch(err){
+    if (axios.isAxiosError(err) && err.response) {
+
+      status = `${err.response.status} ${err.response.statusText}`;
+
+      httpResLog.err(err.response.config.method,err.response.config.url,status)
+      console.error(err.message)
+      return null
     }
   }
-  // @ts-ignore
-  catch(err: Error){
-    console.error(chalk.red.bgBlack(err.message))
-    return undefined
-  }
 
 
-  console.log(chalk.green.bgBlack(`${httpMethod} ${res.url} ${res.status}`) )
-  return data as ArticlesAnalytic
+  return dataRes as ArticlesAnalytic
 }

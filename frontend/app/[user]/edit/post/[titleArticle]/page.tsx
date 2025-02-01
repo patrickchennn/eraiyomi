@@ -4,6 +4,7 @@ import { getArticle } from '@/services/article/getArticle';
 import { GET_user } from '@/services/user/GET_user';
 import { POST_verify } from '@/services/user/POST_verify';
 import { User } from '@patorikkuuu/eraiyomi-types';
+import chalk from 'chalk';
 import { cookies } from 'next/headers';
 import React from 'react'
 
@@ -15,6 +16,7 @@ interface PageProps{
   searchParams: { id: string };
 }
 export default async function Page({params,searchParams}: PageProps) {
+  console.info(chalk.blueBright.bgBlack(`[INF] @app/[user]/edit/post/[titleArticle] Page()`))
 
 
   console.log("params=",params)
@@ -47,21 +49,26 @@ export default async function Page({params,searchParams}: PageProps) {
     )
   }
 
-  let verifiedUser: undefined|User
+  let verifiedUser: {
+    status: string;
+    message: any;
+    data: any;
+  } = {
+    status: "",
+    message: "",
+    data: null
+  }
   // IF the user has logged in before
   if(userCredToken){
     // verify the user credential
     verifiedUser = await POST_verify(userCredToken.value)
-    // console.log("verifiedUser=",user)
+    console.log("verifiedUser=",user)
   }
 
   // IF the credential is not valid --> display non-privileged(non edit user feature) 
-  if(!verifiedUser){
+  if(!verifiedUser.data){
     return (
-      <>
-        <h1>403 Forbidden</h1>
-        <p>The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server.</p>
-      </>
+      <pre>{JSON.stringify(verifiedUser, null, 4)}</pre>
     )
   }
   
@@ -73,10 +80,10 @@ export default async function Page({params,searchParams}: PageProps) {
 
   if(!article.data || !articleAsset.data){
     return (
-      <>
-        <h1>{article.errMsg}</h1>
-        <p>article with title "{params.titleArticle}" does not exist</p>
-      </>
+      <pre>
+        {JSON.stringify(articleAsset, null, 4)}
+        {JSON.stringify(article, null, 4)}
+      </pre>
     )
   }
 

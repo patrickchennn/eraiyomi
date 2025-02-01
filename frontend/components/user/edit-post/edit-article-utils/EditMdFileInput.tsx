@@ -1,19 +1,24 @@
-import { useContext, useRef, useState } from "react"
-import chalk from "chalk"
+import { useRef } from "react"
 import { BsTrash3 } from "react-icons/bs";
-import words from "lodash.words";
-import { EditArticleDataCxt } from "../EditArticle";
 import MarkdownEditor from "@uiw/react-markdown-editor";
 import debounce from "lodash.debounce";
+import { ArticleAssetState } from "../EditArticle";
+
 
 interface MdFileInputInputProps{
+  articleAssetState: ArticleAssetState
+  markdownFilesState: any
+  rawMarkdownStringState: any
 }
 function EditMdFileInput({
+  articleAssetState,
+  markdownFilesState,
+  rawMarkdownStringState
 }: MdFileInputInputProps) {
-  const c = useContext(EditArticleDataCxt)!
-  const [articleData,setArticleData] = c.articleDataState
-  
-  const [contentMD_local,setContentMD_local] = useState<string>(articleData.content as string)
+  const [articleAssetData,setArticleAssetData] = articleAssetState
+
+  const [markdownFiles,setMarkdownFiles] = markdownFilesState
+  const [rawMarkdownString, setRawMarkdownString] = rawMarkdownStringState
 
   const fileInputRef = useRef<null|HTMLInputElement>(null);
 
@@ -22,97 +27,112 @@ function EditMdFileInput({
     // Check if the file input is not null
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
-      setArticleData(prev=>({
+      setArticleAssetData(prev=>({
         ...prev,
-        contentStuctureType:"",
+        contentStructureType:null,
         content:"",
-        wordCounts:0
+        totalWordCounts:0
       }))
     }
   };
 
   const handleMarkdownFile = (e: React.ChangeEvent) => {
-    console.log(chalk.yellow.bgBlack("@handleMarkdownFile"))
-    const target = e.target as HTMLInputElement
-    console.log("target=",target)
+    console.log('File(s) selected');
 
-    const file = target.files
-    console.log("file=",file)
+    const target = e.target as HTMLInputElement;
+    const files = target.files;
 
-    if (file && file.length>0) {
-      const mdFile = file[0]
-      console.log("mdFile=",mdFile)
+    if (!files || files.length === 0) return;
 
-      // IF: the given file is NOT an .md type
-      if(mdFile.type!=="text/markdown"){
-        return alert("Wrong extention; wrong file. It supposed to be '.md' file")
-      }
+    const fileList = Array.from(files);
+    console.log("fileList=",fileList)
+
+    // Separate markdown files and assets
+    const markdownFiles = fileList.filter((file) => file.type === 'text/markdown');
+    console.log("markdownFiles=",markdownFiles)
+
+    const assetFiles = fileList.filter((file) => file.type !== 'text/markdown');
+    console.log("assetFiles=",assetFiles)
 
 
-      // Create a new FileReader object
-      const reader = new FileReader();
-
-      // Define what happens when the reading succeeds
-      reader.onload = (readEvent) => {
-        if (readEvent.target === null) {
-          return 
-        }
-        // The result attribute contains the contents of the file as a text string
-        const content = readEvent.target.result;
-        console.log("File content:", content);
-
-        if (typeof content === 'string') { // Confirming it's a string
-          console.log("File content:", content);
-          // You can now handle the Markdown content as needed
-          // e.g., setting it to state, parsing it, etc.
-          setArticleData(prev=>({
-            ...prev,
-            contentStuctureType:"markdown",
-            content,
-            wordCounts:words(content).length
-          }))
-        } else {
-          console.log("Expected string, received different type or null");
-        }
-      };
-
-      // Read the file as text
-      reader.readAsText(mdFile);
+    if (markdownFiles.length === 0) {
+      alert("No Markdown file found. Please upload at least one '.md' file.");
+      return;
     }
-  }
-  
-  // Update the content in the editor after a delay
-  const debouncedSetContent = debounce(setContentMD_local, 500);
+
+    // Handle the first markdown file (assuming you want to process only one for now)
+    const mdFile = markdownFiles[0];
+    console.log('mdFile=', mdFile);
+
+    // `reader` is about read the markdown file, like actually exract the text
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const content = reader.result as string;
+      // console.log('Markdown content:', content);
+
+      // Update state with the markdown content
+      setArticleAssetData((prev) => ({
+        ...prev,
+        contentStructureType: 'markdown',
+        totalWordCounts: content.split(/\s+/).length,
+      }));
+      setMarkdownFiles(fileList)
+    };
+
+    reader.readAsText(mdFile);
+
+    // Handle the asset files (if any)
+    if (assetFiles.length > 0) {
+      console.log('Asset files:', assetFiles);
+      // You can process assets and store their references in the state as needed
+    }
+
+    // setMarkdownFiles(fileList)
+  };
+
+    // Update the content in the editor after a delay
+    const debouncedSetContent = debounce(setRawMarkdownString, 500);
 
   const handleEditorChange = (value: string) => {
     debouncedSetContent(value);
   };
 
+
+
   // render
   return (
-    <form
-      encType="multipart/form-data" 
-      method='post'
-      className='w-fit'
-    >
-      <label htmlFor="doc_file_upload" className="block">upload a file:</label>
-      <input
-        type="file"
-        id="doc_file_upload"
-        name="doc_file_upload"
-        accept="text/markdown, text/plain"
-        onChange={handleMarkdownFile}
-        ref={fileInputRef}  // Attach the ref to the file input
-      />
-      <button type="button" onClick={resetInputFile}>
-        <BsTrash3 className="inline"/>
-      </button>
+    <>
+      <form
+        encType="multipart/form-data" 
+        method='post'
+        className='w-fit'
+      >
+        <label htmlFor="doc_file_upload" className="block">You can upload a single markdown file or markdown with its asset such as images:</label>
+        <input
+          type="file"
+          id="doc_file_upload"
+          name="doc_file_upload"
+          accept="text/markdown"
+          onChange={handleMarkdownFile}
+          ref={fileInputRef}
+          multiple
+          // @ts-ignore
+          webkitdirectory="true"
+        />
+        <button type="button" onClick={resetInputFile}>
+          <BsTrash3 className="inline"/>
+        </button>
+      </form>
 
+      <br />
+
+      <label className="block">Or you can also just type directly in this markdown editor:</label>
       <MarkdownEditor
-        value={contentMD_local}
+        value={rawMarkdownString}
         onChange={handleEditorChange}
       />
-    </form>
+    </>
   )
 }
 

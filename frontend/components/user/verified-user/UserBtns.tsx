@@ -12,7 +12,7 @@ import { ArticleAsset } from '@patorikkuuu/eraiyomi-types'
 interface UserBtnsProps{
   user: User
   articles: Article[]
-  articlesAnalytic: ArticlesAnalytic|undefined
+  articlesAnalytic: ArticlesAnalytic|null
   articlesAsset:ArticleAsset[]|undefined
 }
 export default function UserBtns({
@@ -46,7 +46,7 @@ export default function UserBtns({
 
   //render
   return (
-    <>
+    <ul className='dark:[&>button]:dark-single-component'>
       <button 
         onClick={handleShowProfile}
         className="px-3 py-1 border rounded w-24 bg-slate-50 shadow-inner hover:white hover:shadow-[0_0_14px_0_#ffffff_inset] hover:font-semibold"
@@ -66,6 +66,6 @@ export default function UserBtns({
         :
         <></>
       }
-    </>
+    </ul>
   )
 }

@@ -9,14 +9,14 @@ import chalk from 'chalk';
 import getReadEstimation from '@/utils/getReadEstimation';
 import { CreateNewPostStateCtx } from '../CreateNewPost';
 import {MarkdownRenderer} from '@/utils/MarkdownRenderer';
-import Link from "next/link";
 
 
 interface PreviewBtnProps{
   setPreviewElem: Dispatch<SetStateAction<JSX.Element | undefined>>
+  className:string
 }
 export default function PreviewBtn({
-  setPreviewElem
+  setPreviewElem,className
 }: PreviewBtnProps) {
 
   // hooks
@@ -77,7 +77,7 @@ export default function PreviewBtn({
   return (
     <button 
       onClick={handlePreview} 
-      className='border rounded py-1 px-2 bg-zinc-50 shadow-inner text-sm hover:shadow'
+      className={className}
     >
       {/* <Link
         href={{

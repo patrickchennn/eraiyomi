@@ -11,7 +11,7 @@ export default function APIKeyInput({API_keyState}: APIKeyInputProps) {
       <input 
         required
         id="api-key"
-        className="px-2 border bg-gray-100" 
+        className="rounded px-2 bg-slate-50 dark:dark-single-component" 
         type="password"
         value={API_key}
         data-cy="api-key-input"

@@ -1,4 +1,4 @@
-import { ReqBodyLoginTraditional, UserRes } from "@patorikkuuu/eraiyomi-types"
+import { ReqBodyLoginTraditional, HTTPGetUserRes } from "@patorikkuuu/eraiyomi-types"
 import { baseURL } from "../config"
 
 export const postLoginTraditional = async (loginData: ReqBodyLoginTraditional) => {
@@ -27,7 +27,7 @@ export const postLoginTraditional = async (loginData: ReqBodyLoginTraditional) =
     console.error(err)
   }
 
-  interface ExtendedUser extends UserRes {
+  interface ExtendedUser extends HTTPGetUserRes {
     message: string;
   }
   console.log(`%c POST ${res.url} ${res.status}\n`,'color: green',data)

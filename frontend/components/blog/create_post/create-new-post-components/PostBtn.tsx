@@ -12,9 +12,10 @@ import { CreateNewPostStateCtx } from '../CreateNewPost';
 
 interface PostBtnProps{
   API_key: string
-  previewElem: JSX.Element|undefined
+  previewElem: JSX.Element|undefined,
+  className: string
 }
-export default function PostBtn({API_key,previewElem}: PostBtnProps) {
+export default function PostBtn({API_key,previewElem,className}: PostBtnProps) {
   // hooks
   const [userInfo] = useUserInfo()
   const c = useContext(CreateNewPostStateCtx)!
@@ -97,7 +98,7 @@ export default function PostBtn({API_key,previewElem}: PostBtnProps) {
   return (
     <button 
       type='button'
-      className='border rounded py-1 px-2 bg-zinc-50 shadow-inner text-sm hover:shadow' 
+      className={className}
       onClick={handlePost}
     >
       Post

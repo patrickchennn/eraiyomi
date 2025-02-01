@@ -3,7 +3,7 @@
 import { POST_verify } from "@/services/user/POST_verify";
 import getCookie from "@/utils/getCookie";
 import { Article } from "@patorikkuuu/eraiyomi-types";
-import { User, UserRes } from "@patorikkuuu/eraiyomi-types";
+import { User } from "@patorikkuuu/eraiyomi-types";
 import chalk from "chalk";
 
 import { Dispatch, SetStateAction, createContext, useContext, useEffect, useState } from "react";
@@ -73,20 +73,20 @@ export const AppContextProvider = ({children}: AppContextProviderProps) => {
         ...prev,
         statusReq:"fail"
       }))
-      console.log(chalk.blue(`[info]: userCredToken is ${userCredToken}`))
+      console.info(chalk.blueBright.bgBlack(`[INF]: userCredToken is ${userCredToken}`))
       return 
     }
 
     
     // remove the first and last character, in this case, removing the the tick ("")
     userCredToken = userCredToken.slice(1,-1);
-    let data: UserRes|undefined
     (async function(){
-      data = await POST_verify(userCredToken)
-      if(data){
+      const data = await POST_verify(userCredToken)
+
+      if(data.data){
         // console.log(data)
         setUserInfo({
-          ...data,
+          ...data.data,
           statusReq:"success"
         })
       }else{

@@ -1,9 +1,7 @@
-import { BlockGroup, InlineGroup, QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 
 import HeaderSection from "@/components/blog/HeaderSection";
 import convertDate from "@/utils/convertDate";
 
-import hljs from 'highlight.js'
 import 'highlight.js/styles/atom-one-dark.css';
 
 import chalk from "chalk";
@@ -13,7 +11,6 @@ import { GET_articleAsset } from "@/services/article-asset/GET_articleAsset";
 import { getArticle } from "@/services/article/getArticle";
 import getReadEstimation from "@/utils/getReadEstimation";
 import dynamic from "next/dynamic";
-import {MarkdownRenderer,markdownRenderStr} from "@/utils/MarkdownRenderer";
 
 // solve the problem `ReferenceError: window is not defined on client component`
 const DynamicDisqusEmbed = dynamic(
@@ -58,7 +55,7 @@ export default async function Page({
   params,
   searchParams 
 }: PageProps) {
-  console.log(chalk.yellow(`@app/post/${params.titleArticle}/page.tsx Page()`))
+  console.log(chalk.blueBright.bgBlack(`[INF] Rendering /post/${params.titleArticle} page`))
 
 
   if(!searchParams.id){
@@ -86,33 +83,26 @@ export default async function Page({
 
   if(!articleAssetRes.data){
     return (
-      <>
-        <h1>{articleAssetRes.status}</h1>
-        <p>{articleAssetRes.errMsg}</p>
-      </>
+      <pre>{JSON.stringify(articleAssetRes, null, 4)}</pre>
     )
   }
 
   const articleAsset = articleAssetRes.data
+  // console.log("articleAsset.contentStructureType=",articleAsset.contentStructureType)
+  // console.log("articleAsset.content=",articleAsset.content)
+
   const article = articleRes.data
   
   let MainContent = <></>
   if(articleAsset.contentStructureType==="markdown"){
-    if(typeof articleAsset.content !== "string"){
-      return alert("error: typeof articleAsset.content !== 'string'")
+    if("rawHTML" in articleAsset){
+      console.info(chalk.blueBright.bgBlack("[INF] handle Markdown data that is already converted to HTML strings"))
+      // assuming `rawHTML` is safes
+      // @ts-ignore
+      MainContent = <div dangerouslySetInnerHTML={{__html: articleAsset.rawHTML}} />
     }
-    MainContent = <MarkdownRenderer markdownText={articleAsset.content}/>
-  }else if(articleAsset.contentStructureType===undefined||articleAsset.contentStructureType==="quilljs"){
-    
-    if(!Array.isArray(articleAsset.content)){
-      return alert("error: `articleAsset.content` is not an array")
-    }
-
-    const content = handleQuilljs(articleAsset.content)
-    // Assuming content is sanitized and safe to use
-    MainContent = <div dangerouslySetInnerHTML={{ __html: content }} />;
-
   }
+
 
 
 
@@ -129,7 +119,7 @@ export default async function Page({
         <div className="border border-zinc-300 dark:border-[rgb(21,7,53)] rounded-xl post-glass dark:bg-[rgba(0,0,0,0.6)]">
 
           {/* header (thumbnail), supposed to be server component */}
-          <HeaderSection pict={articleAsset.thumbnail.dataURL} caption=""/>
+          {/* <HeaderSection pict={articleAsset.thumbnail.dataURL} caption=""/> */}
 
           <CreateTitle 
             titlePage={article.titleArticle.title}
@@ -159,102 +149,4 @@ export default async function Page({
       </div>
     </>
   )
-}
-
-function handleQuilljs(content: []){
-  let imgIdxs: number[] =[]
-  // FOR: search all imgs and keep the index
-  for(let i=0; i<content.length; i++){
-    const data = content[i] as {[key: string]: any}
-    if(Object.hasOwn(data.insert,"image")){
-      imgIdxs.push(i)
-    }
-  }
-
-  // documentation: https://github.com/nozer/quill-delta-to-html#readme
-  const converter = new QuillDeltaToHtmlConverter(content);
-
-  // this function is supposed to return a `string` type. But I had no idea what to return, I did not understand the doc
-  // currently, it returns void, obviously, an error type. So to simplify task, I just add `@ts-ignore`
-  // @ts-ignore
-  converter.beforeRender((groupType, data)=>{
-    if(groupType==="inline-group"){
-      // console.log(chalk.magenta.bgBlack("IF: groupType===inline-group"))
-      const inlineData = data as InlineGroup
-      // console.log("inlineData=",inlineData)
-
-      for(const op of inlineData.ops){
-        
-        /* fail implementation of feature
-          the main problem: "img src attribute is set to [object Object] #95": https://github.com/nozer/quill-delta-to-html/issues/95
-          
-          This supposed to help me constructing an `img` tag that is looks like: <img src="" alt="" data-[attribute]/>. You see there are several attributes on that img tag, and I want those attributes to, of course, enrich the `img` information. Current solution I can only use, `op.insert.value = src`, to set the `src` attribute which you can see in here
-
-          the first solution approach(1st) is to use the `beforeRender` method. It worked but only for the `src` attribute
-          
-          another approach(2nd) is to use the `customTagAttributes` method on the second argument of `QuillDeltaToHtmlConverter` class. But, in short, it's not working because whenever I set/return the attribute, the same data is again being loop which cause some unnecessary cycle
-          
-          3rd approach is using the `urlSanitizer`, not working
-
-          so, in short, i can only set the `src` attribute, I can't add like attribute `alt`, let alone the `data-` attribute
-        */
-        if(op.insert.type==="image"){
-          // console.log(chalk.magenta.bgBlack("found an image"))
-          // console.log("op=",op)
-          // console.log("op.insert=",op.insert)
-          // console.log("op.insert.value=",op.insert.value)
-
-          // console.log("idx=",imgIdxs[0])
-
-          const imgObj = content[imgIdxs[0]] as {[key: string]: any}
-          // console.log("imgObj=",imgObj)
-
-          const src = imgObj.insert.image.src
-
-          // const dataPublicId = imgObj.insert.image["data-public_id"]
-
-          
-          // pop the first element for preparing the next img
-          imgIdxs.shift()
-
-          // set img src
-          // original error: Cannot assign to 'value' because it is a read-only property.ts(2540)
-          // @ts-ignore
-          op.insert.value = src
-
-          // set additional attributes for the img
-          // op.attributes = {
-          //   "data-file-name":dataPublicId
-          // }
-        }
-      }
-    }else if(groupType==="block"){
-      // console.log(chalk.magenta.bgBlack("IF: groupType===block"))
-      // `blockData` points to `data`. This existed for sake of typecasting. Initially I can use the `as` typescript typecast utility but it took many variable to typecast for each
-      const blockData = data as BlockGroup
-
-      // console.log("data=",data)
-      // console.log("data.op=",data.op)
-      
-      // make the code block highlighted
-      if(blockData.op.isCodeBlock()){
-        // console.log(chalk.magenta.bgBlack("IF: op.isCodeBlock()"))
-        // console.log("data=",data)
-        // console.log("data.op=",data.op)
-        // console.log("data.ops=",data.ops)
-
-        let codeContent = blockData.ops.map(op => op.insert.value).join('');
-        // console.log("codeContent=",codeContent)
-
-        // const highlightedCode = hljs.highlight(codeContent, { language: 'python' })
-        // console.log("highlightedCode=",highlightedCode)
-
-        const autoHighlightCode = hljs.highlightAuto(codeContent)
-        // console.log("autoHighlightCode=",autoHighlightCode)
-        return `<pre><code class="hljs">${autoHighlightCode.value}</code></pre>`;
-
-      }
-    }
-  });
-  return converter.convert(); 
 }

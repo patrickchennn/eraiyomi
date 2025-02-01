@@ -1,10 +1,8 @@
 import "@/assets/globals.css"
-import { GoogleIdentityRes } from "@patorikkuuu/eraiyomi-types";
 import HomeTemplate from "@/components/HomeTemplate";
 import { getArticlesAnalytic } from "@/services/analytics/articleAnalyticService";
 import chalk from "chalk";
 import getArticles from "@/services/article/getArticles";
-
 
 declare global{
   interface Window { 
@@ -12,17 +10,8 @@ declare global{
   }
 }
 
-
-export interface AccountInfo{
-  isLoggedIn:boolean,
-  googleIdentityRes: GoogleIdentityRes | null
-}
-
-
-
-
 export default async function App(){
-  console.log(chalk.yellow.bgBlack("@App()"))
+  console.log(chalk.blueBright.bgBlack("@App()"))
 
   const articles = await getArticles({
     sort:"newest",status:"published"
@@ -31,16 +20,12 @@ export default async function App(){
   
   if(!articles.data){
     return (
-      <pre>
-        {JSON.stringify(articles, null, 2)}
-      </pre>
+      <pre>{JSON.stringify(articles, null, 4)}</pre>
     )
   }
 
   const articlesAnalyticData = await getArticlesAnalytic()
   // console.log("articlesAnalyticData=",articlesAnalyticData)
-
-  
 
 
 

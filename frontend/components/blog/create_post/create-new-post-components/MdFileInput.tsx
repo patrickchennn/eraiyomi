@@ -101,7 +101,7 @@ function MdFileInput() {
         method='post'
         className='w-fit'
       >
-        <label htmlFor="doc_file_upload" className="block">upload a file:</label>
+        <label htmlFor="doc_file_upload" className="block">upload a <code>.md</code> file:</label>
         <input
           type="file"
           id="doc_file_upload"

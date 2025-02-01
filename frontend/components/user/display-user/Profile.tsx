@@ -22,7 +22,7 @@ export default function Profile({userInfo}: ProfileProps){
               alt="profile picture" 
             />
             :
-            <p>No Profile</p>
+            <p>No profile picture</p>
           }
         </div>
         <div>

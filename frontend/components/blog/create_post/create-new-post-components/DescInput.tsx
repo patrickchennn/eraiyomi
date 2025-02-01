@@ -13,7 +13,7 @@ export default function DescInput({}: DescInputProps) {
       <input 
         required
         id="description"
-        className="px-2 border w-full bg-slate-50 valid:bg-slate-100 focus:bg-white"
+        className="rounded px-2 w-full bg-slate-50 dark:bg-zinc-800 valid:bg-slate-100 focus:bg-white"
         type="text" 
         placeholder='Describe shortly about your works...'
         value={articleData.shortDescription}

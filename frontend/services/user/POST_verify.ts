@@ -1,45 +1,52 @@
-import { UserRes } from "@patorikkuuu/eraiyomi-types";
+import { HTTPGetUserRes } from "@patorikkuuu/eraiyomi-types";
 import chalk from "chalk";
 import { baseURL } from "../config";
+import axios from "axios";
+import httpResLog from "@/loggers/httpResLog";
 
 export const POST_verify = async (userCredToken: string) => {
-  let res!: Response
 
-
-  interface ErrorServerRes{
-    google:{}
-    traditional:{}
-  }
-  let data: UserRes | ErrorServerRes;
-
+  let resData
+  let status = "";
   try{
-    res = await fetch(
+    const res = await axios(
       `${baseURL}/user/verify`,
       {
         headers: {
           'Authorization': `Bearer ${userCredToken}`
         },
         method: 'POST',
-        credentials:"include"
+        // credentials:"include"
       }
     )
-    data = await res.json()
+    resData = res.data
+    status = `${res.status} ${res.statusText}`;
 
-    if(!res.ok){
-      throw new Error(JSON.stringify(data));
+    console.info(chalk.green.bgBlack(`[INF] ${res.config.method} ${res.config.url} ${res.status} ${res.statusText}`) )
+    httpResLog.ok(res.config.method,res.config.url,status)
+
+  }
+  catch(err){
+    if (axios.isAxiosError(err) && err.response) {
+      status = `${err.response.status} ${err.response.statusText}`;
+
+      // console.error(err)
+      httpResLog.err(err.response.config.method,err.response.config.url,status)
+
+      console.error(err.message)
+      return {
+        status, 
+        message:err.response.data.message, 
+        data:null
+      }
     }
-
-  }
-  // @ts-ignore
-  catch(err: Error){
-
-    console.error(err.message)
-
-    return undefined
   }
 
 
-  console.log(chalk.green.bgBlack(`POST ${res.url} ${res.status}`) )
 
-  return data as UserRes
+  return {
+    status,
+    message:"ok",
+    data:resData as HTTPGetUserRes
+  }
 }

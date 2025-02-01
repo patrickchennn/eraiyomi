@@ -8,12 +8,12 @@ import {BsEye} from "react-icons/bs"
 import {BiLike} from "react-icons/bi"
 import {HiOutlineArrowDown,HiOutlineArrowUp} from  "react-icons/hi"
 
-import { v4 as uuidv4 } from 'uuid';
 import Link from "next/link";
 
 // my custom types
 import { Article, ArticlesAnalytic } from '@patorikkuuu/eraiyomi-types'
 import getArticles from '@/services/article/getArticles'
+import chalk from 'chalk'
 
 interface ArticlesSorted{
   "newest":Article[],
@@ -23,12 +23,12 @@ interface ArticlesSorted{
 }
 interface HomeTemplateProps{
   initArticles: Article[]
-  articlesAnalytic:ArticlesAnalytic|undefined
+  articlesAnalytic:ArticlesAnalytic|null
 }
 export default function HomeTemplate ({
   initArticles,articlesAnalytic
 }: HomeTemplateProps){
-  console.log("@HomeTemplate")
+  console.info(chalk.blueBright.bgBlack("[INF] Rendering @HomeTemplate component"))
 
 
   // hooks
@@ -79,7 +79,7 @@ export default function HomeTemplate ({
   // render
   return (
     // TODO: fix border-radius
-    <div className='py-3 w-1/2 mx-auto !bg-transparent flex flex-col gap-y-3 [&>*]:bg-white max-[576px]:w-3/4 max-[768px]:w-2/3'>
+    <div className='py-3 w-1/2 mx-auto flex flex-col gap-y-3 max-[576px]:w-3/4 max-[768px]:w-2/3'>
       
       {/* TODO: this is supposed to be border-radius: rounded-xl */}
       <div>
@@ -128,12 +128,12 @@ const SortDropdown: React.FC<SortDropdownProps> = ({ sortBy, ulRef }) => {
   const sortOptions: SortOption[] = ["newest", "oldest", "popular", "unpopular"];
 
   return (
-    <ul ref={ulRef} className="bg-white invisible absolute left-2/4 -translate-x-2/4 [&>button]:px-1 [&>button]:border [&>button]:w-full">
-      <span className="px-2">Sort by:</span>
+    <ul ref={ulRef} className="bg-white invisible absolute left-2/4 -translate-x-2/4 [&>button]:px-1 [&>button]:border [&>button]:w-full dark:dark-single-component">
+      <span className="px-2 x">Sort by:</span>
       {sortOptions.map((option) => (
         <button
           key={option}
-          className="hover:bg-slate-100"
+          className="hover:bg-slate-100 dark:hover:bg-zinc-800"
           onClick={() => sortBy(option)}
         >
           {option}
@@ -201,7 +201,7 @@ const ShowArticles = ({articlesSorted, articlesAnalytic, sortType="newest"}: Sho
               })
             }
           </div>
-          <p className='p-3 text-gray-600'>
+          <p className='p-3 text-gray-600 dark:text-gray-300'>
             {article.shortDescription}
           </p>
         </div>

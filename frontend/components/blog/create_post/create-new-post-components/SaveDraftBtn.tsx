@@ -6,9 +6,11 @@ import { CreateNewPostStateCtx } from '../CreateNewPost'
 
 interface SaveDraftBtnProps{
   API_key: string
+  className: string
 }
 export default function SaveDraftBtn({
-  API_key
+  API_key,
+  className
 }: SaveDraftBtnProps) {
   const [userInfo] = useUserInfo()
   const c = useContext(CreateNewPostStateCtx)!
@@ -53,7 +55,7 @@ export default function SaveDraftBtn({
   return (
     <button 
       onClick={handleSaveDraft}
-      className='border rounded py-1 px-2 bg-zinc-50 shadow-inner text-sm hover:shadow'
+      className={className}
     >
       Save Draft
     </button>

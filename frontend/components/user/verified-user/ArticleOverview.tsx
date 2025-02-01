@@ -13,16 +13,17 @@ import getCookie from "@/utils/getCookie"
 import { ImSearch } from "react-icons/im"
 import { deleteArticle } from "@/services/article/deleteArticle"
 import getArticles from "@/services/article/getArticles"
+import chalk from "chalk"
 
 interface ArticleOverviewProps{
   initArticles:Article[]|undefined
-  initArticlesAnalytic: ArticlesAnalytic|undefined
+  initArticlesAnalytic: ArticlesAnalytic|null
   initArticlesAsset: ArticleAsset[]|undefined
 }
 export default function ArticleOverview({
   initArticles,initArticlesAnalytic,initArticlesAsset
 }: ArticleOverviewProps){
-  console.log("@ArticleOverview")
+  console.log(chalk.blueBright.bgBlack("@ArticleOverview"))
   // hooks
   const [userInfo] = useUserInfo()
 
@@ -100,17 +101,18 @@ export default function ArticleOverview({
           const articleAsset = articlesAsset?.find(articleAsset => articleAsset.articleIdRef===article._id)
 
           return (
-            <div key={article._id} className={bgColor+" border rounded-md p-3 shadow-inner"}>
+            <div key={article._id} className={bgColor+" border rounded-md p-3 shadow-inner dark:text-black"}>
               <div>
                 {
                   articleAsset&&!isEmpty(articleAsset.thumbnail)?
-                  <Image 
-                    width={0}
-                    height={0}
-                    unoptimized
-                    src={articleAsset.thumbnail.dataURL} 
-                    alt="article thumbnail" 
-                  />
+                  <></>
+                  // <Image 
+                  //   width={0}
+                  //   height={0}
+                  //   unoptimized
+                  //   src={articleAsset.thumbnail.src} 
+                  //   alt="article thumbnail" 
+                  // />
                   :
                   <></>
                 }

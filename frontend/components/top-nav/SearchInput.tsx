@@ -12,7 +12,7 @@ import {ImSearch} from "react-icons/im"
 interface SearchInputProps{
 }
 export default function SearchInput({}: SearchInputProps){
-  console.log(chalk.yellow.bgBlack("@SearchInput"))
+  console.log(chalk.blueBright.bgBlack("[INF] Rendering @SearchInput component"))
   // hooks
   const [keySearch,setKeySearch] = useState("")
   const typingTimer = useRef<number|NodeJS.Timeout>(0);

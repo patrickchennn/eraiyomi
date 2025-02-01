@@ -18,11 +18,9 @@ const CreateTitle = ({titlePage, miscInfo}: CreateTitleProps) =>{
   
   return (
     <div className="p-4">
-      <h1 className='font-roboto'>
-        {titlePage}
-      </h1>
+      <h1 className='font-roboto'><b>{titlePage}</b></h1>
       <span className='text-gray-400 text-sm flex flex-wrap	items-center tracking-[-0.9px]'>
-        <PublishedDate/> {miscInfo.date} <LuDot /> {miscInfo.wordCount} kata ditulis oleh {miscInfo.author} <LuDot /> <EstimatedReadTime/> {miscInfo.readingTime}
+        <PublishedDate/> {miscInfo.date} <LuDot /> {miscInfo.wordCount} kata oleh {miscInfo.author} <LuDot /> <EstimatedReadTime/> {miscInfo.readingTime}
       </span>
       <span className='text-gray-400 text-sm flex gap-x-1'>
         {miscInfo.category.map((keyword: string, idx: number) => (

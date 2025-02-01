@@ -1,16 +1,21 @@
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { BsPlus } from 'react-icons/bs'
 import { IoIosClose } from 'react-icons/io'
-import { EditArticleDataCxt } from '../EditArticle'
+import { ArticleData, ArticleDataState } from '../EditArticle'
 
 interface EditInputCategoryProps{
+  articleDataState: ArticleDataState
+  articleDefaultDataRef: React.MutableRefObject<ArticleData>
 }
-export default function EditInputCategory({}: EditInputCategoryProps) {
+export default function EditInputCategory({
+  articleDataState,
+  articleDefaultDataRef
+
+}: EditInputCategoryProps) {
   // hooks
   const [categoryTxt,setCategoryTxt] = useState<string>("")
-  const c = useContext(EditArticleDataCxt)!
-  const [articleData,setArticleData] = c.articleDataState
-  const {articleDefaultDataRef} = c
+  const [articleData,setArticleData] = articleDataState
+
 
   // useEffect(()=>{
   //   const { content, ...rest } = articleMetadata;
@@ -45,7 +50,7 @@ export default function EditInputCategory({}: EditInputCategoryProps) {
           type="text" 
           id="edit-category" 
           data-cy="edit-category"
-          className='px-2 border bg-slate-50 valid:bg-slate-100 focus:bg-white' 
+          className='px-2 border bg-slate-50 focus:bg-white dark:dark-single-component' 
           value={categoryTxt}
           onChange={(e)=>setCategoryTxt(e.target.value)}
         />

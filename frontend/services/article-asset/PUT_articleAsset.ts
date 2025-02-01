@@ -1,42 +1,52 @@
-import { ArticleAsset } from "@patorikkuuu/eraiyomi-types"
-import chalk from "chalk"
+
 import { baseURL } from "../config"
+import axios from "axios"
+import httpResLog from "@/loggers/httpResLog"
 
 export const PUT_articleAsset = async (
   articleId: string,
   formData: FormData,
   API_key: string
 ) => {
-  let res!: Response
-  let data
-  const httpMethod = "PUT"
+  let resData: string = ""
+  let status = "";
 
   try{
-    res = await fetch(
+    const res = await axios(
       `${baseURL}/article-asset/${articleId}`,
       {
         headers: {
           // "Content-Type": "multipart/form-data",
           'Authorization': `Bearer ${API_key}`
         },
-        method: httpMethod,
-        body: formData
+        method: "put",
+        data:formData
       }
     )
-    data = await res.json()
-    
-    if(!res.ok){
-      // console.error(data)
-      const errorMessage = data?.message || 'An error occurred';
-      throw new Error(errorMessage);
+    status = `${res.status} ${res.statusText}`;
+
+    resData = res.data
+    httpResLog.ok(res.config.method, res.config.url, status)
+
+  }
+  catch(err){
+    if (axios.isAxiosError(err) && err.response) {
+      status = `${err.response.status} ${err.response.statusText}`;
+
+      httpResLog.err(err.response.config.method,err.response.config.url,status)
+
+      console.error(err.message)
+      return {
+        status, 
+        message:err.response.data.message, 
+        data:null
+      }
     }
   }
-  // @ts-ignore
-  catch(err: Error){
-    console.error(err.message)
-    return undefined
-  }
 
-  console.log(chalk.green.bgBlack(`${httpMethod} ${res.url} ${res.status}`) )
-  return data as {message:string,data:ArticleAsset}
+  return {
+    status,
+    message:resData,
+    data:null
+  }
 }

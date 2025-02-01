@@ -15,9 +15,7 @@ export default function DarkToggle({}: DarkToggleProps){
   const handleDarkModeClick = () => {
     // by default the theme is light so I can turn it into black immidiately
     document.documentElement.classList.contains("dark")?
-      setTheme("dark")
-      :
-      setTheme("light")
+      setTheme("dark") : setTheme("light")
     ;
     document.documentElement.classList.toggle("dark")
   }

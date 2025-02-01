@@ -19,7 +19,7 @@ export default function RootLayout({children}: RootLayoutProps){
 
 
   return (
-    <html lang="en" >
+    <html lang="en" className="dark">
       <head>
 
         <script id="dsq-count-scr" src="//eraiyomi.disqus.com/count.js" async></script>
@@ -40,9 +40,9 @@ export default function RootLayout({children}: RootLayoutProps){
             <TopNav />
             <div className='min-h-screen h-full light-theme-bg dark:dark-theme-bg relative max-[640px]:font-sm'>
               {/* Wrap children in a container that applies the dark background to all its children */}
-              <div className=''>
+              <>
                 {children}
-              </div>
+              </>
             </div>
             <Footer />
           

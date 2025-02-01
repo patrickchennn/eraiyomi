@@ -1,33 +1,37 @@
-import { UserRes } from "@patorikkuuu/eraiyomi-types"
-import chalk from "chalk"
 import { baseURL } from "../config"
+import axios from "axios"
+import httpResLog from "@/loggers/httpResLog"
+import { HTTPGetUserRes } from "@patorikkuuu/eraiyomi-types"
 
 export const GET_user = async (username: string) => {
-  let res!: Response
-  let data: UserRes
+  let resData
+  let status = "";
 
   try{
-    res = await fetch(
-      `${baseURL}/user/?username=${username}`
-    )
+    const res = await axios(`${baseURL}/user/?username=${username}`, {method:"get"})
+    resData = res.data
+    status = `${res.status} ${res.statusText}`;
 
-    data = await res.json()
+    httpResLog.ok(res.config.method, res.config.url,status)
+  }
+  catch(err){
+    if (axios.isAxiosError(err) && err.response) {
+      status = `${err.response.status} ${err.response.statusText}`;
 
-    if(!res.ok){
-      throw new Error(JSON.stringify(data));
+      httpResLog.err(err.response.config.method,err.response.config.url,status)
+
+      console.error(err.message)
+      return {
+        status, 
+        message:err.response.data.message, 
+        data:null
+      }
     }
-
-  }
-  // @ts-ignore
-  catch(err: Error){
-
-    console.error(chalk.red.bgBlack(err.message))
-
-    return undefined
   }
 
-
-  console.log(chalk.green.bgBlack(`GET ${res.url} ${res.status}`) )
-
-  return data as UserRes
+  return {
+    status,
+    message:"ok",
+    data:resData as HTTPGetUserRes
+  }
 }

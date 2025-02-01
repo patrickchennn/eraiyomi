@@ -8,7 +8,6 @@ The reason it is limited because to implement for global users, I guess, it need
 
 // react
 import {useState, useRef, useEffect, createContext} from 'react'
-import ReactQuill from 'react-quill';
 import useDidMountEffect from '@/hooks/useDidMountEffect';
 
 import PostBtn from './create-new-post-components/PostBtn';
@@ -38,19 +37,22 @@ interface CreateNewPostStateCtxType{
   articleDataState: [ArticleDataType,React.Dispatch<React.SetStateAction<ArticleDataType>>]
   contentState:[string,React.Dispatch<React.SetStateAction<string>>]
   contentMDState:[string,React.Dispatch<React.SetStateAction<string>>]
-
-  textEditorRef: React.RefObject<ReactQuill>
 }
 export const CreateNewPostStateCtx = createContext<CreateNewPostStateCtxType|null>(null);
 
 
 
 export default function CreateNewPost(){
+  const btnClass = 'border rounded py-1 px-2 bg-zinc-50 dark:bg-zinc-900 shadow-inner text-sm hover:shadow';
+  const inpEditorClass = {
+    main:'rounded px-2 w-full bg-slate-50 dark:bg-zinc-800 valid:bg-slate-100 focus:bg-white font-bold',
+    category:'rounded px-2 bg-slate-50 dark:bg-zinc-800 valid:bg-slate-100 focus:bg-white font-bold',
+  };
+
 
   // hooks
   const previewSectionRef = useRef<HTMLDivElement>(null)
   const editorSectionRef = useRef<HTMLDivElement>(null)
-  const textEditorRef = useRef<ReactQuill>(null)
 
   const [previewElem,setPreviewElem] = useState<JSX.Element>()
   const [API_key,set_API_key] = useState<string>("")
@@ -97,21 +99,6 @@ export default function CreateNewPost(){
     articleData.title
   ])
 
-  // @todo: is this necessary though?
-  useDidMountEffect(() => {
-    const deltaContents = textEditorRef.current?.editor?.getContents()
-    console.log("deltaContents=",deltaContents)
-
-
-    const txt = textEditorRef.current?.editor?.getText().trim()
-    setArticleData(prev=>({
-      ...prev,
-      contentStuctureType:"quilljs",
-      content:JSON.stringify(deltaContents?.ops as []),
-      wordCounts:txt ? txt.split(/\s+/).length : 0
-    }))
-  },[content])
-
 
   useEffect(() => {
     console.log(chalk.yellow.bgBlack("@useEffect(Function,[previewElem])"))
@@ -128,26 +115,26 @@ export default function CreateNewPost(){
       value={{
         articleDataState:[articleData,setArticleData],
         contentState:[content, setContent],
-        textEditorRef,
         contentMDState:[contentMD,setContentMD]
       }}
     >
       <div className='w-full flex items-center flex-col'>
         <div className='[&>button]:mx-1'>
 
-          <PreviewBtn setPreviewElem={setPreviewElem}/>
+          <PreviewBtn setPreviewElem={setPreviewElem} className={btnClass}/>
 
           <PostBtn 
             API_key={API_key} 
             previewElem={previewElem}
+            className={btnClass}
           />
 
-          <SaveDraftBtn API_key={API_key}/>
+          <SaveDraftBtn API_key={API_key} className={btnClass}/>
 
         </div>
 
         {/* editor section */}
-        <div className='my-3 p-5 border rounded-xl w-3/4 bg-slate-100 flex flex-col gap-y-5 dark:bg-zinc-900' ref={editorSectionRef}>
+        <div className='my-3 p-5 border dark:border-zinc-900 rounded-xl w-3/4 bg-slate-100 flex flex-col gap-y-5 dark:bg-zinc-950' ref={editorSectionRef}>
         
           <TitleInput />
 

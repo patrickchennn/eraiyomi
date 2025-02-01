@@ -44,12 +44,12 @@ export default function CategoryInput({}: CategoryInputProps) {
           required
           type="text" 
           id="category" 
-          className='px-2 border bg-slate-50 valid:bg-slate-100 focus:bg-white' 
+          className='rounded px-2 bg-slate-50 dark:bg-zinc-800 valid:bg-slate-100 focus:bg-white font-bold' 
           value={categoryTxt}
           onChange={(e)=>setCategoryTxt(e.target.value)}
           data-cy="category-input"
         />
-        <button className='bg-neutral-100' onClick={handleSetCategoryBtn}><BsPlus/></button>
+        <button className='bg-neutral-100 dark:bg-zinc-900' onClick={handleSetCategoryBtn}><BsPlus/></button>
       </div>
       <div className='text-sm	flex flex-wrap'>
       {articleData.category.map((category,i: number) => {

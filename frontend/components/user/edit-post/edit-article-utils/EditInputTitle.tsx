@@ -1,13 +1,14 @@
-import {  useContext } from 'react'
-import { EditArticleDataCxt } from '../EditArticle'
+import { ArticleData, ArticleDataState } from '../EditArticle'
 
 interface EditInputTitleProps{
+  articleDataState: ArticleDataState
+  articleDefaultDataRef: React.MutableRefObject<ArticleData>
 }
 export default function EditInputTitle({
+  articleDataState,
+  articleDefaultDataRef
 }: EditInputTitleProps) {
-  const c = useContext(EditArticleDataCxt)!
-  const [articleData,setArticleData] = c.articleDataState
-  const {articleDefaultDataRef} = c
+  const [articleData,setArticleData] = articleDataState
   
   return (
     <div>
@@ -18,7 +19,7 @@ export default function EditInputTitle({
         required
         id="edit-title"
         data-cy="edit-title"
-        className="px-2 border w-full bg-slate-50 valid:bg-slate-100 focus:bg-white font-bold" 
+        className="dark:dark-single-component dark:valid:dark-single-component px-2 border w-full bg-slate-50 valid:bg-slate-100 focus:bg-white " 
         type="text" 
         placeholder='Insert a title...'
         value={articleData.title}

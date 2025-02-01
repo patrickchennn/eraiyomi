@@ -1,9 +1,9 @@
 import { cookies } from "next/headers"
 import UserClient from "@/components/user/VerifiedUser"
-import { User } from "@patorikkuuu/eraiyomi-types"
 import DisplayUser from "@/components/user/DisplayUser"
 import { GET_user } from "@/services/user/GET_user"
 import { POST_verify } from "@/services/user/POST_verify"
+import chalk from "chalk"
 
 
 interface UserProps{
@@ -12,36 +12,42 @@ interface UserProps{
   }
 }
 export default async function User({params}:UserProps) {
+  console.log(chalk.blueBright.bgBlack(`[INF] Rendering /${params.user} page`))
   console.log("params=",params)
 
-  const user = await GET_user(params.user)
-  console.log("user=",user)
+  const userRes = await GET_user(params.user)
+  console.log("userRes=",userRes)
 
   // IF user does not exist --> display 404
-  if(!user){
+  if(!userRes.data){
     return (
-      <>
-        <h1>404 Not Found</h1>
-        <p>{params.user} is not found.</p>        
-      </>
+      <pre>{JSON.stringify(userRes, null, 4)}</pre>
     )
   }
 
   const cookieStore = cookies()
 
   const userCredToken = cookieStore.get('userCredToken')
-  // console.log("userCredToken=",userCredToken)
+  console.log("userCredToken=",userCredToken)
 
   // IF: the user has never logged in before
   if(!userCredToken){
     return (
       <>
-        <DisplayUser user={user}/>
+        <DisplayUser user={userRes.data}/>
       </>
     )
   }
 
-  let verifiedUser: undefined|User
+  let verifiedUser: {
+    status: string;
+    message: any;
+    data: any;
+  } = {
+    status: "",
+    message: "",
+    data: null
+  }
   // IF the user has logged in before
   if(userCredToken){
     // verify the user credential
@@ -50,10 +56,10 @@ export default async function User({params}:UserProps) {
   }
 
   // IF the credential is not valid --> display non-privileged(non edit user feature) 
-  if(!verifiedUser){
+  if(!verifiedUser.status){
     return (
       <>
-        <DisplayUser user={user}/>
+        <DisplayUser user={userRes.data}/>
       </>
     )
   }
@@ -62,7 +68,7 @@ export default async function User({params}:UserProps) {
   // IF valid --> display privileged user
   return (
     <>
-      <UserClient user={user}/>
+      <UserClient user={userRes.data}/>
     </>
   )
 }

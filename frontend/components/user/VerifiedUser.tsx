@@ -11,7 +11,7 @@ interface VerifiedUserProps{
   user: User
 }
 export default async function VerifiedUser({user}:VerifiedUserProps){
-  console.log(chalk.blue("@VerifiedUser()"))
+  console.log(chalk.blueBright.bgBlack("@VerifiedUser()"))
 
   const articles = await getArticles({sort:"newest" })
   // console.log("articles=",articles)
@@ -34,20 +34,15 @@ export default async function VerifiedUser({user}:VerifiedUserProps){
    
 
   return (
-    <div className="my-0 mx-auto rounded w-1/2 bg-white flex gap-x-1">
-      <div>
-        <ul>
-          <UserBtns 
-            user={user} 
-            articles={articles.data}
-            articlesAnalytic={articlesAnalytic}
-            articlesAsset={articlesAsset}
-          />
-        </ul>
-      </div>
+    <div className="my-0 mx-auto rounded w-1/2 bg-white flex gap-x-1 dark:dark-single-component">
+      <UserBtns 
+        user={user} 
+        articles={articles.data}
+        articlesAnalytic={articlesAnalytic}
+        articlesAsset={articlesAsset}
+      />
 
-      <div className="w-full" id="show-selected-component">
-      </div>
+      <div className="w-full" id="show-selected-component"></div>
     </div>
   )
 }

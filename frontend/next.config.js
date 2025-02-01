@@ -17,8 +17,9 @@ module.exports = (phase, { defaultConfig }) => {
       },
     }
   }
- 
+  
   return {
+    output: "standalone",
     /* config options for all phases except development here */
     env:{
       URL_API:"http://localhost:8999/api",
@@ -26,7 +27,6 @@ module.exports = (phase, { defaultConfig }) => {
     experimental: {
       serverActions: true,
     },
-    output: "standalone",
     compiler: {
       removeConsole:{
         exclude: ["error","trace"]

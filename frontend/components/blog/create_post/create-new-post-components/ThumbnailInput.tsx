@@ -40,7 +40,7 @@ export default function ThumbnailInput({
     >
       <label htmlFor="thumbnail">add thumbnail</label>
       <label 
-        className="border-2 border-dotted rounded-md border-gray-400 hover:border-black w-[150px] h-[150px] bg-[aliceblue] block cursor-pointer relative group" 
+        className="border-2 border-dotted rounded-md border-gray-400 hover:border-black w-[150px] h-[150px] bg-[aliceblue] dark:bg-zinc-900 block cursor-pointer relative group" 
         tabIndex={0} 
         htmlFor="thumbnail"
         data-cy="add-thumbnail-input-btn"
