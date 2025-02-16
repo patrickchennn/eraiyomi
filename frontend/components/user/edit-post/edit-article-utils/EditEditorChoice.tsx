@@ -1,47 +1,50 @@
+"use client"
+
 import chalk from 'chalk'
 import EditMdFileInput from './EditMdFileInput'
 import { useState } from 'react'
 import { AiOutlineFileMarkdown } from 'react-icons/ai'
+import { Article } from '../EditArticle'
 
-
-interface EditorChoiceProps{
-  articleAssetState: any
-  markdownFilesState:any
-  rawMarkdownStringState:any
+interface EditorChoiceProps {
+  article: Article
+  mdInputUploadRef: React.MutableRefObject<HTMLInputElement | null>
+  contentActionRef: React.MutableRefObject<"default"|"change"|"delete">
+  rawTextState: [string, React.Dispatch<React.SetStateAction<string>>]
 }
 const EditorChoice = ({
-  articleAssetState,
-  markdownFilesState,
-  rawMarkdownStringState
+  article,
+  mdInputUploadRef,
+  contentActionRef,
+  rawTextState,
 }: EditorChoiceProps) => {
 
-  const [selectedEditor, setSelectedEditor] = useState(""); // New state for tracking the selected editor
+  const [selectedEditor, setSelectedEditor] = useState<"markdown" | null>(null)
 
-  const handleEditorChoice = (e: React.MouseEvent) => {
+  const handleMarkdown = async () => {
+    console.log(chalk.blueBright.bgBlack("@handleMarkdown"))
 
-    console.log(chalk.blueBright.bgBlack("@handleEditorChoice"))
-    const target = e.target as HTMLElement
-    console.log("target=",target)
-    console.log("target.textContent=",target.textContent)
-    
-    setSelectedEditor(target.textContent as string); // Update the selected editor based on button text
-
+    // Set the selected editor to "markdown"
+    setSelectedEditor("markdown")
   }
 
   return (
     <>
       <div>
         <label>Editor:</label>
-        <ul onClick={handleEditorChoice} className='flex'>
-          <button className='px-2 border rounded bg-slate-100 dark:bg-zinc-900'>Markdown<AiOutlineFileMarkdown className='inline'/></button>
+        <ul onClick={handleMarkdown} className='flex'>
+          <button className='px-2 border rounded bg-slate-100 dark:bg-zinc-900'>
+            Markdown <AiOutlineFileMarkdown className='inline' />
+          </button>
         </ul>
       </div>
       <div>
-        {selectedEditor === 'Markdown' && (
-          <EditMdFileInput 
-            articleAssetState={articleAssetState} 
-            markdownFilesState={markdownFilesState}
-            rawMarkdownStringState={rawMarkdownStringState}
+        {selectedEditor === "markdown" && (
+          <EditMdFileInput
+            articleId={article._id}
+            mdInputUploadRef={mdInputUploadRef}
+            contentActionRef={contentActionRef}
+            rawTextState={rawTextState}
           />
         )}
       </div>

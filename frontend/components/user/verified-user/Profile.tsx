@@ -1,14 +1,20 @@
-import { User } from '@patorikkuuu/eraiyomi-types'
-import Image from 'next/image'
-import React from 'react'
+"use client"
 
-interface ShowProfileProps{
-  userInfo: User
-}
-export default function ShowProfile({
-  userInfo
-}: ShowProfileProps) {
-  
+import { AppContext } from '@/hooks/appContext'
+import Image from 'next/image'
+import React, { useContext } from 'react'
+
+
+export default function ShowProfile() {
+  const c = useContext(AppContext)
+  const [userInfo] = c.userInfoStates
+
+  if(userInfo===null){
+    return (
+      <pre>User is null</pre>
+    )
+  }
+
 
   return (
     <div className="px-6">
@@ -31,7 +37,7 @@ export default function ShowProfile({
           Username: {userInfo.username}
         </div>
         <div>
-          Name: {userInfo.name?userInfo.name:'-'}
+          Name: {userInfo.name}
         </div>
         <div>
           Email: {userInfo.email}

@@ -5,8 +5,11 @@
 
 @layer base{
     blockquote{
-        margin: 16px 40px 16px 40px;
-        @apply bg-gray-200
+        margin: revert;
+        font-family: monospace;
+        /* margin: 8px 20px 8px 20px;
+        padding: 4px 10px 4px 10px; */
+        /* @apply bg-cyan-50 dark:dark-single-component */
     }
     pre {
         white-space: pre-wrap;
@@ -23,12 +26,10 @@
         height: 100%;
     }
     pre{@apply max-[640px]:!whitespace-pre-line}
-    h1{@apply text-3xl}
-    h2{@apply text-2xl}
-    h3{@apply text-xl}
-    h4{@apply text-lg}
-    h5{@apply text-base}
-    h6{@apply text-sm}
+    h1{@apply text-4xl}
+    h2{@apply text-3xl}
+    h3{@apply text-2xl}
+    h4{@apply text-xl}
     hr{
         @apply dark:border-stone-700;
     }
@@ -135,24 +136,18 @@
     }
   /* END: loading spinner */
 
-  /* START: quill js config */
-  .quill{
-    position: relative;
-  }
-  .quill .ql-toolbar.ql-snow{
-    @apply bg-stone-50;
-    position: sticky;
-    top: 0;
-    z-index: 2;
-  }
-  /* END: quill js config */
+    .post-glass{
+        background: rgba( 255, 255, 255, 0.25 );
+        box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+        backdrop-filter: blur( 4px );
+        -webkit-backdrop-filter: blur( 4px );
+        border-radius: 10px;
+        border: 1px solid rgba( 255, 255, 255, 0.18 );
+    }
 
-  .post-glass{
-    background: rgba( 255, 255, 255, 0.25 );
-    box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
-    backdrop-filter: blur( 4px );
-    -webkit-backdrop-filter: blur( 4px );
-    border-radius: 10px;
-    border: 1px solid rgba( 255, 255, 255, 0.18 );
-  }
+    .article-content-style ul,
+    .article-content-style ol {
+        list-style: revert;
+        padding: revert;
+    }
 }

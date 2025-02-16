@@ -1,19 +1,23 @@
-import { ArticleDataState, ArticleData } from "../EditArticle"
+import { Article, ArticleState } from '../EditArticle'
+import IsChangedStar from './IsChangedStar'
+
 
 interface EditInputDescProps{
-  articleDataState: ArticleDataState
-  articleDefaultDataRef: React.MutableRefObject<ArticleData>
+  articleState: ArticleState
+  articleDefaultDataRef: React.MutableRefObject<Article>
 }
 export default function EditInputDesc({
-  articleDataState,
+  articleState,
   articleDefaultDataRef
 }: EditInputDescProps) {
-  const [articleData,setArticleData] = articleDataState
+  const [articleData,setArticleData] = articleState
 
 
   return (
     <div>
-      <label htmlFor="edit-desc" className='block'>short description{articleData.shortDescription!==articleDefaultDataRef.current.shortDescription?<span className='text-gray-600'>*</span>:null}</label>
+      <label htmlFor="edit-desc" className='block'>
+        Description<IsChangedStar src={articleData.shortDescription} dst={articleDefaultDataRef.current.shortDescription} />
+      </label>
       <input 
         required
         id="edit-desc"

@@ -1,9 +1,11 @@
+"use server"
+
 import { cookies } from "next/headers"
-import UserClient from "@/components/user/VerifiedUser"
+import AuthenticatedUser from "@/components/user/AuthenticatedUser"
 import DisplayUser from "@/components/user/DisplayUser"
-import { GET_user } from "@/services/user/GET_user"
-import { POST_verify } from "@/services/user/POST_verify"
 import chalk from "chalk"
+import { postVerifyUser } from "@/services/user/userService"
+import { User as UserType } from "@shared/User"
 
 
 interface UserProps{
@@ -11,19 +13,11 @@ interface UserProps{
     user: string
   }
 }
-export default async function User({params}:UserProps) {
-  console.log(chalk.blueBright.bgBlack(`[INF] Rendering /${params.user} page`))
+export default async function User({params}: UserProps) {
+  const userName = params.user
+  
+  console.log(chalk.blueBright.bgBlack(`[INF] Rendering /${userName}`))
   console.log("params=",params)
-
-  const userRes = await GET_user(params.user)
-  console.log("userRes=",userRes)
-
-  // IF user does not exist --> display 404
-  if(!userRes.data){
-    return (
-      <pre>{JSON.stringify(userRes, null, 4)}</pre>
-    )
-  }
 
   const cookieStore = cookies()
 
@@ -33,42 +27,35 @@ export default async function User({params}:UserProps) {
   // IF: the user has never logged in before
   if(!userCredToken){
     return (
-      <>
-        <DisplayUser user={userRes.data}/>
-      </>
+      <DisplayUser userName={userName}/>
     )
   }
 
   let verifiedUser: {
     status: string;
     message: any;
-    data: any;
+    data: UserType|null;
   } = {
     status: "",
     message: "",
     data: null
   }
-  // IF the user has logged in before
+  // IF: the user has logged in before
   if(userCredToken){
-    // verify the user credential
-    verifiedUser = await POST_verify(userCredToken.value)
-    // console.log("verifiedUser=",user)
+    // SECURITY server-side check: verify the user credential in order prevent JWT tampering
+    verifiedUser = await postVerifyUser(userCredToken.value)
+    console.log("verifiedUser=",verifiedUser)
   }
 
-  // IF the credential is not valid --> display non-privileged(non edit user feature) 
-  if(!verifiedUser.status){
+  // IF the credential is not valid --> display non-authentiated (non edit user feature) 
+  if(verifiedUser.data===null){
     return (
-      <>
-        <DisplayUser user={userRes.data}/>
-      </>
+      <DisplayUser userName={userName}/>
     )
   }
 
-
-  // IF valid --> display privileged user
+  // FINALLY: display authentiated user
   return (
-    <>
-      <UserClient user={userRes.data}/>
-    </>
+    <AuthenticatedUser />
   )
 }

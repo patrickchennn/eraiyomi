@@ -1,15 +1,17 @@
-import { ArticleData, ArticleDataState } from "../EditArticle"
+import { Article, ArticleState } from '../EditArticle'
+import IsChangedStar from './IsChangedStar'
+
 
 interface EditSelectStatusProps{
-  articleDataState: ArticleDataState
-  articleDefaultDataRef: React.MutableRefObject<ArticleData>
+  articleState: ArticleState
+  articleDefaultDataRef: React.MutableRefObject<Article>
 }
 export default function EditSelectStatus({
-  articleDataState,
+  articleState,
   articleDefaultDataRef
 }: EditSelectStatusProps) {
 
-  const [articleData,setArticleData] = articleDataState
+  const [articleData,setArticleData] = articleState
   
   const handleChange = (e: React.ChangeEvent) => {
     const target = e.target as HTMLSelectElement
@@ -25,7 +27,9 @@ export default function EditSelectStatus({
   // render
   return (
     <div >
-      <label htmlFor="status">Article status{articleData.status!==articleDefaultDataRef.current.status?<span className='text-gray-600'>*</span>:null}</label>
+      <label htmlFor="status">
+        Status<IsChangedStar src={articleData.status} dst={articleDefaultDataRef.current.status} />
+      </label>
       <select name="status" id="status" onChange={handleChange} value={articleData.status} data-cy="edit-status" className="dark:[&>*]:dark-single-component dark:dark-single-component">
         <option value="published">published</option>
         <option value="unpublished">unpublished</option>

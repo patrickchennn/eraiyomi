@@ -3,4 +3,4 @@ node_modules
 /backend/.env
 /backend/GA4-eraiyomi-credentials.json
 /backend/logs
-dilinger.md
+/backend/dist

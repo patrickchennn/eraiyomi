@@ -1,48 +1,64 @@
-import { useRef } from "react"
+"use client"
+
+import { useEffect } from "react"
 import { BsTrash3 } from "react-icons/bs";
+
 import MarkdownEditor from "@uiw/react-markdown-editor";
 import debounce from "lodash.debounce";
-import { ArticleAssetState } from "../EditArticle";
+import isEmpty from "lodash.isempty";
+import { Article } from "../EditArticle";
+import chalk from "chalk";
+import { getArticleContent } from "@/services/article/articleContentService";
 
 
 interface MdFileInputInputProps{
-  articleAssetState: ArticleAssetState
-  markdownFilesState: any
-  rawMarkdownStringState: any
+  articleId: string
+  mdInputUploadRef: React.MutableRefObject<HTMLInputElement | null>
+  contentActionRef: React.MutableRefObject<"default"|"change"|"delete">
+  rawTextState: [string, React.Dispatch<React.SetStateAction<string>>]
 }
 function EditMdFileInput({
-  articleAssetState,
-  markdownFilesState,
-  rawMarkdownStringState
+  articleId,
+  mdInputUploadRef,
+  contentActionRef,
+  rawTextState
 }: MdFileInputInputProps) {
-  const [articleAssetData,setArticleAssetData] = articleAssetState
 
-  const [markdownFiles,setMarkdownFiles] = markdownFilesState
-  const [rawMarkdownString, setRawMarkdownString] = rawMarkdownStringState
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Hooks~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  const [rawText, setRawText] = rawTextState
+  useEffect(() => {
+    console.log("@useEffect fetch content from server")
 
-  const fileInputRef = useRef<null|HTMLInputElement>(null);
+    getArticleContent(articleId)
+      .then(resData => {
+        if(resData.data!==null) {
+          setRawText(resData.data.rawText)
+        }
+      })
+    ;
+    
+  }, [])
 
-  // methods
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Methods~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const resetInputFile = () => {
+    console.log(chalk.blueBright.bgBlack('@resetInputFile'));
+
     // Check if the file input is not null
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-      setArticleAssetData(prev=>({
-        ...prev,
-        contentStructureType:null,
-        content:"",
-        totalWordCounts:0
-      }))
+    if (mdInputUploadRef.current) {
+      mdInputUploadRef.current.value = "";
     }
+    setRawText("")
+    contentActionRef.current = "default"
   };
 
   const handleMarkdownFile = (e: React.ChangeEvent) => {
-    console.log('File(s) selected');
+    console.log(chalk.blueBright.bgBlack('@handleMarkdownFile'));
 
     const target = e.target as HTMLInputElement;
     const files = target.files;
 
-    if (!files || files.length === 0) return;
+    if (!files) return alert("files is null");
 
     const fileList = Array.from(files);
     console.log("fileList=",fileList)
@@ -56,28 +72,24 @@ function EditMdFileInput({
 
 
     if (markdownFiles.length === 0) {
-      alert("No Markdown file found. Please upload at least one '.md' file.");
+      alert("No Markdown file found. Please upload only one '.md' file.");
       return;
     }
+
+    contentActionRef.current = "change"
 
     // Handle the first markdown file (assuming you want to process only one for now)
     const mdFile = markdownFiles[0];
     console.log('mdFile=', mdFile);
 
-    // `reader` is about read the markdown file, like actually exract the text
+    // `reader` is about read the markdown file, like actually extract the text
     const reader = new FileReader();
 
     reader.onload = () => {
       const content = reader.result as string;
-      // console.log('Markdown content:', content);
+      console.log('Markdown content:', content);
 
-      // Update state with the markdown content
-      setArticleAssetData((prev) => ({
-        ...prev,
-        contentStructureType: 'markdown',
-        totalWordCounts: content.split(/\s+/).length,
-      }));
-      setMarkdownFiles(fileList)
+      setRawText(content)
     };
 
     reader.readAsText(mdFile);
@@ -87,12 +99,10 @@ function EditMdFileInput({
       console.log('Asset files:', assetFiles);
       // You can process assets and store their references in the state as needed
     }
-
-    // setMarkdownFiles(fileList)
   };
 
-    // Update the content in the editor after a delay
-    const debouncedSetContent = debounce(setRawMarkdownString, 500);
+  // Update the content in the editor after a delay
+  const debouncedSetContent = debounce(setRawText, 500);
 
   const handleEditorChange = (value: string) => {
     debouncedSetContent(value);
@@ -100,7 +110,7 @@ function EditMdFileInput({
 
 
 
-  // render
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Render~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   return (
     <>
       <form
@@ -108,14 +118,13 @@ function EditMdFileInput({
         method='post'
         className='w-fit'
       >
-        <label htmlFor="doc_file_upload" className="block">You can upload a single markdown file or markdown with its asset such as images:</label>
         <input
           type="file"
           id="doc_file_upload"
           name="doc_file_upload"
           accept="text/markdown"
           onChange={handleMarkdownFile}
-          ref={fileInputRef}
+          ref={mdInputUploadRef}
           multiple
           // @ts-ignore
           webkitdirectory="true"
@@ -127,9 +136,8 @@ function EditMdFileInput({
 
       <br />
 
-      <label className="block">Or you can also just type directly in this markdown editor:</label>
       <MarkdownEditor
-        value={rawMarkdownString}
+        value={rawText}
         onChange={handleEditorChange}
       />
     </>

@@ -1,28 +1,48 @@
 'use client'
 
-
-import React from 'react'
+import { useEffect } from 'react'
+import { usePathname, useSearchParams } from 'next/navigation'
 import Script from 'next/script'
+import chalk from 'chalk'
+
+const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID
+
 
 export default function GoogleAnalytics() {
-  return (
-    <>
-      {/* Google tag (gtag.js) for G. Analytics 4
-        docs:
-        - https://developers.google.com/analytics/devguides/collection/ga4/tag-options (accessed 17 Nov 2023) 
-        - https://support.google.com/analytics/answer/9304153#add-tag&zippy=%2Cadd-the-google-tag-directly-to-your-web-pages (accessed 17 Nov 2023)
-        - https://stackoverflow.com/questions/76144321/google-analytics-with-nextjs-13
-      */}
-      <Script async strategy="lazyOnload" src="https://www.googletagmanager.com/gtag/js?id=G-Q879BR7270" />
-      <Script async strategy="lazyOnload" id="google-analytics">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
+  console.log(chalk.blueBright.bgBlack("@GoogleAnalytics"))
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  
+  useEffect(() => {
+    if (pathname.startsWith('/post/')) {
+      window.dataLayer = window.dataLayer || []
+      // function gtag() { window.dataLayer.push(arguments) }
+      const gtag: Gtag.Gtag = function () {window.dataLayer.push(arguments);};
+      console.log("window.dataLayer=",window.dataLayer)
 
-          gtag('config', 'G-Q879BR7270');
-        `}
-      </Script>
-    </>
+      gtag('js', new Date())
+      gtag('config', GA_TRACKING_ID!)
+
+      // Extract `articleId` from query params
+      // const articleId = searchParams.get("id")
+      // if (articleId) {
+      //   console.info(chalk.blueBright.bgBlack("Sending articleId to GA:", articleId))
+
+      //   gtag('event', 'view_article', {
+      //     articleId: articleId, // Custom dimension
+      //   })
+      // }
+    }
+  }, [pathname,searchParams])
+
+  if (!pathname.startsWith('/post/')) return null // Don't render on other routes
+
+  return (
+    <Script async strategy="lazyOnload" src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`} />
   )
 }
+/** Useful Docs
+ * Introduction to Google Analytics - https://developers.google.com/analytics/devguides/collection/ga4 (Accessed on Feb 2025)
+ * gtag function Typescript definition - https://stackoverflow.com/questions/62306920/gtag-function-typescript-definition (Accessed on Feb 2025)
+ * Google analytics with nextjs 13? - https://stackoverflow.com/questions/76144321/google-analytics-with-nextjs-13 (Accessed on Feb 2025)
+ */

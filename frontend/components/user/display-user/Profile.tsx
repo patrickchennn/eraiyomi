@@ -1,11 +1,39 @@
-import { User } from "@patorikkuuu/eraiyomi-types"
+import { getUser } from "@/services/user/userService";
+import { User } from "@shared/User"
 import Image from "next/image"
+import { useEffect, useState } from "react";
+
 
 interface ProfileProps{
-  userInfo: User
+  userName: string
 }
+export default function Profile({userName}: ProfileProps){
+  const [userInfo,setUserInfo] = useState<{status:string,message:any,data:User|null}|null>(null)
 
-export default function Profile({userInfo}: ProfileProps){
+
+
+  
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Hooks~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  useEffect(() => {
+    getUser({username:userName})
+      .then(resData => {
+        setUserInfo(resData)
+      })
+    ;
+
+  }, [])
+
+
+
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Render~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  if(userInfo===null) return <div className='loader'></div>
+
+  if(userInfo.data===null){
+    return (
+      <pre>{JSON.stringify(userInfo, null, 4)}</pre>
+    )
+  }
 
   return (
     <div className="px-6">
@@ -13,12 +41,12 @@ export default function Profile({userInfo}: ProfileProps){
       <div>
         <div>
           {
-            userInfo.profilePictureUrl?
+            userInfo.data.profilePictureUrl?
             <Image 
               width={70}
               height={70}
               // className="w-full"
-              src={userInfo.profilePictureUrl} 
+              src={userInfo.data.profilePictureUrl} 
               alt="profile picture" 
             />
             :
@@ -26,13 +54,13 @@ export default function Profile({userInfo}: ProfileProps){
           }
         </div>
         <div>
-          Username: {userInfo.username}
+          Username: {userInfo.data.username}
         </div>
         <div>
-          Name: {userInfo.name?userInfo.name:'-'}
+          Name: {userInfo.data.name}
         </div>
         <div>
-          Email: {userInfo.email}
+          Email: {userInfo.data.email}
         </div>
       </div>
     </div>

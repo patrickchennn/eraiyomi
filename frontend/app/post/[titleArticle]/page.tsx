@@ -1,28 +1,39 @@
-
-import HeaderSection from "@/components/blog/HeaderSection";
-import convertDate from "@/utils/convertDate";
-
-import 'highlight.js/styles/atom-one-dark.css';
+"use server"
 
 import chalk from "chalk";
+import 'highlight.js/styles/atom-one-dark.css';
 import { Metadata, ResolvingMetadata } from "next";
-import CreateTitle from "@/components/blog/CreateTitle";
-import { GET_articleAsset } from "@/services/article-asset/GET_articleAsset";
-import { getArticle } from "@/services/article/getArticle";
+// import dynamic from "next/dynamic";
+
+import convertDate from "@/utils/convertDate";
 import getReadEstimation from "@/utils/getReadEstimation";
-import dynamic from "next/dynamic";
+
+import HeaderSection from "@/components/blog/HeaderSection";
+import CreateTitle from "@/components/blog/CreateTitle";
+import { getArticleContent } from "@/services/article/articleContentService";
+import { getArticle } from "@/services/article/articleService";
+import { getUser } from "@/services/user/userService";
+import { cache } from "react";
+import { getArticleThumbnail } from "@/services/article/articleThumbnailService";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
+
 
 // solve the problem `ReferenceError: window is not defined on client component`
-const DynamicDisqusEmbed = dynamic(
-  () => import('@/components/blog/DisqusEmbed'),
-  { 
-    ssr: false ,
-    loading:()=><div className='loader'></div>
-  }
-)
+// const DynamicDisqusEmbed = dynamic(
+//   () => import('@/components/blog/DisqusEmbed'),
+//   { 
+//     ssr: false ,
+//     loading:()=><div className='loader'></div>
+//   }
+// )
  
+const getArticleCache = cache(async (id: string) => {
+  return await getArticle(id)
+})
 
-
+const getArticleThumbnailCache = cache(async (id: string) => {
+  return await getArticleThumbnail(id)
+})
 
 interface PageProps{
   params: { 
@@ -30,84 +41,99 @@ interface PageProps{
   }
   searchParams: { id: string };
 }
-// Dynamic metadata
+/**
+ * https://nextjs.org/docs/13/app/api-reference/functions/generate-metadata
+ */
 export async function generateMetadata(
   { params, searchParams }: PageProps,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  // Step 1: Remove '-' and split the string into an array of words
-  let titleArray = params.titleArticle.split('-');
-
-  // Step 2: Capitalize each word
-  let capitalizedTitleArray = titleArray.map(word => word.charAt(0).toUpperCase() + word.slice(1));
-
-  // Step 3: Join the words back into a single string
-  let modTitle = capitalizedTitleArray.join(' ');
-
-  return {
-    title: modTitle,
+  // Ensure id is present
+  if (!searchParams.id) {
+    return { title: "Article Not Found" };
   }
-}
 
-
-
-export default async function Page({ 
-  params,
-  searchParams 
-}: PageProps) {
-  console.log(chalk.blueBright.bgBlack(`[INF] Rendering /post/${params.titleArticle} page`))
-
-
-  if(!searchParams.id){
-    return (
-      <>
-        <h1>404 Not Found</h1>
-        <p>article not found</p>
-      </>
-    )
-  }
-  const articleRes = await getArticle(searchParams.id,params.titleArticle)
+  const articleRes = await getArticleCache(searchParams.id)
   // console.log("articleRes=",articleRes)
 
   if(!articleRes.data){
     return (
-      <>
-        <h1>{articleRes.status}</h1>
-        <p>{articleRes.errMsg}</p>
-      </>
+      {title:"Article Not Found"}
     )
   }
 
-  const articleAssetRes = await GET_articleAsset(searchParams.id)
-  // console.log("articleAssetRes=",articleAssetRes)
-
-  if(!articleAssetRes.data){
-    return (
-      <pre>{JSON.stringify(articleAssetRes, null, 4)}</pre>
-    )
-  }
-
-  const articleAsset = articleAssetRes.data
-  // console.log("articleAsset.contentStructureType=",articleAsset.contentStructureType)
-  // console.log("articleAsset.content=",articleAsset.content)
-
-  const article = articleRes.data
+  const metadata: Metadata = {}
   
-  let MainContent = <></>
-  if(articleAsset.contentStructureType==="markdown"){
-    if("rawHTML" in articleAsset){
-      console.info(chalk.blueBright.bgBlack("[INF] handle Markdown data that is already converted to HTML strings"))
-      // assuming `rawHTML` is safes
-      // @ts-ignore
-      MainContent = <div dangerouslySetInnerHTML={{__html: articleAsset.rawHTML}} />
+  const article = articleRes.data
+  // console.log("article=",article)
+
+
+  metadata.title = article.title
+  metadata.description = article.shortDescription
+
+  const thumbnailRes = await getArticleThumbnailCache(article._id)
+
+  if(thumbnailRes.data!==null) {
+    metadata.openGraph = {
+      images:[
+        {
+          url: thumbnailRes.data && thumbnailRes.data.remoteUrl
+        }
+      ]
     }
   }
+  return metadata
+}
 
 
 
+export default async function Page({ params, searchParams }: PageProps) {
+  console.log(chalk.blueBright.bgBlack(`[INF] Rendering /post/${params.titleArticle}?id=${searchParams.id}`))
 
+
+  // IF the user intentionally remove the query id
+  if(!searchParams.id){
+    return (
+      <h1>404 Not Found</h1>
+    )
+  }
+  const articleRes = await getArticleCache(searchParams.id)
+  // console.log("articleRes=",articleRes)
+
+  if(!articleRes.data){
+    return (
+      <pre>{JSON.stringify(articleRes, null, 4)}</pre>
+    )
+  }
+
+  const article = articleRes.data
+  // console.log("article=",article)
+
+  const articleContentRes = await getArticleContent(searchParams.id)
+
+  if(!articleContentRes.data){
+    return (
+      <pre>{JSON.stringify(articleRes, null, 4)}</pre>
+    )
+  }
+
+  const articleContent = articleContentRes.data
+  // console.log("articleContent=",articleContent)
+
+  const userRes = await getUser({id: article.userIdRef})
+  // console.log("userRes=",userRes)
+
+  const user = userRes.data!
+
+  const thumbnailRes = await getArticleThumbnailCache(article._id)
+
+  
+
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~Render~~~~~~~~~~~~~~~~~~~~~~~
   return (
     <>
+      <GoogleAnalytics />
       <div className="px-16 py-5 relative max-[576px]:px-1">
         {/* other posts/content, server component */}
         {/* <OtherPosts 
@@ -118,24 +144,27 @@ export default async function Page({
         {/* main content (write here) and header (thumbnail)*/}
         <div className="border border-zinc-300 dark:border-[rgb(21,7,53)] rounded-xl post-glass dark:bg-[rgba(0,0,0,0.6)]">
 
-          {/* header (thumbnail), supposed to be server component */}
-          {/* <HeaderSection pict={articleAsset.thumbnail.dataURL} caption=""/> */}
+          {/* Thumbnail image: server component */}
+          <HeaderSection thumbnailSrc={thumbnailRes.data? thumbnailRes.data.remoteUrl : null}/>
 
           <CreateTitle 
-            titlePage={article.titleArticle.title}
+            titlePage={article.title}
             miscInfo={{
               date:convertDate(article.publishedDate),
               category:article.category,
-              author:article.author,
-              wordCount:articleAsset.totalWordCounts,
-              readingTime:getReadEstimation(articleAsset.totalWordCounts)
+              author:user.name,
+              wordCount:article.totalWordCounts,
+              readingTime:getReadEstimation(article.totalWordCounts)
             }}
           />
 
           <main
             id="main-content"
-            className="px-16 py-8 transition-all duration-250 ease-[linear] max-[1024px]:px-14 max-[576px]:px-8"
-          >{MainContent}</main>
+            className="px-16 py-8 transition-all duration-250 ease-[linear] max-[1024px]:px-14 max-[576px]:px-8 article-content-style"
+            // NOTE: security issuse, this might result XSS
+            dangerouslySetInnerHTML={{__html: articleContent.rawHtml}}
+            // dangerouslySetInnerHTML={{__html: ""}}
+          ></main>
 
           {/* like or dislike the article, client component */}
           {/* <LikeDislikeArticle articleInit={article}/> */}
@@ -145,7 +174,7 @@ export default async function Page({
         {/* <TableOfContents /> */}
 
         {/* Disqus library, client component */}
-        <DynamicDisqusEmbed articleId={article._id}/>
+        {/* <DynamicDisqusEmbed articleId={article._id}/> */}
       </div>
     </>
   )

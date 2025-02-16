@@ -1,42 +1,35 @@
 /* Notes
-Currently this feature is limited. Only the developer(@patrick.chen31@gmail.com) can access this feature. No one should be able to access this feature.
+Currently this feature is limited. Only the developer can access this feature. No one should be able to access this feature.
 
 The reason it is limited because to implement for global users, I guess, it needs a tons of work to do.
 */
 "use client"
 
-
 // react
-import {useState, useRef, useEffect, createContext} from 'react'
+import {useState, useRef, useEffect, createContext, Dispatch, SetStateAction, RefObject} from 'react'
+
+// custom hook
 import useDidMountEffect from '@/hooks/useDidMountEffect';
 
-import PostBtn from './create-new-post-components/PostBtn';
-import PreviewBtn from './create-new-post-components/PreviewBtn';
-import SaveDraftBtn from './create-new-post-components/SaveDraftBtn';
+import PostBtn from './PostBtn';
+// import PreviewBtn from './PreviewBtn';
+// import SaveDraftBtn from './create-new-post-components/SaveDraftBtn';
 import CategoryInput from './create-new-post-components/CategoryInput';
 import ThumbnailInput from './create-new-post-components/ThumbnailInput';
 import DescInput from './create-new-post-components/DescInput';
-import TitleInput from './create-new-post-components/TitleInput';
 import APIKeyInput from './create-new-post-components/APIKeyInput';
 import EditorChoice from './create-new-post-components/EditorChoice';
-import chalk from 'chalk';
-import hljs from 'highlight.js';
 import 'highlight.js/styles/atom-one-dark.css';
+import TitleInput from './create-new-post-components/TitleInput';
+import { ArticlePostRequestBody } from '@shared/Article';
 
-export interface ArticleDataType{
-  title:string,
-  shortDescription:string,
-  category:Array<string>,
-  thumbnail:File|string|null,
-  content:string
-  contentStructureType:string|"quilljs"|"markdown"
-  wordCounts:number
-}
 
 interface CreateNewPostStateCtxType{
-  articleDataState: [ArticleDataType,React.Dispatch<React.SetStateAction<ArticleDataType>>]
-  contentState:[string,React.Dispatch<React.SetStateAction<string>>]
-  contentMDState:[string,React.Dispatch<React.SetStateAction<string>>]
+  articleDataState: [ArticlePostRequestBody, Dispatch<SetStateAction<ArticlePostRequestBody>>]
+  rawTextState:[string, Dispatch<SetStateAction<string>>]
+  API_keyState:[string, Dispatch<SetStateAction<string>>]
+  mdInputUploadRef:RefObject<HTMLInputElement>
+  thumbnailRef:RefObject<HTMLInputElement>
 }
 export const CreateNewPostStateCtx = createContext<CreateNewPostStateCtxType|null>(null);
 
@@ -50,25 +43,22 @@ export default function CreateNewPost(){
   };
 
 
-  // hooks
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~Hooks~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const previewSectionRef = useRef<HTMLDivElement>(null)
   const editorSectionRef = useRef<HTMLDivElement>(null)
+  const mdInputUploadRef = useRef<HTMLInputElement>(null)
+  const thumbnailRef = useRef<HTMLInputElement>(null)
 
   const [previewElem,setPreviewElem] = useState<JSX.Element>()
   const [API_key,set_API_key] = useState<string>("")
-  const [content, setContent] = useState('');
-  const [contentMD, setContentMD] = useState('');
+  const [rawText, setRawText] = useState('');
 
-
-  const [articleData,setArticleData] = useState<ArticleDataType>({
+  const [articleData, setArticleData] = useState<any>({
     title:"",
-    shortDescription:"",
-    contentStructureType:"",
-    category:[],
-    thumbnail:null,
-    content:"",
-    wordCounts:0
-  })
+    shortDescription: "",
+    category: [],
+    totalWordCounts: 0,
+  });
 
 
 
@@ -94,65 +84,54 @@ export default function CreateNewPost(){
     window.localStorage.setItem("article-data",JSON.stringify(rest))
     
   },[
-    articleData.category,
+    articleData.title,
     articleData.shortDescription,
-    articleData.title
+    articleData.category,
   ])
 
 
-  useEffect(() => {
-    console.log(chalk.yellow.bgBlack("@useEffect(Function,[previewElem])"))
-    // @TODO: this breaks the react rules: do not directly manipulate the DOM
-    hljs.highlightAll()
-  },[previewElem])
 
 
 
-
-  // render
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~Render~~~~~~~~~~~~~~~~~~~~~~~~~~~
   return (
     <CreateNewPostStateCtx.Provider 
       value={{
         articleDataState:[articleData,setArticleData],
-        contentState:[content, setContent],
-        contentMDState:[contentMD,setContentMD]
+        rawTextState: [rawText, setRawText],  
+        API_keyState: [API_key,set_API_key],
+        mdInputUploadRef,
+        thumbnailRef:thumbnailRef
       }}
     >
       <div className='w-full flex items-center flex-col'>
+
+      <div className='my-3 p-5 border dark:border-zinc-900 rounded-xl w-3/4 bg-slate-100 flex flex-col gap-y-5 dark:bg-zinc-950' ref={editorSectionRef}>
         <div className='[&>button]:mx-1'>
+          {/* <PreviewBtn setPreviewElem={setPreviewElem} className={btnClass}/> */}
 
-          <PreviewBtn setPreviewElem={setPreviewElem} className={btnClass}/>
+          <PostBtn previewElem={previewElem} className={btnClass} />
 
-          <PostBtn 
-            API_key={API_key} 
-            previewElem={previewElem}
-            className={btnClass}
-          />
-
-          <SaveDraftBtn API_key={API_key} className={btnClass}/>
-
+          {/* <SaveDraftBtn className={btnClass}/> */}
         </div>
-
-        {/* editor section */}
-        <div className='my-3 p-5 border dark:border-zinc-900 rounded-xl w-3/4 bg-slate-100 flex flex-col gap-y-5 dark:bg-zinc-950' ref={editorSectionRef}>
         
-          <TitleInput />
+        <APIKeyInput />
+      
+        <TitleInput />
 
-          <DescInput />
+        <DescInput />
 
-          <CategoryInput />
+        <CategoryInput />
 
-          <APIKeyInput API_keyState={[API_key,set_API_key]}/>
+        <ThumbnailInput />
 
-          <ThumbnailInput />
+        <EditorChoice />
+      </div>
 
-          <EditorChoice />
-        </div>
-
-        {/* preview section, grid (container) */}
-        <div data-cy="preview-article-section" className='w-full'>
-          {previewElem && previewElem}
-        </div>
+      {/* preview section, grid (container) */}
+      <div data-cy="preview-article-section" className='w-full'>
+        {previewElem && previewElem}
+      </div>
       </div>
     </CreateNewPostStateCtx.Provider>
   )

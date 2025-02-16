@@ -1,9 +1,9 @@
 "use client";
 
-import { POST_verify } from "@/services/user/POST_verify";
+import { postVerifyUser } from "@/services/user/userService";
 import getCookie from "@/utils/getCookie";
-import { Article } from "@patorikkuuu/eraiyomi-types";
-import { User } from "@patorikkuuu/eraiyomi-types";
+import { Article } from "@shared/Article";
+import { User } from "@shared/User";
 import chalk from "chalk";
 
 import { Dispatch, SetStateAction, createContext, useContext, useEffect, useState } from "react";
@@ -14,8 +14,8 @@ interface AppContextType{
     setArticles:Dispatch<SetStateAction<Article[]>>
   ],
   userInfoStates:[
-    userInfo: User,
-    setUserInfo: Dispatch<SetStateAction<User>>
+    userInfo: User|null,
+    setUserInfo: Dispatch<SetStateAction<User|null>>
   ],
   themeState:[
     theme:"dark"|"light",
@@ -28,12 +28,11 @@ const initialContextValue: AppContextType = {
   userInfoStates: [
     {
       _id:"",
-      userId: "",
       name: "",
       username:"",
       email:"",
       profilePictureUrl: "",
-      statusReq:"fail"
+      articleIdRef:[]
     },
     () => {}
   ],
@@ -51,15 +50,7 @@ export const AppContextProvider = ({children}: AppContextProviderProps) => {
   
   const [articles,setArticles] = useState<Article[]>([])
   
-  const [userInfo,setUserInfo] = useState<User>({
-    _id:"",
-    userId: "",
-    username: "",
-    name:"",
-    email:"",
-    profilePictureUrl: "",
-    statusReq:"loading"
-  })
+  const [userInfo,setUserInfo] = useState<User|null>(null)
 
   const [theme,setTheme] = useState<"light"|"dark">("light")
   
@@ -69,10 +60,7 @@ export const AppContextProvider = ({children}: AppContextProviderProps) => {
 
     // console.log("userCredToken",userCredToken)
     if(userCredToken==null) {
-      setUserInfo(prev => ({
-        ...prev,
-        statusReq:"fail"
-      }))
+      setUserInfo(null)
       console.info(chalk.blueBright.bgBlack(`[INF]: userCredToken is ${userCredToken}`))
       return 
     }
@@ -81,19 +69,15 @@ export const AppContextProvider = ({children}: AppContextProviderProps) => {
     // remove the first and last character, in this case, removing the the tick ("")
     userCredToken = userCredToken.slice(1,-1);
     (async function(){
-      const data = await POST_verify(userCredToken)
+      const data = await postVerifyUser(userCredToken)
 
       if(data.data){
         // console.log(data)
         setUserInfo({
           ...data.data,
-          statusReq:"success"
         })
       }else{
-        setUserInfo(prev => ({
-          ...prev,
-          statusReq:"fail"
-        }))
+        setUserInfo(null)
       }
     })()
 

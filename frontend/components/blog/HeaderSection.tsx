@@ -1,43 +1,34 @@
+"use server"
 
-import { EB_Garamond } from "next/font/google"
 import Image from "next/image"
 
-const eb_garamond = EB_Garamond({
-  subsets: ['latin'],
-  display: 'swap',
-  weight:"400"
-})
-
 interface HeaderSectionProps{
-  pict?: string,
-  caption?: string,
+  thumbnailSrc: string | null,
 }
-const HeaderSection = ({pict,caption}: HeaderSectionProps) => {
+const HeaderSection = ({thumbnailSrc}: HeaderSectionProps) => {
+
+    
   // console.log("pict=",pict)
+  if(thumbnailSrc===null){
+    return null
+  }
   return (
     <>
-      {
-
-        pict?
-        <>
-          <div>
-            {/* https://github.com/vercel/next.js/issues/18372 */}
-            <Image 
-              unoptimized 
-              width={0}
-              height={0}
-              className="rounded-t-xl w-full shadow-md" 
-              src={pict} 
-              alt="Thumbnail" 
-            />
-          </div>
-          <p className={eb_garamond.className+" text-gray-400 text-center text-xs italic"}>
-            {caption}
-          </p>
-        </>
-        :
-        <></>
-      }
+      <div>
+        {/* https://github.com/vercel/next.js/issues/18372 */}
+        <Image 
+          src={thumbnailSrc} 
+          alt="Thumbnail image" 
+          width={0}
+          height={0}
+          className="rounded-t-xl w-full shadow-md" 
+          unoptimized
+          priority={true}
+        />
+      </div>
+      {/* <p className={eb_garamond.className+" text-gray-400 text-center text-xs italic"}>
+        {caption}
+      </p> */}
     </>
   )
 }

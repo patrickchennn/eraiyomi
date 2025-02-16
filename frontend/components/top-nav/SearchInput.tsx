@@ -1,9 +1,9 @@
 "use client"
 
-import getArticles from "@/services/article/getArticles"
-import { Article } from "@patorikkuuu/eraiyomi-types"
+import { getArticles } from "@/services/article/articleService"
+import articleTitleToUrlSafe from "@/utils/articleTitleToUrlSafe"
+import { Article } from "@shared/Article"
 import chalk from "chalk"
-import isEmpty from "lodash.isempty"
 import Link from "next/link"
 import { useState, useRef } from "react"
 import {FcSearch} from "react-icons/fc"
@@ -13,11 +13,13 @@ interface SearchInputProps{
 }
 export default function SearchInput({}: SearchInputProps){
   console.log(chalk.blueBright.bgBlack("[INF] Rendering @SearchInput component"))
-  // hooks
+
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~Hooks~~~~~~~~~~~~~~~~~~~~~~~
   const [keySearch,setKeySearch] = useState("")
   const typingTimer = useRef<number|NodeJS.Timeout>(0);
 
-  const [articles, setArticles] = useState<Article[]>();
+  const [articles, setArticles] = useState<Article[] | null>(null);
 
   const searchResultContainerRef = useRef<HTMLUListElement>(null)
 
@@ -25,7 +27,7 @@ export default function SearchInput({}: SearchInputProps){
 
 
 
-  // methods
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~Methods~~~~~~~~~~~~~~~~~~~~~~~
   const handleChange =  (e: React.ChangeEvent) => {
     if(typingTimer.current) clearTimeout(typingTimer.current);
 
@@ -46,14 +48,15 @@ export default function SearchInput({}: SearchInputProps){
           status:"published",sort:"newest",search:inputVal
         },"no-store")
         console.log("articles=",articles)
-        setArticles(articles.data)
+        // @NOTE: assuming not null
+        setArticles(articles.data!)
       }
     }, 300);
   }
 
 
 
-  // render
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~Render~~~~~~~~~~~~~~~~~~~~~~~
   return (
     <div className='w-[30%] relative basis-2/4'>
 
@@ -80,41 +83,63 @@ export default function SearchInput({}: SearchInputProps){
         ref={searchResultContainerRef}
         className='border border-gray-100 w-full h-fit bg-[#fdfdfd] overflow-auto absolute z-[2] dark:bg-zinc-900'
       >
-        {
-          !isEmpty(articles) ? 
-          articles!.map((article: Article) => (
-            <li key={article._id} className='hover:bg-slate-100 dark:hover:bg-sky-900'>
-              <div className='flex'>
-                <FcSearch className="text-[1.5rem] self-center"/>
-                <h2>
-                  <Link href={article.titleArticle.URLpath} target="_blank" className="after:content-[''] after:block after:w-0 after:h-0.5 after:bg-black after:transition-[width] after:duration-500 after:ease-in after:hover:w-full after:dark:bg-white">
-                    {article.titleArticle.title}
-                  </Link>
-                </h2>
-              </div>
-
-
-              {/* keywords */}
-              <div>
-                {
-                  article.category.map((val,idx) => (
-                    <span key={idx} className="px-2 hover:font-black">
-                      <span>#</span>{val}
-                    </span>
-                  ))
-                }
-              </div>
-            </li>
-          ))
-          :
-          // {/* IF nothing is found --> display this specific li element, this element is created particularly when indeed nothing is found */}
-          keySearch && <li ref={searchIsUnavailable} className='' data-cy="unavailable-element">
-            <h2 className='text-center text-gray-400'>
-              <mark className='bg-gray-200'>{keySearch}</mark> is unavailable
-            </h2>
-          </li>
-        }
+        <ShowArticles articles={articles} keySearch={keySearch} searchIsUnavailable={searchIsUnavailable}/>
       </ul>
     </div>
   )
+}
+
+interface ShowArticlesProps{
+  articles: Article[] | null
+  keySearch: string
+  searchIsUnavailable: any
+}
+const ShowArticles = ({
+  articles, keySearch, searchIsUnavailable
+}: ShowArticlesProps) => {
+
+  if(articles===null){
+    return null
+  }
+
+  // IF: nothing is found --> display this specific li element, this element is created particularly when indeed nothing is found
+  if(articles===null && keySearch){
+    return (
+      <li ref={searchIsUnavailable} className='' data-cy="unavailable-element">
+        <h2 className='text-center text-gray-400'>
+          <mark className='bg-gray-200'>{keySearch}</mark> is unavailable
+        </h2>
+      </li>
+    )
+  }
+
+  return articles.map((article: Article) => {
+    const url = articleTitleToUrlSafe(article.title)
+    return (
+      <li key={article._id} className='hover:bg-slate-100 dark:hover:bg-sky-900'>
+        <div className='flex'>
+          <FcSearch className="text-[1.5rem] self-center"/>
+          <h2>
+            <Link href={url} target="_blank" className="after:content-[''] after:block after:w-0 after:h-0.5 after:bg-black after:transition-[width] after:duration-500 after:ease-in after:hover:w-full after:dark:bg-white">
+              {article.title}
+            </Link>
+          </h2>
+        </div>
+  
+  
+        {/* keywords */}
+        <div>
+          {
+            article.category.map((val,idx) => (
+              <span key={idx} className="px-2 hover:font-black">
+                <span>#</span>{val}
+              </span>
+            ))
+          }
+        </div>
+      </li>
+
+
+    )
+  })
 }

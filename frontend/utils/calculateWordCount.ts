@@ -1,23 +1,19 @@
 /**
- * Calculates the total number of words in the text content of a specified HTML element or an element selected by a string selector.
+ * Calculates the total number of words in a given string.
  * 
- * @param elementOrSelector - The HTML element or string selector of the element whose text content will be analyzed.
- * @returns The total number of words in the element's text content. Returns 0 if the element is not found or contains no text.
+ * @param text - The input string whose words will be counted.
+ * @returns The total number of words in the string. Returns 0 if the input is empty or contains no words.
  */
-export default function calculateWordCount(elementOrSelector: Element | string): number {
-  const element = typeof elementOrSelector === 'string' 
-      ? document.querySelector(elementOrSelector)
-      : elementOrSelector;
-
-  if (!element || !element.textContent) {
+export default function calculateWordCount(text: string): number {
+  if (!text.trim()) {
       return 0;
   }
 
-  const words = element.textContent.match(/\S+/g) || [];
+  const words = text.match(/\S+/g) || [];
   return words.length;
 }
 
-// Usage examples
-// const wordCount1 = calculateWordCount(".quill"); // using a selector
-// const textEditorElem = document.querySelector<HTMLDivElement>(".quill");
-// const wordCount2 = textEditorElem ? calculateWordCount(textEditorElem) : 0; // using an Element
+// Usage example
+// const wordCount = calculateWordCount("This is a sample text.");
+
+// This version removes the DOM interaction and works purely with a string input. 

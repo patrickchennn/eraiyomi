@@ -1,99 +1,94 @@
-import { useContext, useRef } from "react"
+"use client"
+
+import { useContext } from "react"
 import { CreateNewPostStateCtx } from "../CreateNewPost"
 import chalk from "chalk"
 import { BsTrash3 } from "react-icons/bs";
-import words from "lodash.words";
 import MarkdownEditor from "@uiw/react-markdown-editor";
 import debounce from 'lodash.debounce';
+import calculateWordCount from "@/utils/calculateWordCount";
+
 
 function MdFileInput() {
-  
-  const fileInputRef = useRef<null|HTMLInputElement>(null)
+  // ~~~~~~~~~~~~~~~~~~~~Hooks~~~~~~~~~~~~~~~~~~~~
   const c = useContext(CreateNewPostStateCtx)!
-  const [,setArticleData] = c.articleDataState
-  const [,setContentMD] = c.contentMDState
+  const [rawText, setRawText] = c.rawTextState
+  const [article,setArticle] = c.articleDataState
+  const mdInputUploadRef = c.mdInputUploadRef
 
-  // methods
+  // ~~~~~~~~~~~~~~~~~~~~Methods~~~~~~~~~~~~~~~~~~~~
   const resetInputFile = () => {
-    console.log(chalk.yellow.bgBlack("@resetInputFile"))
+    console.log(chalk.blueBright.bgBlack("@resetInputFile"))
     // Check if the file input is not null
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-      setArticleData(prev=>({
-        ...prev,
-        contentStructureType:"",
-        wordCounts:0
-      }))
-      setContentMD("")
-
+    if (mdInputUploadRef.current) {
+      mdInputUploadRef.current.value = "";
+      setRawText("")
     }
   };
 
   const handleMarkdownFile = (e: React.ChangeEvent) => {
-    console.log(chalk.yellow.bgBlack("@handleMarkdownFile"))
-    const target = e.target as HTMLInputElement
-    console.log("target=",target)
+    console.log(chalk.blueBright.bgBlack('@handleMarkdownFile'))
 
-    const file = target.files
-    console.log("file=",file)
+    const target = e.target as HTMLInputElement;
+    const files = target.files;
 
-    if (file && file.length>0) {
-      const mdFile = file[0]
-      console.log("mdFile=",mdFile)
+    if (files===null) return;
 
-      // IF: the given file is NOT an .md type
-      if(mdFile.type!=="text/markdown"){
-        return alert("Wrong extention; wrong file. It supposed to be '.md' file")
-      }
+    const fileList = Array.from(files);
+    console.log("fileList=",fileList)
 
+    // Separate markdown files and assets
+    const markdownFiles = fileList.filter((file) => file.type === 'text/markdown');
+    console.log("markdownFiles=",markdownFiles)
 
-      // Create a new FileReader object
-      const reader = new FileReader();
-
-      // Define what happens when the reading succeeds
-      reader.onload = (readEvent) => {
-        if (readEvent.target === null) {
-          return 
-        }
-        // The result attribute contains the contents of the file as a text string
-        const content = readEvent.target.result;
-        // console.log("File content:", content);
-
-        if (typeof content === 'string') { // Confirming it's a string
-          console.log("File content:", content);
-          // You can now handle the Markdown content as needed
-          // e.g., setting it to state, parsing it, etc.
-          setArticleData(prev=>({
-            ...prev,
-            contentStructureType:"markdown",
-            wordCounts:words(content).length
-          }))
-
-          setContentMD(content)
+    const assetFiles = fileList.filter((file) => file.type !== 'text/markdown');
+    console.log("assetFiles=",assetFiles)
 
 
-        } else {
-          console.log("Expected string, received different type or null");
-        }
-      };
+    if (markdownFiles.length === 0) {
+      alert("No Markdown file found. Please upload only one '.md' file.");
+      return;
+    }
 
-      // Read the file as text
-      reader.readAsText(mdFile);
+    // Handle the first markdown file (assuming you want to process only one for now)
+    const mdFile = markdownFiles[0];
+    console.log('mdFile=', mdFile);
+
+    // `reader` is about read the markdown file, like actually extract the text
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const content = reader.result as string;
+      // console.log('Markdown content:', content);
+
+      // Adjust the word counts
+      setArticle(data => ({
+        ...data,
+        totalWordCounts:calculateWordCount(content)
+      }))
+
+      // Render the input
+      setRawText(content)
+    };
+
+    reader.readAsText(mdFile);
+
+    // Handle the asset files (if any)
+    if (assetFiles.length > 0) {
+      console.log('Asset files:', assetFiles);
+      // You can process assets and store their references in the state as needed
     }
   }
 
   // Update the content in the editor after a delay
-  const debouncedSetContent = debounce(setContentMD, 500);
+  const debouncedSetContent = debounce(setRawText, 500);
 
   const handleEditorChange = (value: string) => {
     debouncedSetContent(value);
   };
 
 
-
-
-
-  // render
+  // ~~~~~~~~~~~~~~~~~~~~Render~~~~~~~~~~~~~~~~~~~~
   return (
     <div>
       <form
@@ -101,26 +96,27 @@ function MdFileInput() {
         method='post'
         className='w-fit'
       >
-        <label htmlFor="doc_file_upload" className="block">upload a <code>.md</code> file:</label>
         <input
           type="file"
           id="doc_file_upload"
           name="doc_file_upload"
-          accept="text/markdown, text/plain"
+          accept="*"
           onChange={handleMarkdownFile}
-          ref={fileInputRef}  // Attach the ref to the file input
+          multiple
+          // @ts-ignore
+          webkitdirectory="true"
+          ref={mdInputUploadRef}
         />
         <button type="button" onClick={resetInputFile}>
           <BsTrash3 className="inline"/>
         </button>
-
       </form>
 
       {/* @TODO: still laggy for large input like 700+ lines of text, temporarily off */}
-      {/* <MarkdownEditor
-        value={contentMD}
+      <MarkdownEditor
+        value={rawText}
         onChange={handleEditorChange}
-      /> */}
+      />
     </div>
   )
 }

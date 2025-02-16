@@ -1,5 +1,7 @@
 "use client"
 
+import chalk from 'chalk'
+
 // react
 import { useRef, useState } from 'react'
 
@@ -11,9 +13,9 @@ import {HiOutlineArrowDown,HiOutlineArrowUp} from  "react-icons/hi"
 import Link from "next/link";
 
 // my custom types
-import { Article, ArticlesAnalytic } from '@patorikkuuu/eraiyomi-types'
-import getArticles from '@/services/article/getArticles'
-import chalk from 'chalk'
+import { Article, ArticlesAnalytic } from '@shared/Article'
+
+import { getArticles } from '@/services/article/articleService'
 
 interface ArticlesSorted{
   "newest":Article[],
@@ -25,13 +27,10 @@ interface HomeTemplateProps{
   initArticles: Article[]
   articlesAnalytic:ArticlesAnalytic|null
 }
-export default function HomeTemplate ({
-  initArticles,articlesAnalytic
-}: HomeTemplateProps){
+export default function HomeTemplate ({initArticles,articlesAnalytic}: HomeTemplateProps){
   console.info(chalk.blueBright.bgBlack("[INF] Rendering @HomeTemplate component"))
 
-
-  // hooks
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Hooks~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const [showArrow,setShowArrow] = useState(true) 
   const [loading, setLoading] = useState(false); // Loading state
   const [sortType,setSortType] = useState("newest") 
@@ -48,7 +47,7 @@ export default function HomeTemplate ({
 
   
 
-  // methods
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Methods~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const handleSortMenuClick = () => {
     ulRef.current!.classList.toggle("!visible")
     setShowArrow(prev=>!prev)
@@ -76,44 +75,25 @@ export default function HomeTemplate ({
 
 
 
-  // render
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Render~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   return (
-    // TODO: fix border-radius
-    <div className='py-3 w-1/2 mx-auto flex flex-col gap-y-3 max-[576px]:w-3/4 max-[768px]:w-2/3'>
-      
-      {/* TODO: this is supposed to be border-radius: rounded-xl */}
-      <div>
-        <div className='w-fit relative'>
-          <div className='flex'>
-            <button ref={sortByTitleRef} onClick={handleSortMenuClick} className='p-3 text-xl font-black flex [&>svg]:hover:visible'>
-              newest post
-              {
-                showArrow ? 
-                  <HiOutlineArrowUp className='self-center invisible'/> 
-                  : 
-                  <HiOutlineArrowDown className='self-center invisible'/>
-              }
-            </button>
-          </div>
-          <SortDropdown sortBy={sortBy} ulRef={ulRef}/>
+    <div>
+      <div className='w-fit relative'>
+        <div className='flex'>
+          <button ref={sortByTitleRef} onClick={handleSortMenuClick} className='p-3 text-xl font-black flex [&>svg]:hover:visible'>
+            newest post
+            {
+              showArrow ? 
+                <HiOutlineArrowUp className='self-center invisible'/> 
+                : 
+                <HiOutlineArrowDown className='self-center invisible'/>
+            }
+          </button>
         </div>
+        <SortDropdown sortBy={sortBy} ulRef={ulRef}/>
       </div>
-
-      {/* TODO: this is supposed to be border-radius: rounded-xl */}
-      <div data-cy="articles-container ">
-
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          <ShowArticles 
-            articlesSorted={articlesSorted} 
-            articlesAnalytic={articlesAnalytic}
-            sortType={sortType}
-          />
-        )}
-      </div>
-
     </div>
+
   )
 }
 
@@ -142,70 +122,3 @@ const SortDropdown: React.FC<SortDropdownProps> = ({ sortBy, ulRef }) => {
     </ul>
   );
 };
-
-
-
-
-interface ShowArticlesProps {
-  articlesSorted: any
-  articlesAnalytic: any
-  sortType: string
-}
-const ShowArticles = ({articlesSorted, articlesAnalytic, sortType="newest"}: ShowArticlesProps) => {
-  const whichOne: Article[] = articlesSorted[sortType as keyof ArticlesSorted]
-
-  return whichOne.map(article => {
-      const pagePath = `/post/${article.titleArticle.URLpath}`
-      // TODO: convert this logic into server component
-      if(article.status==="unpublished") return <></>
-      return (
-        // TODO: this `rounded-xl` not working
-        <div key={article._id} className='p-3 rounded-xl'>
-          <div className='flex justify-between'>
-            <Link 
-              href={{
-                pathname:"post/"+article.titleArticle.URLpath,
-                query: { id: article._id },
-              }} 
-              target="_blank" 
-              className="text-2xl font-bold after:content-[''] after:block after:w-0 after:h-0.5 after:bg-black after:transition-[width] after:duration-500 after:ease-in after:hover:w-full after:dark:bg-white"
-            >
-              {article.titleArticle.title}
-            </Link>
-            <div className='text-center flex gap-x-2'>
-              <dfn className='text-gray-400'>
-                {article.publishedDate}
-              </dfn>
-              <div>
-                <BsEye className='mx-auto'/>
-                {/* get the view counter from google analytics. */}
-                {
-                  articlesAnalytic &&
-                  Object.hasOwn(articlesAnalytic,pagePath) ? articlesAnalytic[pagePath].screenPageViews : '-'
-                }
-              </div>
-              <div>
-                <BiLike className='mx-auto'/>
-                {article.likeDislike.totalLike}
-              </div>
-            </div>
-          </div>
-          <div>
-            {
-              article.category.map((keyword: string,idx: number) => {
-                return (
-                  <span key={idx} className="px-2">
-                    <span>#</span>{keyword}
-                  </span>
-                )
-              })
-            }
-          </div>
-          <p className='p-3 text-gray-600 dark:text-gray-300'>
-            {article.shortDescription}
-          </p>
-        </div>
-      )
-    }
-  )
-}

@@ -2,13 +2,9 @@ import {FaHome} from "react-icons/fa"
 import Link from "next/link"
 import DarkToggle from "./DarkToggle"
 import SearchInput from "./SearchInput"
-import SignInModal from "./SignInModal"
+import Auth from "./auth/Auth"
 
-interface TopNavProps{
-}
-export default function TopNav({}: TopNavProps){
-
-
+export default function TopNav(){
 
   // render
   return (
@@ -21,7 +17,6 @@ export default function TopNav({}: TopNavProps){
         {/* search input */}
         <SearchInput/>
   
-        {/* toogle dark mode btn / sign in btn(for future feature I guess) */}
         <ul className='flex items-center gap-x-4 [&>*]:hover:cursor-pointer'>
           <DarkToggle />
 
@@ -29,7 +24,7 @@ export default function TopNav({}: TopNavProps){
             New Post
           </Link>
 
-          <SignInModal />
+          <Auth />
         </ul>
       </div>
 

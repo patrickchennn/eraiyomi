@@ -1,14 +1,13 @@
 {
   "name": "frontend",
-  "version": "1.0.0",
-  "private": true,
+  "version": "2.0.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start -p 3999",
     "lint": "next lint",
     "cy:open": "cypress open",
-    "checktype": "tsc --noEmit"
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@types/node": "20.5.9",
@@ -42,7 +41,6 @@
   },
   "devDependencies": {
     "@netlify/plugin-nextjs": "^4.41.3",
-    "@patorikkuuu/eraiyomi-types": "^4.0.0",
     "@types/google-one-tap": "^1.2.2",
     "@types/google.analytics": "^0.0.45",
     "@types/gtag.js": "^0.0.18",

@@ -1,25 +1,26 @@
-import { ArticleData, ArticleDataState } from '../EditArticle'
+import { Article, ArticleState } from '../EditArticle'
+import IsChangedStar from './IsChangedStar'
 
 interface EditInputTitleProps{
-  articleDataState: ArticleDataState
-  articleDefaultDataRef: React.MutableRefObject<ArticleData>
+  articleState: ArticleState
+  articleDefaultDataRef: React.MutableRefObject<Article>
 }
 export default function EditInputTitle({
-  articleDataState,
+  articleState,
   articleDefaultDataRef
 }: EditInputTitleProps) {
-  const [articleData,setArticleData] = articleDataState
+  const [articleData,setArticleData] = articleState
   
   return (
     <div>
       <label htmlFor="edit-title" className='block'>
-        title{articleData.title!==articleDefaultDataRef.current.title?<span className='text-gray-600'>*</span>:null}
+        Title<IsChangedStar src={articleData.title} dst={articleDefaultDataRef.current.title}/>
       </label>
       <input 
         required
         id="edit-title"
         data-cy="edit-title"
-        className="dark:dark-single-component dark:valid:dark-single-component px-2 border w-full bg-slate-50 valid:bg-slate-100 focus:bg-white " 
+        className="dark:dark-single-component dark:valid:dark-single-component px-2 border w-full bg-slate-50 valid:bg-slate-100 focus:bg-white" 
         type="text" 
         placeholder='Insert a title...'
         value={articleData.title}

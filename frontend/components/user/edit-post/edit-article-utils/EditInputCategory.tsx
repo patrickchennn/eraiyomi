@@ -1,29 +1,27 @@
 import { useState } from 'react'
 import { BsPlus } from 'react-icons/bs'
 import { IoIosClose } from 'react-icons/io'
-import { ArticleData, ArticleDataState } from '../EditArticle'
+import { Article, ArticleState } from '../EditArticle'
+import IsChangedStar from './IsChangedStar'
+
 
 interface EditInputCategoryProps{
-  articleDataState: ArticleDataState
-  articleDefaultDataRef: React.MutableRefObject<ArticleData>
+  articleState: ArticleState
+  articleDefaultDataRef: React.MutableRefObject<Article>
 }
 export default function EditInputCategory({
-  articleDataState,
+  articleState,
   articleDefaultDataRef
 
 }: EditInputCategoryProps) {
   // hooks
   const [categoryTxt,setCategoryTxt] = useState<string>("")
-  const [articleData,setArticleData] = articleDataState
+  const [article,setArticle] = articleState
 
 
-  // useEffect(()=>{
-  //   const { content, ...rest } = articleMetadata;
-  //   window.localStorage.setItem("article-metadata",JSON.stringify(rest))
-  // },[categoryTxt])
 
   const handleSetCategoryBtn = () => {
-    setArticleData(prev=> ({
+    setArticle(prev=> ({
       ...prev,
       category:[...prev.category,categoryTxt]
     }));
@@ -31,9 +29,9 @@ export default function EditInputCategory({
 
   const handleRemoveCategory = (indexToRemove: number) => {
     // Use filter to create a new array without the category to be removed
-    const newcategory = articleData.category.filter((_, index: number) => index !== indexToRemove);
+    const newcategory = article.category.filter((_, index: number) => index !== indexToRemove);
     
-    setArticleData(prev=>({
+    setArticle(prev=>({
       ...prev,
       category:newcategory
     }))
@@ -43,7 +41,9 @@ export default function EditInputCategory({
   // render
   return (
     <div>
-      <label htmlFor="edit-category" className='block'>category{articleData.category!==articleDefaultDataRef.current.category?<span className='text-gray-600'>*</span>:null}</label>
+      <label htmlFor="edit-category" className='block'>
+        Category<IsChangedStar src={article.category} dst={articleDefaultDataRef.current.category}/>
+      </label>
       <div className='flex'>
         <input 
           required
@@ -57,7 +57,7 @@ export default function EditInputCategory({
         <button className='bg-neutral-100' onClick={handleSetCategoryBtn}><BsPlus/></button>
       </div>
       <div className='text-sm	flex flex-wrap' data-cy="category-container">
-        {articleData.category.map((category,i: number) => {
+        {article.category.map((category,i: number) => {
           return (
             <div key={i} className='px-2 rounded-full flex'>
               {category}

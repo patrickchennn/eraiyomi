@@ -1,14 +1,14 @@
-import { User } from '@patorikkuuu/eraiyomi-types'
+"use client"
+
 import React from 'react'
 import Profile from './display-user/Profile'
 
+
 interface DisplayUserProps{
-  user: User
+  userName: string
 }
-export default function DisplayUser({user}: DisplayUserProps) {
+export default function DisplayUser({userName}: DisplayUserProps) {
   return (
-    <div>
-      <Profile userInfo={user}/>
-    </div>
+    <Profile userName={userName}/>
   )
 }

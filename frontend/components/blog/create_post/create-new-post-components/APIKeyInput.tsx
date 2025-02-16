@@ -1,17 +1,18 @@
-import React, { Dispatch, SetStateAction } from 'react'
+import React, { useContext } from 'react'
+import { CreateNewPostStateCtx } from '../CreateNewPost'
 
-interface APIKeyInputProps{
-  API_keyState: [string,Dispatch<SetStateAction<string>>]
-}
-export default function APIKeyInput({API_keyState}: APIKeyInputProps) {
-  const [API_key,set_API_key] = API_keyState
+
+export default function APIKeyInput() {
+  const c = useContext(CreateNewPostStateCtx)!
+  const [API_key,set_API_key] = c.API_keyState
+  
   return (
     <div>
-      <label htmlFor="api-key" className='block'>key<span className='text-red-600'>*</span></label>
+      <label htmlFor="api-key" className='block'>Key<span className='text-red-600'>*</span></label>
       <input 
         required
         id="api-key"
-        className="rounded px-2 bg-slate-50 dark:dark-single-component" 
+        className="rounded px-2 w-full bg-slate-50 dark:bg-zinc-800 valid:bg-slate-100 focus:bg-white" 
         type="password"
         value={API_key}
         data-cy="api-key-input"
