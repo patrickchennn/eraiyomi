@@ -13,17 +13,24 @@
     "lib": ["ES2022"],
     "allowJs": true, // Allow importing JavaScript files
     // source map options
-    "outDir": "build",
+    "outDir": "build-dev",
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
+    "inlineSources": true, // Include original source code in source maps
 
+    "removeComments": false, // Preserve comments
+    "pretty": true, // Format output in a readable manner
+    "noUnusedLocals": true, // TypeScript compiler will report an error for local variables that are declared but never used in your code
 
-    "noUnusedLocals": true // TypeScript compiler will report an error for local variables that are declared but never used in your code
-
+    "paths": {
+      // "@/*": [
+      //   "./src/*"
+      // ],
+      "@shared/*": ["../shared/*"]
+    },
   },
-  "include": ["./**/*","declaration.d.ts"],
+  "include": ["src/**/*","declaration.d.ts","../shared"],
   "exclude": [
     "./node_modules",
-    "./build/**/*"
-  ]
+  ],
 }

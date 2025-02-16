@@ -1,37 +1,39 @@
 import express from 'express'
+
+// env
 import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 dotenv.config()
-
 
 // middleware
 import bodyParser from 'body-parser'
 import cors from "cors"
 import cookieParser from "cookie-parser"
 import rateLimit from 'express-rate-limit'
-import afterResponseLogger from './middleware/afterResponseMiddleware.js'
-import notFound from './middleware/notFound.js'
+import afterResponseLogger from './src/middleware/afterResponseMiddleware.js'
+import notFound from './src/middleware/notFound.js'
 
 // ./routes
-import { routerArticle } from './routes/articleRoute.js'
-import { routerUser } from './routes/userRoute.js'
-import { routerArticleAsset } from './routes/articleAssetRoute.js'
-import { routerArticleAnalytic } from './routes/articleAnalytic.js'
+import { routerArticle } from './src/routes/articleRoute.js'
+import { routerUser } from './src/routes/userRoute.js'
+import { routerArticleAnalytic } from './src/routes/articleAnalytic.js'
 
 // cloud services
 import { S3Client } from '@aws-sdk/client-s3'
 
 // db
 import mongoose from 'mongoose'
-import connectDB from './config/db.js'
+import connectDB from './src/config/db.js'
+mongoose.set('strictQuery', true);
+
+// connect to mongodb database
+connectDB()
 
 // logging
-import indexLogger from './loggers/indexLogger.js'
+import indexLogger from './src/loggers/indexLogger.js'
 import chalk from 'chalk'
 
 
-
-
-
+// AWS S3 config
 const AWS_ACCESSKEYID = process.env.AWS_ACCESSKEYID
 const AWS_SECRETACCESSKEY = process.env.AWS_SECRETACCESSKEY
 export const AWS_BUCKET_NAME = process.env.AWS_BUCKET_NAME
@@ -53,13 +55,10 @@ export const s3Client = new S3Client({
 });
 
 
-mongoose.set('strictQuery', true);
 
 const nodeEnv = process.env.NODE_ENV as "development" | "production";
 // console.log("nodeEnv=",nodeEnv)
 
-// connect to mongodb database
-connectDB()
 
 const app = express()
 const port = process.env.PORT as string // PORT=8001
@@ -77,7 +76,7 @@ app.set('etag', false); // turn off `etag`
 
 const limiter = rateLimit({
 	windowMs: 10 * 60 * 1000, // 15 minutes
-	max: 1000, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+	max: nodeEnv==="development" ? 10000 : 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
 	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 	// store: ... , // Use an external store for more precise rate limiting
@@ -85,13 +84,8 @@ const limiter = rateLimit({
 
 app.use(limiter)
 
-
+// Log after every request is being made
 app.use(afterResponseLogger)
-
-
-/** ## API/route layer
- * @APIAuth method, currently is used for restricting the endpoint. No one access it because it needs an API key and I never expose the key on the public (that's how it suppossed to be). So, the end point that marked with the method only available to the dev
-*/
 
 
 // user
@@ -100,12 +94,10 @@ app.use(routerUser)
 // article
 app.use(routerArticle)
 
-// article-asset
-app.use(routerArticleAsset)
-
 // article analytic
 app.use(routerArticleAnalytic)
 
+// Handle error not found REST endpoint
 app.use(notFound);
 
 
