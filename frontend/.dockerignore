@@ -15,6 +15,6 @@ next-env.d.ts
 
 # misc
 .dockerignore
-docker_script.sh
 .gitignore
 README.md
+.env.local.example

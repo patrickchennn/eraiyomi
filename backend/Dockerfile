@@ -10,12 +10,7 @@ RUN mkdir -p /app/shared
 COPY shared /app/shared
 
 # Copy all necessary backend files
-COPY ./backend/index.ts ./
-COPY ./backend/src ./src
-COPY ./backend/package*.json ./ 
-COPY ./backend/.babelrc.json ./
-COPY ./backend/tsconfig.prod.json ./
-COPY ./backend/declaration.d.ts ./
+COPY ./backend .
 
 # Install both `devDependencies` and `dependencies`
 RUN npm install

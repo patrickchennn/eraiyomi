@@ -1,0 +1,19 @@
+# build
+logs
+build*
+dist
+
+# dependencies
+node_modules
+
+# api documentation
+openAPI.json
+
+# typescript
+tsconfig.json
+
+# misc
+.gitignore
+.dockerignore
+GA4-eraiyomi-credentials.json
+.env.example
