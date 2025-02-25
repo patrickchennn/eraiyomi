@@ -97,6 +97,10 @@ app.use(routerArticle)
 // article analytic
 app.use(routerArticleAnalytic)
 
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 // Handle error not found REST endpoint
 app.use(notFound);
 

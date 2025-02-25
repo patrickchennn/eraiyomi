@@ -14,9 +14,9 @@
     "allowJs": true, // Allow importing JavaScript files
     // source map options
     "outDir": "build-dev",
-    "sourceMap": true,
     "allowSyntheticDefaultImports": true,
-    "inlineSources": true, // Include original source code in source maps
+    "sourceMap": true,
+    "inlineSources": true,
 
     "removeComments": false, // Preserve comments
     "pretty": true, // Format output in a readable manner

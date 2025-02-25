@@ -1,33 +1,44 @@
-# Stage 1: Build stage
+# Stage 1: Build
 FROM node:18.20.4-alpine AS builder
-WORKDIR /app
 
-# Install necessary build dependencies for Alpine
-RUN apk add --no-cache python3 g++ make
+WORKDIR /app/backend
 
-# Copy package files and install all dependencies
-COPY package*.json ./
-RUN npm cache clean --force && npm install # Clean cache and install
+# Ensure shared directory exists (this is only needed if not using volumes)
+RUN mkdir -p /app/shared
 
-# Copy source files and run the build process
-COPY . .
+# Copy `shared` directory to `/app/shared` (if using COPY)
+COPY shared /app/shared
+
+# Copy all necessary backend files
+COPY ./backend/index.ts ./
+COPY ./backend/src ./src
+COPY ./backend/package*.json ./ 
+COPY ./backend/.babelrc.json ./
+COPY ./backend/tsconfig.prod.json ./
+COPY ./backend/declaration.d.ts ./
+
+# Install both `devDependencies` and `dependencies`
+RUN npm install
+
+# Build
 RUN npm run build
 
-# Stage 2: Final stage
+# Debug: Ensure dist folder exists
+RUN ls -la ./dist
+
+
+
+# Stage 2: Production
 FROM node:18.20.4-alpine
-WORKDIR /app
+WORKDIR /app/backend
 
-# Install production dependencies only
-COPY package*.json ./
-# RUN npm ci --only=production
-RUN npm install --omit=dev
+COPY ./backend/.env ./
+COPY --from=builder /app/backend/dist ./dist
+COPY --from=builder /app/backend/package*.json ./ 
 
-# Copy the build artifacts
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/.env ./.env
+# Install only `dependencies`
+RUN npm install ---omit=dev
 
-# Expose the desired port
 EXPOSE 8999
 
-# Start the application
 CMD ["npm", "start"]

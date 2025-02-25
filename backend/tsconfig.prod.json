@@ -1,25 +1,41 @@
 {
-    "extends": "./tsconfig", // Extend from your base configuration
-    "compilerOptions": {
-      "outDir": "build-prod", // Separate production build directory
-      "sourceMap": false, // Disable source maps in production for smaller files and security
-      "declaration": false, // You might not need type declarations in production
-      "removeComments": true, // Remove comments to reduce file size
-      "noEmitOnError": true, // Avoid emitting files if there's an error
-      "strict": true, // Keep strict checks
-      // Consider enabling these additional strict checks for production
-      "noImplicitAny": true,
-      "strictNullChecks": true,
-      "strictFunctionTypes": true,
-      "strictBindCallApply": true,
-      "strictPropertyInitialization": true,
-      "noImplicitThis": true,
-      "alwaysStrict": true,
-      // Optimization options
-      "skipLibCheck": true, // Skip type checking of all declaration files (*.d.ts).
-      "incremental": false // Don't use incremental compilation in production for a clean build
+  "compilerOptions": {
+    // basic options
+    "target": "ES6",
+    "module": "ES2020",
+    "outDir": "compiled-ts", // Separate production build directory
+    "declaration": false, // You might not need type declarations in production
+    "esModuleInterop": true,      
+    "forceConsistentCasingInFileNames": true,
+
+    // module resolution options
+    "moduleResolution": "node",
+    "isolatedModules": true,
+    "lib": ["ES2022"],
+    "allowJs": true, // Allow importing JavaScript files
+
+    // Consider enabling these additional strict checks for production
+    "noEmitOnError": true, // Avoid emitting files if there's an error
+    "strict": true, // Keep strict checks
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+
+    // Optimization options
+    "removeComments": true, // Remove comments to reduce file size
+    "skipLibCheck": true, // Skip type checking of all declaration files (*.d.ts).
+    "incremental": false, // Don't use incremental compilation in production for a clean build
+    "sourceMap": false, // Disable source maps in production for smaller files and security
+    "inlineSourceMap": false,
+    "inlineSources": false,
+    "paths": {
+      "@shared/*": ["../shared/*"]
     },
-    "include": ["./**/*"], // Only include your source files
-    "exclude": ["./node_modules", "./build", "**/*.spec.ts"] // Exclude node_modules, build directory, and test files
-  }
-  
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}

@@ -3,11 +3,11 @@
   "version": "2.0.0",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start -p 3999",
+    "check-type": "tsc --noEmit",
     "lint": "next lint",
-    "cy:open": "cypress open",
-    "type-check": "tsc --noEmit"
+    "build": "npm run check-type && npm run lint && next build",
+    "start": "next start -p 3999",
+    "cy:open": "cypress open"
   },
   "dependencies": {
     "@types/node": "20.5.9",

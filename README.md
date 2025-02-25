@@ -1,2 +1,2 @@
 ## Demo
-https://blog.eraiyomi.com
+https://www.eraiyomi.com

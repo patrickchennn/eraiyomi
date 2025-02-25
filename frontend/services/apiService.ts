@@ -56,6 +56,8 @@ export const apiService = async <T>(
 
   return {
     status,
+    // Property 'message' does not exist on type 'T'.ts(2339)
+    // @ts-ignore
     message: dataRes.message || null,
     data: dataRes,
   };

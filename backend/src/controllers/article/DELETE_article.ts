@@ -31,7 +31,7 @@ export const DELETE_article =  async (
   // Remove article from user
   const {user} = req.body
 
-  const idx = user.articleIdRef.findIndex(id => articleId===id.toString())
+  const idx = user.articleIdRef.findIndex((id: string) => articleId===id.toString())
   if (idx===-1) {
     console.error('Relation article with its author is not found');
     return retResErrJson(res, 500,"Relation article with its author is not found")

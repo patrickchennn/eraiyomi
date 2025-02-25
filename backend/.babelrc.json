@@ -12,5 +12,7 @@
     ],
     "plugins": [
         ["transform-remove-console", { "exclude": ["error", "warn"] }]
-    ]
+    ],
+    "ignore": ["**/shared/**/*"] // Ignore the shared directory
+
 }
