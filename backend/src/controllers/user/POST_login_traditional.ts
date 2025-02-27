@@ -40,15 +40,16 @@ export const POST_loginTraditional = async (
   const JWT_token = generateToken(user._id.toString())
 
   // remember user's account info
-  res.cookie(
-    "userCredToken",
-    JSON.stringify(JWT_token),
-    {
-      maxAge: 3600000, // 1 hour in milliseconds
-      expires:new Date(Date.now() + 1 * 3600000),
-      encode: String
-    }
-  )
+  res.cookie("userCredToken", JSON.stringify(JWT_token), {
+    // httpOnly: true, // Ensures cookie is only accessible by the server (better security)
+    // secure: process.env.NODE_ENV === "production", // Ensures cookie is sent over HTTPS
+    secure: true, // Ensures cookie is sent over HTTPS
+    sameSite: "none", // Set to "Strict" if same-origin, "None" if cross-origin
+    maxAge: 3600000, // 1 hour in milliseconds
+    expires: new Date(Date.now() + 3600000), // Explicit expiration time
+    path: "/", // Ensures cookie is available site-wide
+  });
+  
 
   // return res.status(200).send("succuessfully logged in")
   return res.status(200).json({
