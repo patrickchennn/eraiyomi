@@ -5,8 +5,6 @@ import { BsTrash3 } from "react-icons/bs";
 
 import MarkdownEditor from "@uiw/react-markdown-editor";
 import debounce from "lodash.debounce";
-import isEmpty from "lodash.isempty";
-import { Article } from "../EditArticle";
 import chalk from "chalk";
 import { getArticleContent } from "@/services/article/articleContentService";
 

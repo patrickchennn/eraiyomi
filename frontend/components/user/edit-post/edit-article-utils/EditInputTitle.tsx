@@ -1,9 +1,10 @@
-import { Article, ArticleState } from '../EditArticle'
+import { ArticlePostRequestBody } from '@shared/Article'
+import { ArticleState } from '../EditArticle'
 import IsChangedStar from './IsChangedStar'
 
 interface EditInputTitleProps{
   articleState: ArticleState
-  articleDefaultDataRef: React.MutableRefObject<Article>
+  articleDefaultDataRef: React.MutableRefObject<ArticlePostRequestBody>
 }
 export default function EditInputTitle({
   articleState,

@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from 'react'
 
-import { Article as ArticleL} from '@shared/Article';
+import { Article, ArticlePostRequestBody} from '@shared/Article';
 import EditInputTitle from './edit-article-utils/EditInputTitle';
 import EditInputDesc from './edit-article-utils/EditInputDesc';
 import EditInputCategory from './edit-article-utils/EditInputCategory';
@@ -14,23 +14,13 @@ import SaveBtn from './SaveBtn';
 import DeleteBtn from './DeleteBtn';
 
 
-export interface Article {
-  _id: string
-  title:string
-  shortDescription:string
-  category:string[]
-  status:"published"|"unpublished"
-  contentStructureType: "markdown"
-  totalWordCounts: number
-}
-
-export type ArticleState = [Article, React.Dispatch<React.SetStateAction<Article>>]
+export type ArticleState = [ArticlePostRequestBody, React.Dispatch<React.SetStateAction<ArticlePostRequestBody>>]
 
 const buttonStyle = 'border rounded py-1 px-2 bg-zinc-50 dark:bg-zinc-900 shadow-inner text-sm hover:shadow'
 
 
 interface EditArticleProps{
-  initArticle: ArticleL
+  initArticle: Article
 }
 export default function EditArticle({initArticle}: EditArticleProps){
 
@@ -44,8 +34,7 @@ export default function EditArticle({initArticle}: EditArticleProps){
   const [rawText, setRawText] = useState<string>('');
   const [API_key, set_API_key] = useState<string>("")
 
-  const [article,setArticle] = useState<Article>({
-    _id:initArticle._id,
+  const [article,setArticle] = useState<ArticlePostRequestBody>({
     title: initArticle.title,
     shortDescription: initArticle.shortDescription,
     category: initArticle.category,
@@ -56,8 +45,7 @@ export default function EditArticle({initArticle}: EditArticleProps){
   // console.log("article=",article)
   const articleState: ArticleState = [article,setArticle]
 
-  const articleDefaultDataRef = useRef<Article>({
-    _id:initArticle._id,
+  const articleDefaultDataRef = useRef<ArticlePostRequestBody>({
     title: initArticle.title,
     shortDescription: initArticle.shortDescription,
     category: initArticle.category,
@@ -76,6 +64,7 @@ export default function EditArticle({initArticle}: EditArticleProps){
         <SaveBtn 
           buttonStyle={buttonStyle}
           API_key={API_key}
+          articleId={initArticle._id}
           article={article}
           articleDefaultDataRef={articleDefaultDataRef}
           mdInputUploadRef={mdInputUploadRef}
@@ -87,7 +76,7 @@ export default function EditArticle({initArticle}: EditArticleProps){
         <DeleteBtn 
           buttonStyle={buttonStyle}
           API_key={API_key}
-          articleId={article._id}
+          articleId={initArticle._id}
         />
       </div>
 
@@ -114,13 +103,13 @@ export default function EditArticle({initArticle}: EditArticleProps){
       />
 
       <EditInputThumbnail 
-        articleId={article._id}
+        articleId={initArticle._id}
         thumbnailRef={thumbnailRef}
         thumbnailActionRef={thumbnailActionRef}
       />
 
       <EditEditorChoice 
-        article={article}
+        articleId={initArticle._id}
         mdInputUploadRef={mdInputUploadRef}
         contentActionRef={contentActionRef}
         rawTextState={[rawText, setRawText]}

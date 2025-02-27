@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { BsPlus } from 'react-icons/bs'
 import { IoIosClose } from 'react-icons/io'
-import { Article, ArticleState } from '../EditArticle'
+import { ArticleState } from '../EditArticle'
 import IsChangedStar from './IsChangedStar'
+import { ArticlePostRequestBody } from '@shared/Article'
 
 
 interface EditInputCategoryProps{
   articleState: ArticleState
-  articleDefaultDataRef: React.MutableRefObject<Article>
+  articleDefaultDataRef: React.MutableRefObject<ArticlePostRequestBody>
 }
 export default function EditInputCategory({
   articleState,

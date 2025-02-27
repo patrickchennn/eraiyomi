@@ -10,6 +10,7 @@ import { postArticle } from '@/services/article/articleService';
 import { postArticleContent } from '@/services/article/articleContentService';
 import { postArticleThumbnail } from '@/services/article/articleThumbnailService';
 import { postArticleImgContent } from '@/services/article/articleImageContentService';
+import { ArticlePostRequestBody } from '@shared/Article';
 
 
 interface PostBtnProps{
@@ -48,11 +49,12 @@ export default function PostBtn({previewElem,className}: PostBtnProps) {
     }
 
 
+    let isSingleError = false;
 
 
     // 1. Handle the non-uploaded-type-data
     console.log(chalk.blueBright.bgBlack("[INF] Handle the non-uploaded-type-data"))
-    const nonUploadArticleData = {
+    const nonUploadArticleData: ArticlePostRequestBody = {
       title: articleData.title,
       shortDescription: articleData.shortDescription,
       status:"published",
@@ -70,13 +72,18 @@ export default function PostBtn({previewElem,className}: PostBtnProps) {
     console.log("postArticleRes=",postArticleRes)
 
     if(postArticleRes.data===null){
+      isSingleError = true;
       return alert(postArticleRes.message)
     }
 
     const articleId = postArticleRes.data._id
 
     // 2. Handle thumbnail 
-    if (thumbnailRef.current!==null && thumbnailRef.current.files!==null) {
+    if (
+      thumbnailRef.current!==null
+      && thumbnailRef.current.files!==null
+      && thumbnailRef.current.files[0]!==undefined
+    ) {
       console.log(chalk.blueBright.bgBlack("[INF] Handle thumbnail"))
       const thumbnailForm = new FormData()
       
@@ -88,12 +95,16 @@ export default function PostBtn({previewElem,className}: PostBtnProps) {
         API_key, JWT_token, articleId, thumbnailForm
       )
       console.log("postThumbnailRes=",postThumbnailRes)
+      if(postThumbnailRes!==null && postThumbnailRes.data===null) isSingleError = true
     }
 
     console.log("mdInputUploadRef.current=",mdInputUploadRef.current)
 
-    // 3. Handle the uploaded-type-data: article.content and its images
-    if (mdInputUploadRef.current!==null && mdInputUploadRef.current.files!==null) {
+    // 3. Handle the article.content and its images
+    if (
+      mdInputUploadRef.current!==null 
+      && mdInputUploadRef.current.files!==null
+    ) {
       console.log(chalk.blueBright.bgBlack("[INF] Handle content and image-content"))
       const contentForm = new FormData()
       const imageContentForm = new FormData()
@@ -115,12 +126,20 @@ export default function PostBtn({previewElem,className}: PostBtnProps) {
 
       imageContentForm.append("image-content", JSON.stringify(imageContentMetadata))
 
-      await postArticleContent(
+      const postArticleContentRes = await postArticleContent(
         API_key, JWT_token, articleId, contentForm
       )
-      await postArticleImgContent(
+      const postArticleImgContentRes = await postArticleImgContent(
         API_key, JWT_token, articleId, imageContentForm
       )
+      if(postArticleContentRes!==null && postArticleContentRes.data===null) isSingleError = true
+      if(postArticleImgContentRes!==null && postArticleImgContentRes.data===null) isSingleError = true
+    }
+
+    if(isSingleError){
+      alert("Error creating article")
+    }else{
+      alert("Successfully creating article")
     }
   }
 

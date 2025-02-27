@@ -2,35 +2,37 @@ import React from "react"
 import chalk from "chalk"
 import isEmpty from "lodash.isempty"
 import isEqual from "lodash.isequal"
-import { Article } from "./EditArticle"
 import getCookie from "@/utils/getCookie"
 import { putArticle } from "@/services/article/articleService"
 import { putArticleImgContent } from "@/services/article/articleImageContentService"
 import { deleteArticleThumbnail, putArticleThumbnail } from "@/services/article/articleThumbnailService"
 import { putArticleContent } from "@/services/article/articleContentService"
+import { ArticlePostRequestBody } from "@shared/Article"
 
 interface SaveBtnProps {
   buttonStyle: string
   API_key: string
-  article: Article
-  mdInputUploadRef: React.MutableRefObject<HTMLInputElement|null>
-  contentActionRef: React.MutableRefObject<"default"|"change"|"delete">
-  articleDefaultDataRef: React.MutableRefObject<Article>
+  articleId: string
+  article: ArticlePostRequestBody
+  articleDefaultDataRef: React.MutableRefObject<ArticlePostRequestBody>
   thumbnailRef :React.MutableRefObject<HTMLInputElement|null>
   thumbnailActionRef: React.MutableRefObject<"default"|"change"|"delete">
+  mdInputUploadRef: React.MutableRefObject<HTMLInputElement|null>
+  contentActionRef: React.MutableRefObject<"default"|"change"|"delete">
 }
 export default function SaveBtn({
   buttonStyle,
   API_key,
+  articleId,
   article,
-  mdInputUploadRef,
-  contentActionRef,
   articleDefaultDataRef,
   thumbnailRef,
-  thumbnailActionRef
+  thumbnailActionRef,
+  mdInputUploadRef,
+  contentActionRef,
 }: SaveBtnProps){
   const handleSave = async () => {
-    console.info(chalk.blueBright.bgBlack("[INF] @handleSave()"))
+    console.log(chalk.blueBright.bgBlack("[INF] @handleSave()"))
     
     
     // Client-side check IF: API key is not provided
@@ -56,7 +58,7 @@ export default function SaveBtn({
     for (const [key, newVal] of Object.entries(article)) {
       // console.log("newVal=",newVal)
 
-      const defaultVal = articleDefaultDataRef.current[key as keyof Article]
+      const defaultVal = articleDefaultDataRef.current[key as keyof ArticlePostRequestBody]
       // console.log("defaultVal=",defaultVal)
 
 
@@ -71,22 +73,22 @@ export default function SaveBtn({
        */
       if(!isEqual(newVal,defaultVal)){
         changedArticle[key] = newVal
-        console.info(chalk.blueBright.bgBlack(`[INF] ${key} is changed:`,defaultVal,"-->",newVal))
+        console.log(chalk.blueBright.bgBlack(`[INF] ${key} is changed:`,defaultVal,"-->",newVal))
       }
     }
 
-    let articleMetadataRes = null
     // IF: there is something in that `changedArticle` object --> it means the user decided to edit/changed the article meta data (which we already handle it on the previous logic)
     if(!isEmpty(changedArticle)){
-      console.info(chalk.blueBright.bgBlack(`[INF] There is some changes on article data --> calling the edit article API`))
+      console.log(chalk.blueBright.bgBlack(`[INF] There is some changes on article data --> calling the edit article API`))
 
       // Simply call the API to make the change
-      articleMetadataRes = await putArticle(API_key, JWT_token,article._id,changedArticle)
+      const articleMetadataRes = await putArticle(API_key, JWT_token,articleId,changedArticle)
       console.log("articleMetadataRes=",articleMetadataRes)
+
+      if(articleMetadataRes!==null && articleMetadataRes.data===null) isSingleError = true
     }
     
 
-    if(articleMetadataRes!==null && articleMetadataRes.data===null) isSingleError = true
     
 
     let thumbnailRes = null
@@ -107,11 +109,11 @@ export default function SaveBtn({
 
         thumbnailForm.append("thumbnail",thumbnailFile)
 
-        thumbnailRes = await putArticleThumbnail(API_key,JWT_token,article._id,thumbnailForm)
+        thumbnailRes = await putArticleThumbnail(API_key,JWT_token,articleId,thumbnailForm)
         console.log("thumbnailRes=",thumbnailRes)
 
       }else if(thumbnailActionRef.current==="delete"){
-        thumbnailRes = await deleteArticleThumbnail(API_key,JWT_token,article._id)
+        thumbnailRes = await deleteArticleThumbnail(API_key,JWT_token,articleId)
         console.log("thumbnailRes=",thumbnailRes)
       }
     }
@@ -147,8 +149,8 @@ export default function SaveBtn({
 
       imageContentForm.append("image-content", JSON.stringify(imageContentMetadata))
 
-      contentRes = await putArticleContent(API_key, JWT_token, article._id, contentForm)
-      imageContentRes = await putArticleImgContent(API_key, JWT_token, article._id, imageContentForm) 
+      contentRes = await putArticleContent(API_key, JWT_token, articleId, contentForm)
+      imageContentRes = await putArticleImgContent(API_key, JWT_token, articleId, imageContentForm) 
     }
 
     if(contentRes!==null && contentRes.data===null) isSingleError = true
