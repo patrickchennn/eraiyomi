@@ -30,7 +30,7 @@ export default async function POST_articleContent(
   const {file} = req
   console.log("file=",file)
 
-  console.log(chalk.blueBright.bgBlack("old article.thumbnail:"),article.thumbnail)
+  console.log(chalk.blueBright.bgBlack("old article.content:"),article.content)
 
 
   if(file!==undefined){
@@ -54,7 +54,7 @@ export default async function POST_articleContent(
     }
   }
 
-  console.log(chalk.blueBright.bgBlack("new article.thumbnail to be saved:"),article.thumbnail)
+  console.log(chalk.blueBright.bgBlack("new article.content to be saved:"),article.content)
   await article.save()
 
   return res.status(201).json({message:"Successfully created content"})

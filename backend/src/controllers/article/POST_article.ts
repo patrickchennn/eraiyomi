@@ -51,7 +51,7 @@ export const POST_article =  async (
     category: body.category,
     status:body.status,
     totalWordCounts: Number(body.totalWordCounts),
-    contentStructureType:"markdown",
+    contentStructureType:body.contentStructureType,
     // Server generated
     _id: articleId,
     userIdRef:body.user._id,

@@ -17,5 +17,8 @@ export const GET_article = async (req: Request, res:Response) => {
     return retResErrJson(res,404,"Article not found")
   }
 
-  return res.status(200).json(articleData)
+  return res.status(200).json({
+    message:"Successfully get article",
+    data:articleData
+  })
 }

@@ -66,5 +66,8 @@ export const GET_articles = async (
 
   }
 
-  return res.status(200).json(articleDatas)
+  return res.status(200).json({
+    message:"Successfully get all articles",
+    data:articleDatas
+  })
 }

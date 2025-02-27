@@ -29,5 +29,7 @@ export const GET_user = async (
     return retResErrJson(res,404,"Not found")
   }
 
-  return res.status(200).json(user)
+  return res.status(200).json({
+    data:user
+  })
 }

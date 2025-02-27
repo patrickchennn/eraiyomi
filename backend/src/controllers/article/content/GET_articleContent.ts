@@ -137,8 +137,10 @@ export const GET_articleContent = async (req: Request, res:Response) => {
   // console.log("rawHtml=",rawHtml)
 
   return res.status(200).json({
-    rawHtml,
-    rawText,
-    images: imageContentRemoteUrl, // In case frontend needs direct mapping
+    data:{
+      rawHtml,
+      rawText,
+      images: imageContentRemoteUrl,
+    }
   });
 }
