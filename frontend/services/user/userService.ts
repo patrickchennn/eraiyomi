@@ -1,4 +1,3 @@
-import { AxiosRequestConfig } from "axios";
 import { apiService } from "../apiService";
 import { User, UserLoginRequestBody } from "@shared/User";
 
@@ -11,14 +10,14 @@ export const postRegisterUser = async (
   },
 
 ) => {
-  const conf: AxiosRequestConfig = {
+  const conf: RequestInit = {
     headers:{
       "Content-Type":"application/json",
       'Authorization': `Bearer ${API_key}`
     },
     method: "POST",
   }
-  return apiService<string>('post', "/user", conf, data);
+  return apiService<string>('post', "/user", conf, JSON.stringify(data));
 };
 
 
@@ -47,9 +46,8 @@ export const getUser = async (
   if (queries.id !== undefined) {
     params.append("id", queries.id);
   }
-  const conf: AxiosRequestConfig = {params}
 
-  return apiService<User>('get', `/user`, conf);
+  return apiService<User>('get', `/user?${params.toString()}`);
 };
 
 
@@ -58,7 +56,7 @@ export const getUser = async (
 export const postVerifyUser = async (JWT: string) => {
 
 
-  const conf: AxiosRequestConfig = {
+  const conf: RequestInit = {
     headers: {
       'Authorization': `Bearer ${JWT}`
     },
@@ -71,8 +69,11 @@ export const postVerifyUser = async (JWT: string) => {
 
 
 export const postLogin = async (loginData: UserLoginRequestBody) => {
-  const conf: AxiosRequestConfig = {
-    withCredentials: true
+  const conf: RequestInit = {
+    credentials: "include",
+    headers:{
+      "Content-Type":"application/json"
+    }
   }
-  return apiService<User>('post', `/user/login-traditional`, conf, loginData);
+  return apiService<User>('post', `/user/login-traditional`, conf, JSON.stringify(loginData));
 };

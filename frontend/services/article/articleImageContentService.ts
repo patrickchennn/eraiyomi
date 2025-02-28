@@ -1,7 +1,4 @@
 import { apiService } from "../apiService";
-import { AxiosRequestConfig } from "axios";
-
-
 
 
 export const postArticleImgContent = async (
@@ -10,10 +7,10 @@ export const postArticleImgContent = async (
   articleId: string,
   form: FormData
 ) => {
-  const conf: AxiosRequestConfig = {
+  const conf: RequestInit = {
     headers: {
-      'Authorization': `Bearer ${JWT_token}`, // JWT token
-      'x-api-key': API_key // API key in a custom header
+      'Authorization': `Bearer ${JWT_token}`,
+      'x-api-key': API_key,
     }
   }
 
@@ -30,10 +27,10 @@ export const putArticleImgContent = async (
   form: FormData
 ) => {
 
-  const conf: AxiosRequestConfig = {
+  const conf: RequestInit = {
     headers: {
-      'Authorization': `Bearer ${JWT_token}`, // JWT token
-      'x-api-key': API_key // API key in a custom header
+      'Authorization': `Bearer ${JWT_token}`,
+      'x-api-key': API_key,
     }
   }
   return apiService<string>('put', `/article/${articleId}/image-content`, conf, form);

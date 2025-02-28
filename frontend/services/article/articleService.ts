@@ -1,19 +1,19 @@
-import { Article } from "@shared/Article";
+import { Article, ArticlePostRequestBody } from "@shared/Article";
 import { apiService } from "../apiService";
-import { AxiosRequestConfig } from "axios";
 
 export const postArticle = async (
   API_key: string,
   JWT_token: string,
-  data: any
+  data: ArticlePostRequestBody
 ) => {
-  const conf: AxiosRequestConfig = {
+  const conf: RequestInit = {
     headers: {
-      'Authorization': `Bearer ${JWT_token}`, // JWT token
-      'x-api-key': API_key // API key in a custom header
+      'Authorization': `Bearer ${JWT_token}`,
+      'x-api-key': API_key,
+      "Content-Type": "application/json"
     }
   }
-  return apiService<Article>('post', "/article", conf, data);
+  return apiService<Article>('post', "/article", conf, JSON.stringify(data));
 };
 
 export const getArticle = async (articleId: string) => {
@@ -46,13 +46,12 @@ export const getArticles = async (
     params.append("search", queryParams.search);
   }
 
-  const conf: AxiosRequestConfig = {
-    params, // Automatically appends query parameters
+  const conf: RequestInit = {
     headers: {
-      'Cache-Control': reqCache // Equivalent to request cache
+      'Cache-Control': reqCache
     }
   }
-  return apiService<Article[]>('get', `/articles`, conf);
+  return apiService<Article[]>('get', `/articles?${params.toString()}`, conf);
 };
 
 
@@ -62,7 +61,7 @@ export const putArticle = async (
   articleId: string,
   data: any
 ) => {
-  const conf: AxiosRequestConfig = {
+  const conf: RequestInit = {
     headers: {
       'Authorization': `Bearer ${JWT_token}`, // JWT token
       'x-api-key': API_key // API key in a custom header
@@ -73,7 +72,7 @@ export const putArticle = async (
 
 
 export const deleteArticle = async (JWT_token: string,articleId: string) => {
-  const conf: AxiosRequestConfig = {
+  const conf: RequestInit = {
     headers: {
       'Authorization': `Bearer ${JWT_token}`, // JWT token
     }

@@ -1,7 +1,4 @@
 import { apiService } from "../apiService";
-import { AxiosRequestConfig } from "axios";
-
-// const routePath = (articleId: string) => `/article/${articleId}/content`
 
 export const getArticleContent = async (articleId: string) => {
   return apiService<{rawHtml: string, rawText: string} | null>('get', `/article/${articleId}/content`);
@@ -16,10 +13,10 @@ export const postArticleContent = async (
   articleId: string,
   form: FormData
 ) => {
-  const conf: AxiosRequestConfig = {
+  const conf: RequestInit = {
     headers: {
-      'Authorization': `Bearer ${JWT_token}`, // JWT token
-      'x-api-key': API_key // API key in a custom header
+      'Authorization': `Bearer ${JWT_token}`,
+      'x-api-key': API_key,
     }
   }
 
@@ -36,10 +33,10 @@ export const putArticleContent = async (
   form: FormData
 ) => {
 
-  const conf: AxiosRequestConfig = {
+  const conf: RequestInit = {
     headers: {
-      'Authorization': `Bearer ${JWT_token}`, // JWT token
-      'x-api-key': API_key // API key in a custom header
+      'Authorization': `Bearer ${JWT_token}`,
+      'x-api-key': API_key,
     }
   }
   return apiService<string>('put', `/article/${articleId}/content`, conf, form);
@@ -53,7 +50,7 @@ export const deleteArticleContent = async (
   JWT_token: string,
   articleId: string,
 ) => {
-  const conf: AxiosRequestConfig = {
+  const conf: RequestInit = {
     headers: {
       'Authorization': `Bearer ${JWT_token}`, // JWT token
       'x-api-key': API_key // API key in a custom header

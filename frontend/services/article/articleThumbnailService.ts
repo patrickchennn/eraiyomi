@@ -1,5 +1,4 @@
 import { apiService } from "../apiService";
-import { AxiosRequestConfig } from "axios";
 
 export const getArticleThumbnail = async (articleId: string) => {
   return apiService<{remoteUrl: string}>('get', `/article/${articleId}/thumbnail`);
@@ -11,14 +10,14 @@ export const postArticleThumbnail = async (
   articleId: string,
   thumbnailForm: FormData
 ) => {
-  const conf: AxiosRequestConfig = {
+  const conf: RequestInit = {
     headers: {
-      'Authorization': `Bearer ${JWT_token}`, // JWT token
-      'x-api-key': API_key // API key in a custom header
+      'Authorization': `Bearer ${JWT_token}`,
+      'x-api-key': API_key,
     }
   }
 
-  return apiService<{remoteUrl: string}>('post', `/article/${articleId}/thumbnail`, conf, thumbnailForm);
+  return apiService<string>('post', `/article/${articleId}/thumbnail`, conf, thumbnailForm);
 };
 
 export const putArticleThumbnail = async (
@@ -28,10 +27,10 @@ export const putArticleThumbnail = async (
   thumbnailForm: FormData
 ) => {
 
-  const conf: AxiosRequestConfig = {
+  const conf: RequestInit = {
     headers: {
-      'Authorization': `Bearer ${JWT_token}`, // JWT token
-      'x-api-key': API_key // API key in a custom header
+      'Authorization': `Bearer ${JWT_token}`,
+      'x-api-key': API_key,
     }
   }
   return apiService<string>('put', `/article/${articleId}/thumbnail`, conf, thumbnailForm);
@@ -43,7 +42,7 @@ export const deleteArticleThumbnail = async (
   JWT_token: string,
   articleId: string,
 ) => {
-  const conf: AxiosRequestConfig = {
+  const conf: RequestInit = {
     headers: {
       'Authorization': `Bearer ${JWT_token}`, // JWT token
       'x-api-key': API_key // API key in a custom header

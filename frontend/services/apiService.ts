@@ -1,6 +1,5 @@
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { baseURL } from './config';
-import httpResLog from '@/loggers/httpResLog';
+import chalk from 'chalk';
 
 // Standardized response format
 interface ApiResponse<T> {
@@ -13,40 +12,44 @@ interface ApiResponse<T> {
 export const apiService = async <T>(
   method: 'get' | 'post' | 'put' | 'delete',
   url: string,
-  config?: AxiosRequestConfig,
-  data?: any,
+  config?: RequestInit,
+  data?: BodyInit,
 ): Promise<ApiResponse<T>> => {
   let status = '';
   let dataRes: T | null = null;
 
   try {
-    const res: AxiosResponse<T> = await axios({
+    const response = await fetch(`${baseURL}${url}`, {
       method,
-      url: `${baseURL}${url}`,
-      data,
       ...config,
+      body: data,
     });
 
-    dataRes = res.data;
-    status = `${res.status} ${res.statusText}`;
+    let resData;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      resData = await response.json();
+    } else {
+      resData = await response.text();
+    }
+    // console.log("resData=",resData)
 
-    // Log successful responses
-    httpResLog.ok(method, url, status);
-  } catch (err) {
-    console.error(err);
+    status = `${response.status} ${response.statusText}`;
 
-    // Handle Axios errors
-    if (axios.isAxiosError(err) && err.response) {
-      status = `${err.response.status} ${err.response.statusText}`;
-
+    if (!response.ok) {
+      console.error(chalk.red.bgBlack(`[ERR] ${method} ${url} ${status}`) )
+      console.error(chalk.red.bgBlack("[ERR]"), resData);
       return {
         status,
-        message: err.response.data?.message || 'An error occurred',
+        message: typeof resData === 'object' ? resData?.message || 'An error occurred' : resData,
         data: null,
       };
     }
 
-    // Handle other errors (e.g., network errors)
+    dataRes = resData;
+    console.info(chalk.green.bgBlack(`[OK] ${method} ${url} ${status}`) )
+  } catch (err) {
+    console.error(err);
     return {
       status: 'Error',
       message: 'A network or unexpected error occurred',
@@ -54,11 +57,10 @@ export const apiService = async <T>(
     };
   }
 
+
   return {
     status,
-    // Property 'message' does not exist on type 'T'.ts(2339)
-    // @ts-ignore
-    message: dataRes.message || null,
-    data: dataRes,
+    message: (dataRes as any).message,
+    data: (dataRes as any).data,
   };
 };
