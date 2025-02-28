@@ -14,7 +14,7 @@ export default function DeleteBtn({
   articleId
 }: DeleteBtnProps){
   const handleDelete = async () => {
-    console.info(chalk.blueBright.bgBlack("[INF] @handleDelete()"))
+    console.log(chalk.blueBright.bgBlack("[INF] @handleDelete()"))
     
     // Client-side check IF: API key is not provided
     console.log("API_key=",API_key)

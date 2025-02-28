@@ -28,7 +28,7 @@ interface HomeTemplateProps{
   articlesAnalytic:ArticlesAnalytic|null
 }
 export default function HomeTemplate ({initArticles,articlesAnalytic}: HomeTemplateProps){
-  console.info(chalk.blueBright.bgBlack("[INF] Rendering @HomeTemplate component"))
+  console.log(chalk.blueBright.bgBlack("[INF] Rendering @HomeTemplate component"))
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Hooks~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const [showArrow,setShowArrow] = useState(true) 

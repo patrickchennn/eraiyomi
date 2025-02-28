@@ -61,7 +61,7 @@ export const AppContextProvider = ({children}: AppContextProviderProps) => {
     // console.log("userCredToken",userCredToken)
     if(userCredToken==null) {
       setUserInfo(null)
-      console.info(chalk.blueBright.bgBlack(`[INF]: userCredToken is ${userCredToken}`))
+      console.log(chalk.blueBright.bgBlack(`[INF]: userCredToken is ${userCredToken}`))
       return 
     }
 

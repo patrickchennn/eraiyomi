@@ -1,6 +1,6 @@
 // @ts-check
 
-const { PHASE_DEVELOPMENT_SERVER, PHASE_PRODUCTION_SERVER, PHASE_PRODUCTION_BUILD } = require("next/dist/shared/lib/constants");
+const { PHASE_DEVELOPMENT_SERVER } = require("next/dist/shared/lib/constants");
 
 module.exports = (phase) => {
   const config = {
@@ -31,7 +31,7 @@ module.exports = (phase) => {
   }
   config['compiler'] = {
     removeConsole: {
-      exclude: ["error", "trace"],
+      exclude: ["error", "info"],
     }
   }
   config['output'] = "standalone"

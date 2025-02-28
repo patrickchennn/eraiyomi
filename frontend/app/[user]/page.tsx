@@ -16,7 +16,7 @@ interface UserProps{
 export default async function User({params}: UserProps) {
   const userName = params.user
   
-  console.log(chalk.blueBright.bgBlack(`[INF] Rendering /${userName}`))
+  console.info(chalk.blueBright.bgBlack(`[INF] Rendering /${userName} Page`))
   console.log("params=",params)
 
   const cookieStore = cookies()

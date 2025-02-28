@@ -6,6 +6,7 @@ import { getArticles } from "@/services/article/articleService";
 import articleTitleToUrlSafe from "@/utils/articleTitleToUrlSafe";
 import { Article, ArticlesAnalytic } from "@shared/Article";
 import chalk from "chalk";
+import isEmpty from "lodash.isempty";
 import Link from "next/link";
 import { BiLike } from "react-icons/bi";
 import { BsEye } from "react-icons/bs";
@@ -25,7 +26,7 @@ export default async function App(){
   }
 
   const articlesAnalyticData = await getArticlesAnalytic()
-  console.log("articlesAnalyticData=",articlesAnalyticData)
+  // console.log("articlesAnalyticData=",articlesAnalyticData)
 
 
 
@@ -53,7 +54,7 @@ const ShowArticles = ({articles, articlesAnalytic}: ShowArticlesProps) => {
     articleId: string
   }
   const ShowArticleAnalytics = ({articleId}: ShowArticleAnalyticsProps) => {
-    if(articlesAnalytic===null){
+    if(isEmpty(articlesAnalytic)){
       return '-'
     }
 
