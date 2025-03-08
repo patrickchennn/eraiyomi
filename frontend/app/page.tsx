@@ -1,4 +1,4 @@
-"use server"
+"use client"
 
 import "@/assets/globals.css"
 import { getArticlesAnalytic } from "@/services/analytics/articleAnalyticService";
@@ -8,36 +8,48 @@ import { Article, ArticlesAnalytic } from "@shared/Article";
 import chalk from "chalk";
 import isEmpty from "lodash.isempty";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { BiLike } from "react-icons/bi";
 import { BsEye } from "react-icons/bs";
 
-export default async function App(){
+export default function App(){
   console.log(chalk.blueBright.bgBlack("[INF] Rendering /"))
-
-  const articles = await getArticles({
-    sort:"newest",status:"published"
-  },"no-store")
-  // console.log("articles=",articles)
   
-  if(articles.data===null){
-    return (
-      <pre>{JSON.stringify(articles, null, 4)}</pre>
-    )
-  }
+  const [isLoading, setLoading] = useState(true)
+  const [articles, setarticles] = useState<Article[]|null>(null)
+  const [articlesAnalytic, setArticlesAnalytic] = useState<ArticlesAnalytic|null>(null)
 
-  const articlesAnalyticData = await getArticlesAnalytic()
-  // console.log("articlesAnalyticData=",articlesAnalyticData)
+  
+  useEffect(() => {
+    getArticles({
+      sort:"newest",status:"published"
+    },"no-store")
+      .then((resArticles) => {
+        console.log("resArticles",resArticles)
+        setarticles(resArticles.data)
+        setLoading(false)
+      })
+    ;
 
+    getArticlesAnalytic()
+      .then((resArticlesAnalytic) => {
+        console.log("resArticlesAnalytic",resArticlesAnalytic)
+        setArticlesAnalytic(resArticlesAnalytic.data)
+        setLoading(false)
+      })
+    ;
 
+  }, [])
 
-  // IF fetch is succeed AND the (dynamically) imported blog page components is done
-    // console.log(articlesState,components)
+  if (isLoading) return <div className="loader">Loading...</div>
+  if (!articles) return <p>No data</p>
+
   return (
     <div className='py-3 w-1/2 mx-auto flex flex-col gap-y-3 max-[576px]:w-3/4 max-[768px]:w-2/3'>
 
       <ShowArticles 
-        articles={articles.data} 
-        articlesAnalytic={articlesAnalyticData.data}
+        articles={articles} 
+        articlesAnalytic={articlesAnalytic}
       />
     </div>
   )
