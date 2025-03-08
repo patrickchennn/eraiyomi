@@ -1,18 +1,32 @@
 import mongoose from 'mongoose'
-import dbLogger from '../loggers/dbLogger.js';
-
+import indexLogger from '../loggers/indexLogger.js';
+import chalk from 'chalk';
 
 const connectDB = async () => {
-  const MONGODB_URI = process.env.MONGODB_URI as string
+  const nodeEnv = process.env.NODE_ENV as "development" | "production" | "staging";
+
+  // console.log("nodeEnv=",nodeEnv)
+  // console.log("process.env.MONGO_USERNAME=",process.env.MONGO_USERNAME)
+  // console.log("process.env.MONGO_PASSWORD=",process.env.MONGO_PASSWORD)
+  
+  let db = ""
+
+  if(nodeEnv==="staging" || nodeEnv==="development"){
+    db = "eraiyomi-staging"
+  }else if(nodeEnv==="production"){
+    db = "eraiyomi"
+  }
+
+  // const MONGODB_URI = null
+  const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.jbtf902.mongodb.net/${db}?retryWrites=true&w=majority&appName=Cluster0`;
+
   try {
     const conn = await mongoose.connect(MONGODB_URI);
-    dbLogger.info(`\r[database] MongoDB Connected to: ${conn.connection.host}:${conn.connection.port}, database name: ${conn.connection.name}`);
+    indexLogger.info(`[database] MongoDB Connected to: ${conn.connection.host}:${conn.connection.port}, database name: ${conn.connection.name}`);
   } 
-  catch (error) {
-    // @ts-ignore
-    dbLogger.error(`[database]: Connection failed with error: ${error.message}`);
-
-    dbLogger.error(`Given URI: ${MONGODB_URI}`);
+  catch (error: any) {
+    console.error(chalk.red(error.message))
+    indexLogger.error(`[database]: Connection failed with error: ${error.message}`);
     process.exit(1)
   }
 }

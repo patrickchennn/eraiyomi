@@ -1,6 +1,7 @@
 node_modules
 /backend/build*
-/backend/.env
+/backend/.env.secrets
 /backend/GA4-eraiyomi-credentials.json
 /backend/logs
 /backend/dist
+/backend/secrets

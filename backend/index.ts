@@ -1,8 +1,12 @@
 import express from 'express'
 
 // env
-import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-dotenv.config()
+import loadSecret from "./src/config/loadSecret.js";
+// loadSecret("secrets")
+loadSecret("/run/secrets")
+
+import 'dotenv/config' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+
 
 // middleware
 import bodyParser from 'body-parser'
@@ -33,7 +37,7 @@ import indexLogger from './src/loggers/indexLogger.js'
 import chalk from 'chalk'
 
 
-// AWS S3 config
+// ~~~~~~~~~~AWS S3 config~~~~~~~~~~
 const AWS_ACCESSKEYID = process.env.AWS_ACCESSKEYID
 const AWS_SECRETACCESSKEY = process.env.AWS_SECRETACCESSKEY
 export const AWS_BUCKET_NAME = process.env.AWS_BUCKET_NAME
@@ -56,19 +60,25 @@ export const s3Client = new S3Client({
 
 
 
-const nodeEnv = process.env.NODE_ENV as "development" | "production";
-// console.log("nodeEnv=",nodeEnv)
+const nodeEnv = process.env.NODE_ENV as "development" | "production" | "staging";
+
 
 
 const app = express()
 const port = process.env.PORT as string // PORT=8001
 
-/** ## Third party middleware*/
+// ~~~~~~~~~~Third party middleware~~~~~~~~~~
 app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json({strict:false}))
 app.use(cors({
-  origin: ['http://localhost:3000',"https://blog.eraiyomi.com"], // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin
-  credentials: true // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin
+  origin: [
+    "http://localhost:3000", // Allow development
+    "https://staging-client.eraiyomi.com", // Allow staging server
+    "https://www.eraiyomi.com", // Allow production
+  ],
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials
+  credentials: true 
 }))
 app.use(cookieParser())
 app.set('etag', false); // turn off `etag`
@@ -88,6 +98,7 @@ app.use(limiter)
 app.use(afterResponseLogger)
 
 
+// ~~~~~~~~~~Express Routing~~~~~~~~~~
 // user
 app.use(routerUser)
 
