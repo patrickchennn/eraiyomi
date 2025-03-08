@@ -5,3 +5,4 @@ node_modules
 /backend/logs
 /backend/dist
 /backend/secrets
+venv/
