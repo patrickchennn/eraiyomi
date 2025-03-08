@@ -19,7 +19,7 @@ elif ENV == "staging":
     DOCKER_SERVICES = "server-staging client-staging"
 else:
     print(f"[bold red]❌ Invalid environment:[/] {ENV}")
-    print("[bold yellow]Usage:[/] deploy.py production|staging")
+    print("Usage: deploy.py production|staging")
     sys.exit(1)
 
 # SSH connection details
@@ -28,8 +28,12 @@ SSH_USER = "patrick"
 SSH_HOST = "raspberrypi.local"
 PROJECT_DIR = "/home/patrick/env/eraiyomi"
 
-def run_ssh_command(client, command, task_description, task):
-    """Executes an SSH command with progress tracking."""
+def run_ssh_command(client, command, description):
+    """Executes an SSH command with colored status updates."""
+    
+    # Show in-progress message
+    print(f"[cyan][*] {description}...[/]")
+
     stdin, stdout, stderr = client.exec_command(command)
     exit_status = stdout.channel.recv_exit_status()
 
@@ -42,8 +46,9 @@ def run_ssh_command(client, command, task_description, task):
     if exit_status != 0:
         print(f"[bold red]❌ Command failed:[/] {command}")
         sys.exit(exit_status)
-    
-    task.update(task_description, advance=1)  # Update progress bar
+
+    # Show success message
+    print(f"[bold green][+] {description}[/]")
 
 def main():
     """Main function to handle deployment."""
@@ -54,16 +59,22 @@ def main():
         ssh.connect(SSH_HOST, username=SSH_USER, key_filename=SSH_KEY)
 
         with Progress() as progress:
-            task = progress.add_task("[cyan]Deploying...", total=4)
+            task = progress.add_task("[bold cyan]Deploying...", total=5)
 
-            print("[bold cyan]📁 Changing to project directory...[/]")
-            run_ssh_command(ssh, f"cd {PROJECT_DIR} && git pull", task, progress)
+            run_ssh_command(ssh, f"cd {PROJECT_DIR} && git pull", "Updating repository")
+            progress.update(task, advance=1)
 
-            print("[bold cyan]🔑 Running setup-secrets.py...[/]")
-            run_ssh_command(ssh, f"cd {PROJECT_DIR}/backend && ./setup_secrets.py", task, progress)
+            run_ssh_command(ssh, f"cd {PROJECT_DIR} && npm run setup-python", "Setup python venv")
+            progress.update(task, advance=1)
 
-            print(f"[bold cyan]🚀 Starting Docker services:[/] {DOCKER_SERVICES}")
-            run_ssh_command(ssh, f"cd {PROJECT_DIR} && docker compose up -d {DOCKER_SERVICES}", task, progress)
+            run_ssh_command(ssh, f"cd {PROJECT_DIR} && npm run pip-install", "Install python venv requirement")
+            progress.update(task, advance=1)
+
+            run_ssh_command(ssh, f"cd {PROJECT_DIR}/backend && ./setup_secrets.py", "Running setup-secrets.py")
+            progress.update(task, advance=1)
+
+            run_ssh_command(ssh, f"cd {PROJECT_DIR} && docker compose up -d {DOCKER_SERVICES}", f"Starting Docker services ({DOCKER_SERVICES})")
+            progress.update(task, advance=1)
 
         print("[bold green]✅ Deployment complete![/]")
 
