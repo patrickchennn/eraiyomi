@@ -11,7 +11,7 @@
         "@babel/preset-typescript"
     ],
     "plugins": [
-        ["transform-remove-console", { "exclude": ["error", "warn"] }]
+        ["transform-remove-console", { "exclude": ["error", "warn", "info"] }]
     ],
     "ignore": ["**/shared/**/*"] // Ignore the shared directory
 

@@ -1,4 +1,4 @@
-# 1. Install dependencies only when needed
+# ~~~~~~~~~~1. Install dependencies only when needed~~~~~~~~~~
 FROM node:18.20.4-alpine AS base
 
 FROM base AS deps
@@ -10,10 +10,7 @@ WORKDIR /app/frontend
 COPY ./frontend/package.json ./frontend/package-lock.json* ./
 RUN npm ci
 
-
-
-
-# 2. Rebuild the source code only when needed
+# ~~~~~~~~~~2. Rebuild the source code only when needed~~~~~~~~~~
 FROM base AS builder
 WORKDIR /app/frontend
 COPY --from=deps /app/frontend/node_modules ./node_modules
@@ -22,14 +19,11 @@ COPY ./frontend .
 COPY shared /app/shared
 RUN npm run build
 
-
-
-
-# 3. Production image, copy all the files and run next
+# ~~~~~~~~~~3. Production image, copy all the files and run next~~~~~~~~~~
 FROM base AS runner
 WORKDIR /app/frontend
 
-ENV NODE_ENV=production
+ENV APP_ENV=staging
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -39,12 +33,11 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder --chown=nextjs:nodejs /app/frontend/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/frontend/.next/static ./.next/static
 
-
 USER nextjs
 
-EXPOSE 3999
+EXPOSE 8006
 
-ENV PORT=3999
+ENV PORT=8006
 
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/next-config-js/output

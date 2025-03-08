@@ -1,10 +1,8 @@
 services:
-  backend:
+  server:
     build:
       context: ./
       dockerfile: ./backend/Dockerfile
-    ports:
-      - "8999:8999"
     network_mode: "host"
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:8999/health"]
@@ -12,13 +10,49 @@ services:
       retries: 5
       start_period: 10s
       timeout: 5s
-  frontend:
+    volumes:
+      - ./backend/secrets/MONGODB_USERNAME:/run/secrets/MONGODB_USERNAME:ro
+      - ./backend/secrets/MONGODB_PASSWORD:/run/secrets/MONGODB_PASSWORD:ro
+      - ./backend/secrets/PROJECT_ID:/run/secrets/PROJECT_ID:ro
+      - ./backend/secrets/CLIENT_EMAIL:/run/secrets/CLIENT_EMAIL:ro
+      - ./backend/secrets/PRIVATE_KEY:/run/secrets/PRIVATE_KEY:ro
+      - ./backend/secrets/AWS_ACCESSKEYID:/run/secrets/AWS_ACCESSKEYID:ro
+      - ./backend/secrets/AWS_SECRETACCESSKEY:/run/secrets/AWS_SECRETACCESSKEY:ro
+      - ./backend/secrets/AWS_BUCKET_NAME:/run/secrets/AWS_BUCKET_NAME:ro
+      - ./backend/secrets/AWS_REGION:/run/secrets/AWS_REGION:ro
+      - ./backend/secrets/MY_API_KEY:/run/secrets/MY_API_KEY:ro
+      - ./backend/secrets/JWT_SECRET:/run/secrets/JWT_SECRET:ro
+  client:
     build:
       context: ./
       dockerfile: ./frontend/Dockerfile
-    ports:
-      - "3999:3999"
     network_mode: "host"
     depends_on:
-      backend:
+      server:
         condition: service_healthy  # Wait until backend is "healthy"
+  server-staging:
+    build:
+      context: ./
+      dockerfile: ./backend/Dockerfile.staging
+      platforms:
+        - linux/arm64
+    network_mode: "host"
+    volumes:
+      - ./backend/secrets/MONGODB_USERNAME:/run/secrets/MONGODB_USERNAME:ro
+      - ./backend/secrets/MONGODB_PASSWORD:/run/secrets/MONGODB_PASSWORD:ro
+      - ./backend/secrets/PROJECT_ID:/run/secrets/PROJECT_ID:ro
+      - ./backend/secrets/CLIENT_EMAIL:/run/secrets/CLIENT_EMAIL:ro
+      - ./backend/secrets/PRIVATE_KEY:/run/secrets/PRIVATE_KEY:ro
+      - ./backend/secrets/AWS_ACCESSKEYID:/run/secrets/AWS_ACCESSKEYID:ro
+      - ./backend/secrets/AWS_SECRETACCESSKEY:/run/secrets/AWS_SECRETACCESSKEY:ro
+      - ./backend/secrets/AWS_BUCKET_NAME:/run/secrets/AWS_BUCKET_NAME:ro
+      - ./backend/secrets/AWS_REGION:/run/secrets/AWS_REGION:ro
+      - ./backend/secrets/MY_API_KEY:/run/secrets/MY_API_KEY:ro
+      - ./backend/secrets/JWT_SECRET:/run/secrets/JWT_SECRET:ro
+  client-staging:
+    build:
+      context: ./
+      dockerfile: ./frontend/Dockerfile.staging
+      platforms:
+        - linux/arm64
+    network_mode: "host"

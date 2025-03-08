@@ -3,6 +3,10 @@
 const { PHASE_DEVELOPMENT_SERVER } = require("next/dist/shared/lib/constants");
 
 module.exports = (phase) => {
+  // console.log("phase=",phase)
+  // console.log("process.env.APP_ENV=",process.env.APP_ENV)
+
+  // All phase config
   const config = {
     images: {
       remotePatterns: [
@@ -17,17 +21,32 @@ module.exports = (phase) => {
     },
   }
 
-  // Development only config options here
+  // Development only config
   if (phase === PHASE_DEVELOPMENT_SERVER) {
     config['env'] = {
-      URL_API: "http://localhost:8001/api",
+      URL_API: "http://localhost:8000/api",
     }
     return config
   }
 
-  // Config options for all phases except development here
+  // Staging only config
+  if(process.env.APP_ENV!==undefined && process.env.APP_ENV==="staging"){
+    config['env'] = {
+      URL_API: "https://staging-api.eraiyomi.com/api",
+      // URL_API: "http://localhost:8001/api",
+    }
+    config['compiler'] = {
+      removeConsole: {
+        exclude: ["error", "info"],
+      }
+    }
+    config['output'] = "standalone"
+    return config
+  }
+
+  // Production only config
   config['env'] = {
-    URL_API: "http://localhost:8999/api",
+    URL_API: "https://api.eraiyomi.com/api",
   }
   config['compiler'] = {
     removeConsole: {
@@ -38,8 +57,3 @@ module.exports = (phase) => {
 
   return config
 };
-
-/** Docs:
- * 
- * Programmatically distinguishing between production build phase and production serve phase? #48736 - https://github.com/vercel/next.js/discussions/48736 (Accessed on Feb 2025)
- */

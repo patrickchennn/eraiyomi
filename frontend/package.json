@@ -2,11 +2,12 @@
   "name": "frontend",
   "version": "2.0.0",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 8005",
     "check-type": "tsc --noEmit",
     "lint": "next lint",
     "build": "npm run check-type && npm run lint && next build",
-    "start": "next start -p 3999",
+    "start-staging": "APP_ENV=staging next start -p 8006",
+    "start": "next start -p 8007",
     "cy:open": "cypress open"
   },
   "dependencies": {
