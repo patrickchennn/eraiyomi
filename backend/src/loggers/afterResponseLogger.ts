@@ -1,57 +1,49 @@
 import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
-import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 import moment from 'moment';
-dotenv.config()
-
+import dotenv from 'dotenv';
+dotenv.config();
 
 const readableTimestampFormat = winston.format((info) => {
-  info.readableTimestamp = moment(info.timestamp).format('DD-MM-YYYY HH:mm:ss'); // Add the readable timestamp
+  info.readableTimestamp = moment(info.timestamp).format('DD-MM-YYYY HH:mm:ss');
   return info;
 });
 
+// Define transports based on environment
+const transports: winston.transport[] = [new winston.transports.Console()];
 
-const httpLogger = winston.createLogger({
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    readableTimestampFormat(),
-    winston.format.json()
-  ),
-  transports: [
-    new winston.transports.Console(),
-    // Daily rotate file transport
+if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging") {
+  transports.push(
     new DailyRotateFile({
-      filename: 'logs/http-response-%DATE%.log',  // Log file name pattern
-      datePattern: 'YYYY-MM-DD',                // Rotate logs daily
-      zippedArchive: true,                      // Compress old logs
-      maxSize: '20m',                           // Maximum log file size before rotation
-      maxFiles: '7d',                          // Keep logs for 14 days
-    }),
-  ]
-});
-
-
-// IF: in development phase --> 
-if (process.env.NODE_ENV !== 'production') {
-  let alignColorsAndTime = winston.format.combine(
-    winston.format.colorize({
-      all:true
-    }),
-    winston.format.label({
-      label:'[development-log]'
-    }),
-    winston.format.timestamp({
-      format:"DD-MM-YY HH:mm:ss"
-    }),
-    winston.format.printf(
-      info => `${info.label} ${info.timestamp} ${info.level} : ${info.message}`
-    ),
+      filename: 'logs/http-response-%DATE%.log',
+      datePattern: 'YYYY-MM-DD',
+      zippedArchive: true,
+      maxSize: '20m',
+      maxFiles: '7d',
+    })
   );
-  httpLogger.add(new winston.transports.Console({
-    format: winston.format.combine(
-      alignColorsAndTime
-    )
-  }));
 }
 
-export default httpLogger
+// Define the base format (used in all environments)
+const baseFormat = winston.format.combine(
+  winston.format.timestamp(),
+  readableTimestampFormat(),
+  winston.format.json()
+);
+
+// Define the development format
+const devFormat = winston.format.combine(
+  readableTimestampFormat(),
+  winston.format.printf(({ level, readableTimestamp, ...rest }) => {
+    return `[${level}] ${readableTimestamp} : ${JSON.stringify(rest, null, 2)}`;
+  }),
+  winston.format.colorize({ all: true })
+);
+
+// Create the logger
+const httpLogger = winston.createLogger({
+  format: process.env.NODE_ENV === "development" ? devFormat : baseFormat,
+  transports,
+});
+
+export default httpLogger;
