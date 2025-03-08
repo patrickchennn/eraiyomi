@@ -5,5 +5,6 @@ declare namespace Cypress {
      * @example cy.login()
      */
     login(): Chainable<any>;
+    uploadFolder(): any;
   }
 }

@@ -52,6 +52,7 @@
     "@types/validator": "^13.11.7",
     "clean-terminal-webpack-plugin": "^3.0.0",
     "cypress": "^13.6.0",
+    "cypress-file-upload": "^5.0.8",
     "netlify-cli": "^17.11.1"
   },
   "engines": {

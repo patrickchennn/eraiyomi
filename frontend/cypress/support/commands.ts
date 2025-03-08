@@ -35,7 +35,7 @@
 //     }
 //   }
 // }
-
+import 'cypress-file-upload';
 
 
 Cypress.Commands.add("login",()=>{
@@ -61,3 +61,36 @@ Cypress.Commands.add("login",()=>{
     expect(xhr.response?.statusCode).to.eq(200);
   });
 })
+
+Cypress.Commands.add('uploadFolder', (selector, folderName) => {
+  cy.task('readdirRecursive', `cypress/fixtures/${folderName}`).then((filePaths) => {
+    const fileList = filePaths.map((filePath: string) => ({
+      // Remove `cypress/fixtures/` prefix
+      filePath: filePath.replace('cypress/fixtures/', ''),
+    }));
+    console.log("fileList=",fileList)
+
+    cy.get(selector).selectFile(fileList);
+    // cy.get(selector).attachFile(fileList);
+  });
+});
+
+// Cypress.Commands.add('uploadFolder', (selector, folderName) => {
+//   cy.task('readdirRecursive', `cypress/fixtures/${folderName}`).then((filePaths) => {
+//     const fileList = filePaths.map((filePath: string) => {
+//       // Remove `cypress/fixtures/` prefix
+//       const fullPath = `cypress/fixtures/${filePath}`
+//       const relativePath = filePath.replace('cypress/fixtures/', '')
+//       return ({
+//         contents: Cypress.Buffer.from(fullPath),
+//         fileName: relativePath,
+//         webkitRelativePath: relativePath
+//       })
+
+//     });
+//     console.log("fileList=",fileList)
+
+//     cy.get(selector).selectFile(fileList);
+//     // cy.get(selector).attachFile(fileList);
+//   });
+// });
