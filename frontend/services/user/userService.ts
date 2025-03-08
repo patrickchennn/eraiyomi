@@ -17,7 +17,7 @@ export const postRegisterUser = async (
     },
     method: "POST",
   }
-  return apiService<string>('post', "/user", conf, JSON.stringify(data));
+  return apiService<string>('post', "/user?method=traditional", conf, JSON.stringify(data));
 };
 
 

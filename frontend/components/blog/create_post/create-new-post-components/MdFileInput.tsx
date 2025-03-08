@@ -39,7 +39,6 @@ function MdFileInput() {
 
     // Separate markdown files and assets
     const markdownFiles = fileList.filter((file) => file.type === 'text/markdown');
-    console.log("markdownFiles=",markdownFiles)
 
     const assetFiles = fileList.filter((file) => file.type !== 'text/markdown');
     console.log("assetFiles=",assetFiles)
@@ -98,8 +97,8 @@ function MdFileInput() {
       >
         <input
           type="file"
-          id="doc_file_upload"
-          name="doc_file_upload"
+          id="markdown-input"
+          name="markdown-input"
           accept="*"
           onChange={handleMarkdownFile}
           multiple

@@ -20,6 +20,7 @@ const RegisterForm = ({signUpFormRef}: RegisterForm) => {
 
     const bodyInit: UserRegisterRequestBody = {
       username:"",
+      name:"",
       email:"",
       password:"",
     }
