@@ -18,20 +18,21 @@ const afterResponseLogger = (req: Request, res: Response, next: NextFunction) =>
       "httpVersion":req.httpVersion,
       "status":res.statusCode + " " + res.statusMessage,
       elapsedTime,
+      headers:req.headers,
+      ip:req.ip,
+      "x-forwarded-for":req.headers['x-forwarded-for'] || req.socket.remoteAddress
     }
 
     // `${req.method} ${req.originalUrl} ${req.httpVersion} - ${res.statusCode} ${res.statusMessage} - ${elapsedTime}ms`;
 
 
     if(statCode>99 && statCode<400){
-      httpLogger.info({http:logMessage})
+      httpLogger.info({...logMessage})
     }
     else if(statCode>399 && statCode<600) {
       httpLogger.error({
-        message:{
-          http:logMessage,
-          res_msg:res.locals.errorMessage
-        }
+        ...logMessage,
+        responseMessage:res.locals.errorMessage
       })
     }
 

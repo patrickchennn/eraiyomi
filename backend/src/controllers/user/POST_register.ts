@@ -1,7 +1,6 @@
 import { Request,Response } from "express"
 import bcrypt from "bcrypt"
 import isString from "lodash.isstring"
-import { v4 as uuidv4 } from 'uuid';
 import { userModel } from "../../schema/userSchema.js";
 import retResErrJson from "../../utils/retResErrJson.js";
 
@@ -33,12 +32,12 @@ export const POST_Register = async (
     profilePictureUrl,
   } = req.body;
 
-  // IF: the user did not provide any of these data
+  // User input check if: the user did not provide any of these data
   if(!username || !email){
-    return retResErrJson(res,400,`Either ${username} 'username' or ${email} 'email' is empty. Those are required data to be filled in order to register`)
+    return retResErrJson(res,400,"Either username or email is empty")
   }
 
-  // IF: `username` has any kind of whitespace
+  // User input check if:: `username` has any kind of whitespace
   // https://stackoverflow.com/questions/17616624/detect-if-string-contains-any-spaces
   if (/\s/.test(username)) {
     return retResErrJson(res,400,`Username '${username}' contains spaces or prohibited character`)
@@ -46,9 +45,9 @@ export const POST_Register = async (
   
   const userExists = await userModel.findOne({ $or: [{ username }, { email }] });
   
-  // IF: the user already exists
+  // User input check if: user already exists
   if (userExists) {
-    return retResErrJson(res,400,`${username} or ${email} is already in use.`)
+    return retResErrJson(res,400,`${username} or ${email} is already in use`)
   }
 
   
@@ -65,19 +64,19 @@ export const POST_Register = async (
     // If this error happens, there is something wrong with the conversion datatype. Offically considered as a server error
     // also that `bcrypt` argument expect to be either "string" or "Buffer"
     if(!isString(password)){
-      return retResErrJson(res,500,`password is not a string`)
+      return retResErrJson(res,500,`Password is not a string`)
     }
 
     // hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPw = await bcrypt.hash(password,salt);
     user = await userModel.create({
-      userId:uuidv4(),
       username,
       name,
       email,
       password:hashedPw,
-      profilePictureUrl: profilePictureUrl ? profilePictureUrl:"https://www.gravatar.com/avatar/?d=mp"
+      profilePictureUrl: profilePictureUrl ? profilePictureUrl:"https://www.gravatar.com/avatar/?d=mp",
+      articleIdRef:[]
     });
   }
   // ELSE IF: registration method using google
@@ -95,7 +94,7 @@ export const POST_Register = async (
 
 
   if(!user){
-    return retResErrJson(res,500,"something error with the server. Cannot create an user. userModel.create() is error")
+    return retResErrJson(res,500,"Something error within the server. Cannot create an user.")
   }
 
 
