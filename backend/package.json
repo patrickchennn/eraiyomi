@@ -3,15 +3,15 @@
   "version": "2.0.0",
   "type": "module",
   "scripts": {
-    "watch:dev": "nodemon ./build-dev/backend/index.js -V --delay 1",
+    "watch:dev": "dotenvx run --env='NODE_ENV=development' -f .env.secrets -- nodemon ./build-dev/backend/index.js -V --delay 1",
     "watch:build-dev": "tsc --watch",
     "compile-ts": "rimraf ./dist && tsc -p tsconfig.prod.json",
     "build-babel": "babel ./compiled-ts --extensions \".ts,.js\" --out-dir dist",
     "flatten-dist": "cp -r dist/backend/* dist/ && rm -rf dist/backend",
     "build": "npm run compile-ts && npm run build-babel && npm run flatten-dist && rimraf ./compiled-ts",
     "dev": "rimraf ./build-dev && tsc && concurrently npm:watch:build-dev npm:watch:dev",
-    "start-staging": "cross-env NODE_ENV=staging PORT=8001 node ./dist/index.js",
-    "start": "cross-env NODE_ENV=production PORT=8002 node ./dist/index.js"
+    "start-staging": "dotenvx run --env='NODE_ENV=staging' -f .env.secrets -- node ./dist/index.js",
+    "start": "dotenvx run --env='NODE_ENV=prodution' -f .env.secrets -- node ./dist/index.js"
   },
   "nodemonConfig": {
     "ignore": [
@@ -55,6 +55,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.679.0",
     "@aws-sdk/s3-request-presigner": "^1.0.0-rc.3",
+    "@dotenvx/dotenvx": "^1.38.4",
     "@google-analytics/data": "^3.2.0",
     "@google-cloud/local-auth": "^2.1.1",
     "axios": "^1.7.7",
@@ -63,8 +64,6 @@
     "chalk": "^5.4.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
-    "cross-env": "^7.0.3",
-    "dotenv": "^16.0.3",
     "etag": "^1.8.1",
     "express": "^4.18.2",
     "express-rate-limit": "^6.9.0",

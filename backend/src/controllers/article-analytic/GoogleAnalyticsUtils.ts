@@ -1,22 +1,15 @@
-import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-dotenv.config()
-
-
-// GAUtils stands for Google Analytics Utilities
-
 // Imports the Google Analytics Data API client library.
 import {BetaAnalyticsDataClient} from '@google-analytics/data'
 
 /**
- * TODO(developer): Uncomment this variable and replace with your
- *   Google Analytics 4 property ID before running the sample.
+ * TODO (developer): Uncomment this variable and replace with your Google Analytics 4 property ID before running the sample. [DONE]
  */
 const propertyId: string = '347340790';
 
 // console.log(process.env.private_key)
 
-// Using a default constructor instructs the client to use the credentials
-// specified in GOOGLE_APPLICATION_CREDENTIALS environment variable.
+// Using a default constructor instructs the client to use the credentials specified in GOOGLE_APPLICATION_CREDENTIALS environment variable.
+// console.log("process.env.CLIENT_EMAIL=",process.env.CLIENT_EMAIL)
 const analyticsDataClient = new BetaAnalyticsDataClient(
   {
     credentials:{

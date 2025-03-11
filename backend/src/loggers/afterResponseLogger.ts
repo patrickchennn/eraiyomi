@@ -1,8 +1,6 @@
 import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import moment from 'moment';
-import dotenv from 'dotenv';
-dotenv.config();
 
 const readableTimestampFormat = winston.format((info) => {
   info.readableTimestamp = moment(info.timestamp).format('DD-MM-YYYY HH:mm:ss');

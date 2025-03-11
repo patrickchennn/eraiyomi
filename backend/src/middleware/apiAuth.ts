@@ -1,10 +1,7 @@
 import chalk from "chalk";
 import { NextFunction, Response, Request } from "express"
-import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 import retResErrJson from "../utils/retResErrJson.js";
 import isEmpty from "lodash.isempty";
-dotenv.config()
-
 
 // Replace this with your secret API key
 const apiKey = process.env.MY_API_KEY;

@@ -1,13 +1,5 @@
 import express from 'express'
 
-// env
-import loadSecret from "./src/config/loadSecret.js";
-// loadSecret("secrets")
-loadSecret("/run/secrets")
-
-import 'dotenv/config' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-
-
 // middleware
 import bodyParser from 'body-parser'
 import cors from "cors"
@@ -27,10 +19,6 @@ import { S3Client } from '@aws-sdk/client-s3'
 // db
 import mongoose from 'mongoose'
 import connectDB from './src/config/db.js'
-mongoose.set('strictQuery', true);
-
-// connect to mongodb database
-connectDB()
 
 // logging
 import indexLogger from './src/loggers/indexLogger.js'
@@ -61,11 +49,20 @@ export const s3Client = new S3Client({
 
 
 const nodeEnv = process.env.NODE_ENV as "development" | "production" | "staging";
+let port = 8000
 
+// Determine port
+if(nodeEnv==='staging'){
+  port=8001
+}else if(nodeEnv==="production"){
+  port=8001
+}
+
+mongoose.set('strictQuery', true);
+connectDB()
 
 
 const app = express()
-const port = process.env.PORT as string // PORT=8001
 
 // ~~~~~~~~~~Third party middleware~~~~~~~~~~
 app.use(bodyParser.urlencoded({extended:false}))
