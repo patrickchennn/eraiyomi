@@ -107,33 +107,22 @@ export default function PostBtn({previewElem,className}: PostBtnProps) {
     ) {
       console.log(chalk.blueBright.bgBlack("[INF] Handle content and image-content"))
       const contentForm = new FormData()
-      const imageContentForm = new FormData()
       
-      const files = mdInputUploadRef.current.files;
-  
-      const fileList = Array.from(files);
+      const fileList = Array.from(mdInputUploadRef.current.files);
       console.log("fileList=",fileList)
-  
-      const imageContentMetadata: {[key: string]: string} = {}
+
       fileList.forEach(file => {
         if(file.type==="text/markdown"){
           contentForm.append('content', file); 
         }else if(file.type==="image/png" || file.type==="image/jpeg"){
-          imageContentForm.append('image-content', file);
-          imageContentMetadata[file.name] = file.webkitRelativePath
+          contentForm.append('image-content', file);
         }
       });
-
-      imageContentForm.append("image-content", JSON.stringify(imageContentMetadata))
 
       const postArticleContentRes = await postArticleContent(
         API_key, JWT_token, articleId, contentForm
       )
-      const postArticleImgContentRes = await postArticleImgContent(
-        API_key, JWT_token, articleId, imageContentForm
-      )
-      if(postArticleContentRes!==null && postArticleContentRes.data===null) isSingleError = true
-      if(postArticleImgContentRes!==null && postArticleImgContentRes.data===null) isSingleError = true
+      console.log("postArticleContentRes=",postArticleContentRes)
     }
 
     if(isSingleError){

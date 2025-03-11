@@ -32,16 +32,16 @@ export default function SaveBtn({
   contentActionRef,
 }: SaveBtnProps){
   const handleSave = async () => {
-    console.log(chalk.blueBright.bgBlack("[INF] @handleSave()"))
+    console.log(chalk.blueBright.bgBlack("@handleSave()"))
     
     
-    // Client-side check IF: API key is not provided
+    // CLIENT-SIDE-SECURITY-CHECK IF: API key is not provided
     console.log("API_key=",API_key)
     if(!API_key) return alert("API key is needed.")
 
     const JWT_token = getCookie("userCredToken")
     console.log("JWT_token=",JWT_token)
-    // Client-side check IF: the user have not login or maybe intentionally remove JWT
+    // CLIENT-SIDE-SECURITY-CHECK IF: the user have not login or maybe intentionally remove JWT
     if(JWT_token===null){
       return alert("No JWT provided")
     }
@@ -55,6 +55,7 @@ export default function SaveBtn({
     const changedArticle: {[key: string]:any} = {} 
 
     // This logic is about checking whether the article data is changed from the original one. If changed simply put that on that object `changedArticle`
+    // The sole reason this kind of logic exist is to make sure that when calling the API there is a data in it, so if there no data need to be changed, it won't call the API hence reduce the unnecessary call to server.
     for (const [key, newVal] of Object.entries(article)) {
       // console.log("newVal=",newVal)
 
@@ -73,13 +74,13 @@ export default function SaveBtn({
        */
       if(!isEqual(newVal,defaultVal)){
         changedArticle[key] = newVal
-        console.log(chalk.blueBright.bgBlack(`[INF] ${key} is changed:`,defaultVal,"-->",newVal))
+        console.log(chalk.blueBright.bgBlack(`${key} is changed:`,defaultVal,"-->",newVal))
       }
     }
 
     // IF: there is something in that `changedArticle` object --> it means the user decided to edit/changed the article meta data (which we already handle it on the previous logic)
     if(!isEmpty(changedArticle)){
-      console.log(chalk.blueBright.bgBlack(`[INF] There is some changes on article data --> calling the edit article API`))
+      console.log(chalk.blueBright.bgBlack(`There is some changes on article data --> calling the edit article API`))
 
       // Simply call the API to make the change
       const articleMetadataRes = await putArticle(API_key, JWT_token,articleId,changedArticle)
@@ -91,15 +92,18 @@ export default function SaveBtn({
 
     
 
-    let thumbnailRes = null
     // 2. Handle the uploaded-type-data: article.thumbnail
+    let thumbnailRes = null
+
     // console.log("thumbnailRef=",thumbnailRef)
+
     console.log("thumbnailActionRef.current=",thumbnailActionRef.current)
+
     if(thumbnailActionRef.current!=="default"){
-      console.log(chalk.blueBright.bgBlack("[INF] Handle thumbnail"))
+      console.log(chalk.blueBright.bgBlack("Handle thumbnail"))
       
       if(thumbnailActionRef.current==="change"){
-        // Assuming: `thumbnailRef.current` and `thumbnailRef.current.files` won't be null 
+        // ASSUMPTION: `thumbnailRef.current` and `thumbnailRef.current.files` won't be null 
         const thumbnailFiles = thumbnailRef.current!.files!;
     
         const thumbnailFile = thumbnailFiles[0]
@@ -121,14 +125,15 @@ export default function SaveBtn({
     if(thumbnailRes!==null && thumbnailRes.data===null) isSingleError = true
 
 
-    let contentRes = null, imageContentRes = null
     // 3. Handle the content and image-content
+    let contentRes = null
+
     console.log("mdInputUploadRef=",mdInputUploadRef)
+
     if (contentActionRef.current!=="default") {
-      console.log(chalk.blueBright.bgBlack("[INF] Handle the content and image-content"))
+      console.log(chalk.blueBright.bgBlack("Handle the content and image-content"))
 
       const contentForm = new FormData()
-      const imageContentForm = new FormData()
 
       // Assuming: `mdInputUploadRef.current` and `mdInputUploadRef.current.files` won't be null 
       const files = mdInputUploadRef.current!.files!;
@@ -137,24 +142,19 @@ export default function SaveBtn({
       console.log("fileList=",fileList)
 
 
-      const imageContentMetadata: {[key: string]: string} = {}
       fileList.forEach(file => {
         if(file.type==="text/markdown"){
           contentForm.append('content', file); 
         }else if(file.type==="image/png" || file.type==="image/jpeg"){
-          imageContentForm.append('image-content', file);
-          imageContentMetadata[file.name] = file.webkitRelativePath
+          contentForm.append('image-content', file);
         }
       });
 
-      imageContentForm.append("image-content", JSON.stringify(imageContentMetadata))
 
       contentRes = await putArticleContent(API_key, JWT_token, articleId, contentForm)
-      imageContentRes = await putArticleImgContent(API_key, JWT_token, articleId, imageContentForm) 
     }
 
     if(contentRes!==null && contentRes.data===null) isSingleError = true
-    if(imageContentRes!==null && imageContentRes.data===null) isSingleError = true
 
 
     if(isSingleError){

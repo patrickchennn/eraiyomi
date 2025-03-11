@@ -82,6 +82,7 @@ export const GET_articleContent = async (req: Request, res:Response) => {
 
   let rawHtml, rawText = "";
 
+  // 1. Fetching the markdown
   if(!isEmpty(article.content)){
     try {
       const remoteUrl = await getS3SignedUrl(article.content.relativePath)
@@ -103,6 +104,7 @@ export const GET_articleContent = async (req: Request, res:Response) => {
     }
   }
 
+  // 2. Fetching the image-content assets
   const imageContentRemoteUrl: {[key: string]: any} = {}
   if(!isEmpty(article.imageContent)){
     // Fetch all content image from S3, just the URL

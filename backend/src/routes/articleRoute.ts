@@ -15,12 +15,10 @@ import GET_articleThumbnail from "../controllers/article/thumbnail/GET_articleTh
 import PUT_articleThumbnail from "../controllers/article/thumbnail/PUT_articleThumbnail.js"
 import DELETE_articleThumbnail from "../controllers/article/thumbnail/DELETE_articleThumbnail.js"
 import POST_articleThumbnail from "../controllers/article/thumbnail/POST_articleThumbnail.js"
-import { GET_articleContent } from "../controllers/article/content/GET_articleContent.js"
 import DELETE_articleContent from "../controllers/article/content/DELETE_articleContent.js"
 import POST_articleContent from "../controllers/article/content/POST_articleContent.js"
-import { POST_articleImgContent } from "../controllers/article/image-content/POST_articleImgContent.js"
-import { PUT_articleImgContent } from "../controllers/article/image-content/PUT_articleImgContent.js"
 import PUT_articleContent from "../controllers/article/content/PUT_articleContent.js"
+import { GET_articleContent } from "../controllers/article/content/GET_articleContent.js"
 
 export const routerArticle = Router()
 
@@ -84,34 +82,19 @@ routerArticle.route("/api/article/:articleId/content")
   .post(
     isValidMongoId, 
     apiAuth, 
-    upload.single("content"),
+    upload.fields([{ name: 'content', maxCount: 1 }, { name: 'image-content'}]),
     POST_articleContent
   )
   .get(isValidMongoId, GET_articleContent)
   .put(
     isValidMongoId, 
     apiAuth,
-    upload.single("content"),
+    upload.fields([{ name: 'content', maxCount: 1 }, { name: 'image-content'}]),
     PUT_articleContent
   )
   .delete(
     isValidMongoId,
     apiAuth,
     DELETE_articleContent
-  )
-;
-
-routerArticle.route("/api/article/:articleId/image-content")
-  .post(
-    isValidMongoId, 
-    apiAuth, 
-    upload.array("image-content"),
-    POST_articleImgContent
-  )
-  .put(
-    isValidMongoId, 
-    apiAuth,
-    upload.array("image-content"),
-    PUT_articleImgContent
   )
 ;
