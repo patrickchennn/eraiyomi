@@ -35,6 +35,7 @@ export const PUT_article =  async (
   if(article===null){
     return retResErrJson(res,404,"Article not found")
   }
+  console.log(chalk.blueBright.bgBlack("old article schema: "),article)
 
 
   if(!isEmpty(body)){
@@ -47,10 +48,10 @@ export const PUT_article =  async (
     body.totalWordCounts && (article.totalWordCounts = Number(body.totalWordCounts))
   }
   
-  console.log(chalk.blueBright.bgBlack("final article to be saved: "),article)
+  console.log(chalk.blueBright.bgBlack("new article schema: "),article)
 
   // FINALLY: save the article
-  // await article.save()
+  await article.save()
   
   return res.status(201).json({message:"Article successfully edited"})
 }

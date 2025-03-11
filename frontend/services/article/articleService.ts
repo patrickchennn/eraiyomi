@@ -59,15 +59,16 @@ export const putArticle = async (
   API_key: string,
   JWT_token: string,
   articleId: string,
-  data: any
+  data: {[key: string]:any} = {} 
 ) => {
   const conf: RequestInit = {
     headers: {
       'Authorization': `Bearer ${JWT_token}`, // JWT token
-      'x-api-key': API_key // API key in a custom header
+      'x-api-key': API_key, // API key in a custom header
+      "Content-Type": "application/json"
     }
   }
-  return apiService<string>('put', `/article/${articleId}`, conf, data);
+  return apiService<string>('put', `/article/${articleId}`, conf, JSON.stringify(data));
 };
 
 
