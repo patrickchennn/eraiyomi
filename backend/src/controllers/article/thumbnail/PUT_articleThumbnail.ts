@@ -27,45 +27,35 @@ const PUT_articleThumbnail =  async (
   if(article===null){
     return retResErrJson(res,404,"Article not found")
   }
+  console.log(chalk.blueBright.bgBlack("old article.thumbnail data schema: "),article.thumbnail)
 
 
 
   // IF: the user did wanna change the thumbnail (by providing image...)
   if(file!==undefined){
-
     const newThumbnailS3Path = `${article.title}/${file.fieldname}/${file.originalname}`
 
-    // IF: the thumbnail is already exist (that is the same as previous) --> skip
+    // IF: previous thumbnail already existed -->  delete the previous one first
     const isObjectExist = await S3_isObjectExist(newThumbnailS3Path)
-    if(isObjectExist.exists){
-      return retResErrJson(res,500,"Error during upload thumbnail")
-    }
 
-    // ELSE: different thumbnail
-
-    // BUT IF: previous thumbnail already existed -->  delete the previous one first
-    if(article.thumbnail !== null){
+    if(article.thumbnail !== null && isObjectExist.exists){
       const existingThumbnailS3Path = article.thumbnail.relativePath
 
       const S3_deleteObjectRes = await S3_deleteObject(existingThumbnailS3Path)
-      // console.log("S3_deleteObjectRes=",S3_deleteObjectRes)
+      console.log("S3_deleteObjectRes=",S3_deleteObjectRes)
     
       if(S3_deleteObjectRes===null){
         return retResErrJson(res,500,"Error during deleting thumbnail image")
       }
     }
 
-    // AND THEN: we can actually create the object. Up until this line we have fulfilled three condition:
-    // 1. If thumbnail the same --> skip
-    // 2. If previously the user already inserted thumbnail --> delete the previous one --> add the new one
-    // 3. If from null --> add new thumbnail
+
     const S3_Res = await createObjectS3(
       newThumbnailS3Path,
       file.buffer, 
       file.mimetype
     );
-    // console.log("S3_Res=",S3_Res)
-
+    console.log("S3_Res=",S3_Res)
 
     if(S3_Res===null){
       return retResErrJson(res,500,"Error occured when trying to upload article's thumbnail image into S3")
@@ -78,7 +68,7 @@ const PUT_articleThumbnail =  async (
     }
   }
 
-  console.log(chalk.blueBright.bgBlack("final article to be saved: "),article)
+  console.log(chalk.blueBright.bgBlack("new article.thumbnail data schema: "),article.thumbnail)
   await article.save()
 
   return res.status(201).json({message:"Article's thumbnail successfully edited"})
