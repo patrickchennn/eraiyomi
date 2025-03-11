@@ -15,7 +15,7 @@ export const getArticlesAnalytic = async (
   if(reportRes===null){
     return retResErrJson(res,500,"Error getting google analytics report")
   }
-  console.log("reportRes=",reportRes)
+  // console.log("reportRes=",reportRes)
 
   const {dimensionHeaders,metricHeaders,rows} = reportRes
 
@@ -63,5 +63,7 @@ export const getArticlesAnalytic = async (
   }
 
   console.info(chalk.blueBright.bgBlack("dataAnalytics="),dataAnalytics)
-  return res.status(200).json(dataAnalytics)
+  return res.status(200).json({
+    data:dataAnalytics
+  })
 }

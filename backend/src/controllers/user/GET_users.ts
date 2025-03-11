@@ -11,5 +11,7 @@ export const GET_users = async (req:Request,res:Response) => {
   const users = await userModel.find({})
   // console.log("users=",users)
 
-  return res.status(200).json(users)
+  return res.status(200).json({
+    data:users
+  })
 }

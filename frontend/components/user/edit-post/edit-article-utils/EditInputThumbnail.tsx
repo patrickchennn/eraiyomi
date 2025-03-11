@@ -30,8 +30,8 @@ export default function EditInputThumbnail({
     getArticleThumbnail(articleId)
       .then(resData => {
         if(resData.data!==null) {
-          defaultThumbnailRef.current = resData.data.remoteUrl
-          setCurrentThumbnail(resData.data.remoteUrl)
+          defaultThumbnailRef.current = resData.data
+          setCurrentThumbnail(resData.data)
         }else{
           console.error(resData.message)
         }

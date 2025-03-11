@@ -1,7 +1,7 @@
 import { apiService } from "../apiService";
 
 export const getArticleThumbnail = async (articleId: string) => {
-  return apiService<{remoteUrl: string}>('get', `/article/${articleId}/thumbnail`);
+  return apiService<string>('get', `/article/${articleId}/thumbnail`);
 };
 
 export const postArticleThumbnail = async (

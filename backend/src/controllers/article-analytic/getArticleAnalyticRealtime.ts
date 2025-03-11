@@ -9,5 +9,5 @@ export const getArticleAnalyticRealtime = async (
   const reportRes = await getRealtime()
   console.log("reportRes=",reportRes)
 
-  return res.status(200).json(reportRes)
+  return res.status(200).json({data:reportRes})
 }
