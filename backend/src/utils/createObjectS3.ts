@@ -3,12 +3,12 @@ import { AWS_BUCKET_NAME, s3Client } from "../../index.js";
 import chalk from "chalk";
 
 /**
- * https://chatgpt.com/share/67a9bc0b-5f58-800a-be83-efc98c045394
- * Uploads an object to S3.
  * @param {string} key - The S3 object key (path).
  * @param {Buffer | string | Uint8Array} body - The data to store.
  * @param {string} mimetype - The MIME type of the file.
  * @returns {Promise<string | null>} The ETag of the uploaded object or null on failure.
+ * @see https://chatgpt.com/share/67a9bc0b-5f58-800a-be83-efc98c045394
+ * Uploads an object to S3.
  */
 const createObjectS3 = async (key: string, body: Buffer | string | Uint8Array, mimetype: string): Promise<string | null> => {
   if (!key || !body || !mimetype) {
@@ -32,7 +32,7 @@ const createObjectS3 = async (key: string, body: Buffer | string | Uint8Array, m
     const response = await s3Client.send(cmd);
 
     if (response.$metadata?.httpStatusCode === 200) {
-      console.log(chalk.green.bgBlack(`[OK] File uploaded successfully: ${key}`));
+      console.info(chalk.green.bgBlack(`[OK] File uploaded successfully: ${key}`));
       return response.ETag || null;
     } else {
       console.error(chalk.red.bgBlack(`[ERR] Failed to upload file: ${key}`, response));

@@ -118,14 +118,12 @@ function EditMdFileInput({
       >
         <input
           type="file"
-          id="doc_file_upload"
-          name="doc_file_upload"
+          id="markdown-input"
+          name="markdown-input"
           accept="text/markdown"
           onChange={handleMarkdownFile}
           ref={mdInputUploadRef}
           multiple
-          // @ts-ignore
-          webkitdirectory="true"
         />
         <button type="button" onClick={resetInputFile}>
           <BsTrash3 className="inline"/>

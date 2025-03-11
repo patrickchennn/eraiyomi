@@ -27,7 +27,7 @@ const S3_deleteObject = async (key: string): Promise<string | null> => {
     const response = await s3Client.send(command);
 
     if (response.$metadata?.httpStatusCode === 204) {
-      console.log(chalk.green.bgBlack(`[OK] Successfully deleted object: ${key}`));
+      console.info(chalk.green.bgBlack(`[OK] Successfully deleted object: ${key}`));
       return `Object '${key}' deleted successfully.`;
     } else {
       console.error(chalk.red.bgBlack(`[ERR] Failed to delete object: ${key}`, response));

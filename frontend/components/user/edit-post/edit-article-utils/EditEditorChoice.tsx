@@ -33,9 +33,7 @@ const EditorChoice = ({
       <div>
         <label>Editor:</label>
         <ul onClick={handleMarkdown} className='flex'>
-          <button className='px-2 border rounded bg-slate-100 dark:bg-zinc-900'>
-            Markdown <AiOutlineFileMarkdown className='inline' />
-          </button>
+          <button className='px-2 border rounded bg-slate-100 dark:bg-zinc-900'>Markdown Editor<AiOutlineFileMarkdown className='inline' /></button>
         </ul>
       </div>
       <div>

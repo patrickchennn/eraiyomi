@@ -41,7 +41,7 @@ export default function App(){
 
   }, [])
 
-  if (isLoading) return <div className="loader">Loading...</div>
+  if (isLoading) return <div className="loader"></div>
   if (!articles) return <p>No data</p>
 
   return (

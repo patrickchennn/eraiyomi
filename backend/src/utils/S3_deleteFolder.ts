@@ -4,8 +4,8 @@ import { s3Client } from "../../index.js";
 const AWS_BUCKET_NAME = process.env.AWS_BUCKET_NAME; // Ensure environment variable is set
 
 /**
- * @param location 
  * 
+ * @see 
  * https://chatgpt.com/share/67a9bc0b-5f58-800a-be83-efc98c045394
  * 
  * https://www.codemzy.com/blog/delete-s3-folder-nodejs

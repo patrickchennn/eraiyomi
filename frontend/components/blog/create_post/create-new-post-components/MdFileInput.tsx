@@ -102,8 +102,6 @@ function MdFileInput() {
           accept="*"
           onChange={handleMarkdownFile}
           multiple
-          // @ts-ignore
-          webkitdirectory="true"
           ref={mdInputUploadRef}
         />
         <button type="button" onClick={resetInputFile}>
