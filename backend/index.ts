@@ -70,8 +70,10 @@ app.use(bodyParser.json({strict:false}))
 app.use(cors({
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin
   origin: [
-    "http://localhost:3000", // Allow development
-    "https://staging-client.eraiyomi.com", // Allow staging server
+    "http://localhost:8005", // Allow local development
+    "http://localhost:8006", // Allow local staging
+    "http://localhost:8007", // Allow local production
+    "https://staging-client.eraiyomi.com", // Allow staging
     "https://www.eraiyomi.com", // Allow production
   ],
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials
