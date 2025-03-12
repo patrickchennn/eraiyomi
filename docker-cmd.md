@@ -18,6 +18,7 @@ docker buildx build \
 ## Staging server
 ### build locally
 docker build --network=host -t patchn/eraiyomi-staging-server:latest -f backend/Dockerfile.staging .
+docker build --no-cache --network=host -t patchn/eraiyomi-staging-client:latest -f frontend/Dockerfile.staging .
 
 ### run container locally
 

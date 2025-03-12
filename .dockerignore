@@ -1,20 +1,17 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules
 
 # testing
-cypress*
+frontend/cypress*
 
 # next.js
-/.next/
+frontend/.next/
 
 # typescript
-*.tsbuildinfo
-next-env.d.ts
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
 
-# misc
-.dockerignore
-.gitignore
-README.md
-.env.local.example
+# secrets
+frontend/.env.local.example

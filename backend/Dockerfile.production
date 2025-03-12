@@ -12,7 +12,6 @@ COPY shared /app/shared
 # Copy all necessary backend files
 COPY ./backend/src ./src
 COPY ./backend/.babelrc.json ./
-COPY ./backend/.env ./
 COPY ./backend/declaration.d.ts ./
 COPY ./backend/index.ts .
 COPY ./backend/package*.json ./ 
@@ -31,7 +30,6 @@ RUN ls -la ./dist
 FROM node:18.20.4-alpine
 WORKDIR /app/backend
 
-COPY --from=builder /app/backend/.env .
 COPY --from=builder /app/backend/dist ./dist
 COPY --from=builder /app/backend/package*.json ./ 
 

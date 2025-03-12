@@ -2,8 +2,8 @@
 
 import sys
 import paramiko
+import time
 from rich import print
-from rich.progress import Progress
 
 # Ensure exactly one argument is provided
 if len(sys.argv) != 2:
@@ -23,31 +23,39 @@ else:
     sys.exit(1)
 
 # SSH connection details
-SSH_KEY = "/home/patrick/.ssh/github-actions"
+SSH_KEY = "~/.ssh/github-actions"
 SSH_USER = "patrick"
 SSH_HOST = "raspberrypi.local"
-PROJECT_DIR = "/home/patrick/env/eraiyomi"
+PROJECT_DIR = "~/eraiyomi"
+GIT_REPO = "https://github.com/patrickchennn/eraiyomi.git"
 
 def run_ssh_command(client, command, description):
-    """Executes an SSH command with colored status updates."""
-    
-    # Show in-progress message
+    """Executes an SSH command with a flushing progress output."""
+
+    # Show in-progress message without a newline
+    # print(f"[cyan][*] {description}...[/]", end="\r", flush=True)
     print(f"[cyan][*] {description}...[/]")
 
     stdin, stdout, stderr = client.exec_command(command)
     exit_status = stdout.channel.recv_exit_status()
 
-    for line in stdout:
-        print(f"[green]{line.strip()}[/]")
+    # Capture output
+    stdout_lines = stdout.readlines()
+    print(stdout_lines)
 
-    for line in stderr:
-        print(f"[bold red]❌ Error:[/] {line.strip()}")
+    stderr_lines = stderr.readlines()
 
+    # Clear previous progress line
+    print(" " * 80, end="\r")
+
+    # If the command fails, show the error and exit
     if exit_status != 0:
-        print(f"[bold red]❌ Command failed:[/] {command}")
+        print(f"[bold red][-] ❌ {description} failed![/]")
+        for line in stderr_lines:
+            print(f"[bold red]Error:[/] {line}")
         sys.exit(exit_status)
 
-    # Show success message
+    # Print success message
     print(f"[bold green][+] {description}[/]")
 
 def main():
@@ -58,23 +66,15 @@ def main():
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(SSH_HOST, username=SSH_USER, key_filename=SSH_KEY)
 
-        with Progress() as progress:
-            task = progress.add_task("[bold cyan]Deploying...", total=5)
+        steps = [
+            (f"mkdir -p {PROJECT_DIR}", "Ensuring project directory exists"),
+            (f"if [ ! -d '{PROJECT_DIR}/.git' ]; then git clone {GIT_REPO} {PROJECT_DIR}; fi", "Checking & Cloning repository if needed"),
+            (f"cd {PROJECT_DIR} && git pull", "Updating repository"),
+            (f"cd {PROJECT_DIR} && sudo docker compose up -d {DOCKER_SERVICES}", f"Starting Docker services ({DOCKER_SERVICES})"),
+        ]
 
-            run_ssh_command(ssh, f"cd {PROJECT_DIR} && git pull", "Updating repository")
-            progress.update(task, advance=1)
-
-            run_ssh_command(ssh, f"cd {PROJECT_DIR} && npm run setup-python", "Setup python venv")
-            progress.update(task, advance=1)
-
-            run_ssh_command(ssh, f"cd {PROJECT_DIR} && npm run pip-install", "Install python venv requirement")
-            progress.update(task, advance=1)
-
-            run_ssh_command(ssh, f"cd {PROJECT_DIR}/backend && ./setup_secrets.py", "Running setup-secrets.py")
-            progress.update(task, advance=1)
-
-            run_ssh_command(ssh, f"cd {PROJECT_DIR} && docker compose up -d {DOCKER_SERVICES}", f"Starting Docker services ({DOCKER_SERVICES})")
-            progress.update(task, advance=1)
+        for command, description in steps:
+            run_ssh_command(ssh, command, description)
 
         print("[bold green]✅ Deployment complete![/]")
 

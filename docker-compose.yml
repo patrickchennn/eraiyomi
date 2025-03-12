@@ -2,30 +2,22 @@ services:
   server:
     build:
       context: ./
-      dockerfile: ./backend/Dockerfile
+      dockerfile: ./backend/Dockerfile.production
+      network: "host"
     network_mode: "host"
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8999/health"]
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8002/health"]
       interval: 10s
       retries: 5
       start_period: 10s
       timeout: 5s
     volumes:
-      - ./backend/secrets/MONGODB_USERNAME:/run/secrets/MONGODB_USERNAME:ro
-      - ./backend/secrets/MONGODB_PASSWORD:/run/secrets/MONGODB_PASSWORD:ro
-      - ./backend/secrets/PROJECT_ID:/run/secrets/PROJECT_ID:ro
-      - ./backend/secrets/CLIENT_EMAIL:/run/secrets/CLIENT_EMAIL:ro
-      - ./backend/secrets/PRIVATE_KEY:/run/secrets/PRIVATE_KEY:ro
-      - ./backend/secrets/AWS_ACCESSKEYID:/run/secrets/AWS_ACCESSKEYID:ro
-      - ./backend/secrets/AWS_SECRETACCESSKEY:/run/secrets/AWS_SECRETACCESSKEY:ro
-      - ./backend/secrets/AWS_BUCKET_NAME:/run/secrets/AWS_BUCKET_NAME:ro
-      - ./backend/secrets/AWS_REGION:/run/secrets/AWS_REGION:ro
-      - ./backend/secrets/MY_API_KEY:/run/secrets/MY_API_KEY:ro
-      - ./backend/secrets/JWT_SECRET:/run/secrets/JWT_SECRET:ro
+      - ./backend/.env.secrets:/app/backend/.env.secrets:ro
   client:
     build:
       context: ./
-      dockerfile: ./frontend/Dockerfile
+      dockerfile: ./frontend/Dockerfile.production
+      network: "host"
     network_mode: "host"
     depends_on:
       server:
@@ -34,25 +26,13 @@ services:
     build:
       context: ./
       dockerfile: ./backend/Dockerfile.staging
-      platforms:
-        - linux/arm64
+      network: "host"
     network_mode: "host"
     volumes:
-      - ./backend/secrets/MONGODB_USERNAME:/run/secrets/MONGODB_USERNAME:ro
-      - ./backend/secrets/MONGODB_PASSWORD:/run/secrets/MONGODB_PASSWORD:ro
-      - ./backend/secrets/PROJECT_ID:/run/secrets/PROJECT_ID:ro
-      - ./backend/secrets/CLIENT_EMAIL:/run/secrets/CLIENT_EMAIL:ro
-      - ./backend/secrets/PRIVATE_KEY:/run/secrets/PRIVATE_KEY:ro
-      - ./backend/secrets/AWS_ACCESSKEYID:/run/secrets/AWS_ACCESSKEYID:ro
-      - ./backend/secrets/AWS_SECRETACCESSKEY:/run/secrets/AWS_SECRETACCESSKEY:ro
-      - ./backend/secrets/AWS_BUCKET_NAME:/run/secrets/AWS_BUCKET_NAME:ro
-      - ./backend/secrets/AWS_REGION:/run/secrets/AWS_REGION:ro
-      - ./backend/secrets/MY_API_KEY:/run/secrets/MY_API_KEY:ro
-      - ./backend/secrets/JWT_SECRET:/run/secrets/JWT_SECRET:ro
+      - ./backend/.env.secrets:/app/backend/.env.secrets:ro
   client-staging:
     build:
       context: ./
       dockerfile: ./frontend/Dockerfile.staging
-      platforms:
-        - linux/arm64
+      network: "host"
     network_mode: "host"

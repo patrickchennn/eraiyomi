@@ -55,7 +55,7 @@ let port = 8000
 if(nodeEnv==='staging'){
   port=8001
 }else if(nodeEnv==="production"){
-  port=8001
+  port=8002
 }
 
 mongoose.set('strictQuery', true);

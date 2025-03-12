@@ -11,7 +11,7 @@
     "build": "npm run compile-ts && npm run build-babel && npm run flatten-dist && rimraf ./compiled-ts",
     "dev": "rimraf ./build-dev && tsc && concurrently npm:watch:build-dev npm:watch:dev",
     "start-staging": "dotenvx run --env='NODE_ENV=staging' -f .env.secrets -- node ./dist/index.js",
-    "start": "dotenvx run --env='NODE_ENV=prodution' -f .env.secrets -- node ./dist/index.js"
+    "start": "dotenvx run --env='NODE_ENV=production' -f .env.secrets -- node ./dist/index.js"
   },
   "nodemonConfig": {
     "ignore": [

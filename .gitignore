@@ -4,5 +4,4 @@ node_modules
 /backend/GA4-eraiyomi-credentials.json
 /backend/logs
 /backend/dist
-/backend/secrets
 venv/
