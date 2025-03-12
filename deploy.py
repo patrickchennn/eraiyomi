@@ -23,10 +23,10 @@ else:
     sys.exit(1)
 
 # SSH connection details
-SSH_KEY = "~/.ssh/github-actions"
+SSH_KEY = "/home/patrick/.ssh/github-actions"
 SSH_USER = "patrick"
 SSH_HOST = "raspberrypi.local"
-PROJECT_DIR = "~/eraiyomi"
+PROJECT_DIR = "/home/patrick/eraiyomi"
 GIT_REPO = "https://github.com/patrickchennn/eraiyomi.git"
 
 def run_ssh_command(client, command, description):
@@ -42,6 +42,7 @@ def run_ssh_command(client, command, description):
     # Capture output
     stdout_lines = stdout.readlines()
     print(stdout_lines)
+    print(exit_status)
 
     stderr_lines = stderr.readlines()
 

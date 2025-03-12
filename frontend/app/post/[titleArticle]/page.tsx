@@ -77,7 +77,7 @@ export async function generateMetadata(
     metadata.openGraph = {
       images:[
         {
-          url: thumbnailRes.data && thumbnailRes.data.remoteUrl
+          url: thumbnailRes.data && thumbnailRes.data
         }
       ]
     }
@@ -145,7 +145,7 @@ export default async function Page({ params, searchParams }: PageProps) {
         <div className="border border-zinc-300 dark:border-[rgb(21,7,53)] rounded-xl post-glass dark:bg-[rgba(0,0,0,0.6)]">
 
           {/* Thumbnail image: server component */}
-          <HeaderSection thumbnailSrc={thumbnailRes.data? thumbnailRes.data.remoteUrl : null}/>
+          <HeaderSection thumbnailSrc={thumbnailRes.data? thumbnailRes.data : null}/>
 
           <CreateTitle 
             titlePage={article.title}
