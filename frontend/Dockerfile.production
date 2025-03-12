@@ -10,20 +10,14 @@ WORKDIR /app/frontend
 COPY ./frontend/package.json ./frontend/package-lock.json* ./
 RUN npm ci
 
-
-
-
-# 2. Rebuild the source code only when needed
+# 2. Build the source code
 FROM base AS builder
 WORKDIR /app/frontend
 COPY --from=deps /app/frontend/node_modules ./node_modules
 COPY ./frontend .
 
 COPY shared /app/shared
-RUN npm run build
-
-
-
+RUN npm run build-production
 
 # 3. Production image, copy all the files and run next
 FROM base AS runner
@@ -42,9 +36,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/frontend/.next/static ./.next/sta
 
 USER nextjs
 
-EXPOSE 8005
+EXPOSE 8007
 
-ENV PORT=8005
+ENV PORT=8007
 
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/next-config-js/output

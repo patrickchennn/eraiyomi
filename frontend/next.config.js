@@ -3,8 +3,9 @@
 const { PHASE_DEVELOPMENT_SERVER } = require("next/dist/shared/lib/constants");
 
 module.exports = (phase) => {
-  // console.log("phase=",phase)
-  // console.log("process.env.APP_ENV=",process.env.APP_ENV)
+  console.log("phase=",phase)
+  console.log("process.env.APP_ENV=",process.env.APP_ENV)
+  console.log("process.env.NODE_ENV=",process.env.NODE_ENV)
 
   // All phase config
   const config = {
@@ -26,14 +27,12 @@ module.exports = (phase) => {
     config['env'] = {
       URL_API: "http://localhost:8000/api",
     }
-    return config
   }
 
   // Staging only config
   if(process.env.APP_ENV!==undefined && process.env.APP_ENV==="staging"){
     config['env'] = {
       URL_API: "https://staging-api.eraiyomi.com/api",
-      // URL_API: "http://localhost:8001/api",
     }
     config['compiler'] = {
       removeConsole: {
@@ -41,19 +40,24 @@ module.exports = (phase) => {
       }
     }
     config['output'] = "standalone"
-    return config
   }
 
   // Production only config
-  config['env'] = {
-    URL_API: "https://api.eraiyomi.com/api",
-  }
-  config['compiler'] = {
-    removeConsole: {
-      exclude: ["error", "info"],
+  if(process.env.APP_ENV!==undefined && process.env.APP_ENV==="production"){
+    config['env'] = {
+      URL_API: "https://api.eraiyomi.com/api",
     }
+    config['compiler'] = {
+      removeConsole: {
+        exclude: ["error", "info"],
+      }
+    }
+    config['output'] = "standalone"
   }
-  config['output'] = "standalone"
-
+  
   return config
 };
+
+/** Docs:
+ * https://nextjs.org/docs/13/app/api-reference/next-config-js
+ */
