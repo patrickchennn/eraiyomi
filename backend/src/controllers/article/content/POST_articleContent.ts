@@ -64,7 +64,7 @@ export default async function POST_articleContent(
     for(let i=0; i<files['image-content'].length; i++){
 
       const img = files['image-content'][i]
-      console.info("img=",img)
+      console.log("img=",img)
 
       const embeddedImgUrl = decodeURIComponent(extractedEmbeddedMarkdownImagesSytax[img.originalname].url)
       

@@ -28,7 +28,7 @@ marked.use({
   breaks: true,
   renderer:{
     heading:({depth, text}) => {
-      // console.info(chalk.blueBright.bgBlack("[INF] `marked.use` @heading()"))
+      // console.log(chalk.blueBright.bgBlack("[INF] `marked.use` @heading()"))
       // console.log("depth=",depth)
       // console.log("text=",text)
 
@@ -114,7 +114,7 @@ export const GET_articleContent = async (req: Request, res:Response) => {
       imageContentRemoteUrl[img.fileName] = remoteUrl
     }
   }
-  console.info(chalk.blueBright.bgBlack("After fetching all the image content `imageContentRemoteUrl`:"), imageContentRemoteUrl)
+  console.log(chalk.blueBright.bgBlack("After fetching all the image content `imageContentRemoteUrl`:"), imageContentRemoteUrl)
 
   // Regex to find Markdown image syntax: ![alt](url)
   rawText = rawText.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, url) => {

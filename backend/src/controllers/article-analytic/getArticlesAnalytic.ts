@@ -1,6 +1,5 @@
 import { Request,Response } from "express"
 import {getRawBasicArticleReports} from "./GoogleAnalyticsUtils.js"
-import chalk from "chalk"
 import { isValidObjectId } from "mongoose"
 import retResErrJson from "../../utils/retResErrJson.js"
 import { ArticlesAnalytic } from "@shared/Article.js"
@@ -62,7 +61,7 @@ export const getArticlesAnalytic = async (
     }
   }
 
-  console.info(chalk.blueBright.bgBlack("dataAnalytics="),dataAnalytics)
+  // console.log("dataAnalytics=",dataAnalytics)
   return res.status(200).json({
     data:dataAnalytics
   })

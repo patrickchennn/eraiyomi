@@ -26,11 +26,11 @@ export default async function deleteFolder(location: string): Promise<string | n
     const list = await s3Client.send(listCommand);
 
     if (!list.Contents || list.Contents.length === 0) {
-      console.log("No files found to delete.");
+      console.info("No files found to delete.");
       return "No files to delete.";
     }
 
-    console.log(`Found ${list.Contents.length} files to delete.`);
+    console.info(`Found ${list.Contents.length} files to delete.`);
 
     // Prepare delete request
     const deleteCommand = new DeleteObjectsCommand({
