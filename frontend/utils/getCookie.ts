@@ -1,5 +1,3 @@
-import chalk from "chalk";
-
 /**
  * 
  * @param cname The key cookie

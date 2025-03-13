@@ -12,8 +12,6 @@ import {useState, useRef, useEffect, createContext, Dispatch, SetStateAction, Re
 import useDidMountEffect from '@/hooks/useDidMountEffect';
 
 import PostBtn from './PostBtn';
-// import PreviewBtn from './PreviewBtn';
-// import SaveDraftBtn from './create-new-post-components/SaveDraftBtn';
 import CategoryInput from './create-new-post-components/CategoryInput';
 import ThumbnailInput from './create-new-post-components/ThumbnailInput';
 import DescInput from './create-new-post-components/DescInput';
@@ -108,11 +106,7 @@ export default function CreateNewPost(){
 
       <div className='my-3 p-5 border dark:border-zinc-900 rounded-xl w-3/4 bg-slate-100 flex flex-col gap-y-5 dark:bg-zinc-950' ref={editorSectionRef}>
         <div className='[&>button]:mx-1'>
-          {/* <PreviewBtn setPreviewElem={setPreviewElem} className={btnClass}/> */}
-
           <PostBtn previewElem={previewElem} className={btnClass} />
-
-          {/* <SaveDraftBtn className={btnClass}/> */}
         </div>
         
         <APIKeyInput />

@@ -1,9 +1,7 @@
 "use server"
 
 import chalk from "chalk";
-import 'highlight.js/styles/atom-one-dark.css';
 import { Metadata, ResolvingMetadata } from "next";
-// import dynamic from "next/dynamic";
 
 import convertDate from "@/utils/convertDate";
 import getReadEstimation from "@/utils/getReadEstimation";
@@ -17,15 +15,6 @@ import { cache } from "react";
 import { getArticleThumbnail } from "@/services/article/articleThumbnailService";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 
-
-// solve the problem `ReferenceError: window is not defined on client component`
-// const DynamicDisqusEmbed = dynamic(
-//   () => import('@/components/blog/DisqusEmbed'),
-//   { 
-//     ssr: false ,
-//     loading:()=><div className='loader'></div>
-//   }
-// )
  
 const getArticleCache = cache(async (id: string) => {
   return await getArticle(id)
