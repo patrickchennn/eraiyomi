@@ -39,16 +39,24 @@ export const POST_loginTraditional = async (
 
   const JWT_token = generateToken(user._id.toString())
 
-  // remember user's account info
-  res.cookie("userCredToken", JSON.stringify(JWT_token), {
-    // httpOnly: true, // Ensures cookie is only accessible by the server (better security)
-    // secure: process.env.NODE_ENV === "production", // Ensures cookie is sent over HTTPS
-    secure: true, // Ensures cookie is sent over HTTPS
-    sameSite: "none", // Set to "Strict" if same-origin, "None" if cross-origin
-    maxAge: 3600000, // 1 hour in milliseconds
-    expires: new Date(Date.now() + 3600000), // Explicit expiration time
-    path: "/", // Ensures cookie is available site-wide
-  });
+  // Remember user's account info
+
+  if (process.env.NODE_ENV === "development") {
+    res.cookie("userCredToken", JSON.stringify(JWT_token), {
+      maxAge: 3600000,
+      expires: new Date(Date.now() + 3600000),
+      path: "/",
+    });
+  } else{
+    res.cookie("userCredToken", JSON.stringify(JWT_token), {
+      secure: true,
+      sameSite: "none",
+      maxAge: 3600000,
+      expires: new Date(Date.now() + 3600000),
+      path: "/",
+      domain: ".eraiyomi.com",
+    });
+  }
   
 
   // return res.status(200).send("succuessfully logged in")
