@@ -1,6 +1,7 @@
 "use server"
 
 import chalk from "chalk";
+import 'highlight.js/styles/atom-one-dark.css';
 import { Metadata, ResolvingMetadata } from "next";
 
 import convertDate from "@/utils/convertDate";

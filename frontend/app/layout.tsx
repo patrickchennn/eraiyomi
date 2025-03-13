@@ -25,8 +25,6 @@ export default function RootLayout({children}: RootLayoutProps){
     <html lang="en" className="dark">
       <head>
 
-        <script id="dsq-count-scr" src="//eraiyomi.disqus.com/count.js" async></script>
-
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
         
         <link rel="icon" href="/favicon.ico" sizes="any" />
