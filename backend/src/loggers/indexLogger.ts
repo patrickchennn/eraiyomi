@@ -10,7 +10,11 @@ const readableTimestampFormat = winston.format((info) => {
 // Create transports based on environment
 const transports: winston.transport[] = [new winston.transports.Console()];
 
-if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging") {
+// if (
+//   process.env.NODE_ENV === "production" 
+//   || process.env.NODE_ENV === "staging" 
+//   || process.env.NODE_ENV === "local-staging"
+// ) {
   transports.push(
     new DailyRotateFile({
       filename: 'logs/index-%DATE%.log',
@@ -20,7 +24,7 @@ if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging")
       maxFiles: '7d',
     })
   );
-}
+// }
 
 // Define the base format (used in all environments)
 const baseFormat = winston.format.combine(
@@ -40,6 +44,7 @@ const devFormat = winston.format.combine(
 
 // Create the logger
 const indexLogger = winston.createLogger({
+  // format:  baseFormat,
   format: process.env.NODE_ENV === "development" ? devFormat : baseFormat,
   transports,
 });
