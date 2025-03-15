@@ -4,6 +4,7 @@ import isEmpty from "lodash.isempty"
 import retResErrJson from "../../utils/retResErrJson.js"
 import chalk from "chalk"
 import { User } from "@shared/User.js"
+import S3_renameFolder from "../../utils/S3_renameFolder.js"
 
 
 /**
@@ -40,7 +41,16 @@ export const PUT_article =  async (
 
   if(!isEmpty(body)){
 
-    body.title && (article.title = body.title)
+    // IF there is a change on the article's title --> change S3 object prefix path that with a new title (as its prefix)
+    if(body.title){
+      
+      const renameFolder = await S3_renameFolder(article.title, body.title)
+      if(renameFolder.isError){
+        return retResErrJson(res,500,renameFolder.message)
+      }
+      article.title = body.title
+      
+    }
 
     body.shortDescription && (article.shortDescription = body.shortDescription)
     body.category && (article.category = body.category)

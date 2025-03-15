@@ -6,7 +6,7 @@ import isEmpty from "lodash.isempty"
 import hljs from "highlight.js"
 import { markedHighlight } from "marked-highlight"
 import retResErrJson from "../../../utils/retResErrJson.js"
-import getS3SignedUrl from "../../../utils/getS3SignedUrl.js"
+import getS3SignedUrl from "../../../utils/S3_getSignedUrl.js"
 import getFileName from "../../../utils/getFileName.js"
 import { articleModel } from "../../../schema/articleSchema.js"
 
@@ -65,7 +65,6 @@ marked.use({
 
 
 
-
 /**
  * @desc Get the article content data: text (markdown) and its images
  * @endpoint GET /api/article/{articleId}/content
@@ -77,7 +76,7 @@ export const GET_articleContent = async (req: Request, res:Response) => {
   const article = await articleModel.findById(articleId).lean()
   
   if(article===null){
-    return retResErrJson(res,404,`Article is not found`)
+    return retResErrJson(res,404,"Article not found")
   }
 
   let rawHtml, rawText = "";
@@ -85,11 +84,14 @@ export const GET_articleContent = async (req: Request, res:Response) => {
   // 1. Fetching the markdown
   if(!isEmpty(article.content)){
     try {
-      const remoteUrl = await getS3SignedUrl(article.content.relativePath)
+      const remoteUrl = await getS3SignedUrl(`${article.title}/${article.content.relativePath}`)
+
+      if(remoteUrl.isError){
+        return retResErrJson(res,404,"Article not found")
+      }
   
       // Make the HTTP GET request to the remoteUrl
-      // @ts-ignore
-      const response = await axios.get(remoteUrl, { responseType: "text" });
+      const response = await axios.get(remoteUrl.url!, { responseType: "text" });
       // console.log("response=",response)
       // console.log("response.data=",response.data)
 
@@ -110,8 +112,8 @@ export const GET_articleContent = async (req: Request, res:Response) => {
     // Fetch all content image from S3, just the URL
     for(let i=0; i<article.imageContent.length; i++){
       const img = article.imageContent[i];
-      const remoteUrl = await getS3SignedUrl(img.relativePath)
-      imageContentRemoteUrl[img.fileName] = remoteUrl
+      const remoteUrl = await getS3SignedUrl(`${article.title}/${img.relativePath}`)
+      imageContentRemoteUrl[img.fileName] = remoteUrl.url
     }
   }
   console.log(chalk.blueBright.bgBlack("After fetching all the image content `imageContentRemoteUrl`:"), imageContentRemoteUrl)
@@ -124,6 +126,7 @@ export const GET_articleContent = async (req: Request, res:Response) => {
 
     let filename = getFileName(url as string)
     filename = decodeURIComponent(filename)
+
     let newUrl = imageContentRemoteUrl[filename]
 
     if(newUrl===undefined) newUrl = url

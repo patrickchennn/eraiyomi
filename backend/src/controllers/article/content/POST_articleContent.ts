@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import { articleModel } from "../../../schema/articleSchema.js"
 import retResErrJson from "../../../utils/retResErrJson.js"
-import createObjectS3 from "../../../utils/createObjectS3.js"
+import createObjectS3 from "../../../utils/S3_createObject.js"
 import chalk from "chalk"
 import extractMarkdownImages from "../../../utils/extractMarkdownImages.js"
 
@@ -22,7 +22,7 @@ export default async function POST_articleContent(
   console.log("files=",files)
 
 
-  let extractedEmbeddedMarkdownImagesSytax;
+  let markdownImgSyntax;
 
 
   // 1. Handle the markdown content
@@ -34,62 +34,60 @@ export default async function POST_articleContent(
 
     const markdownText = content.buffer.toString('utf-8');
 
-    extractedEmbeddedMarkdownImagesSytax = extractMarkdownImages(markdownText)
-    console.log("extractedEmbeddedMarkdownImagesSytax",extractedEmbeddedMarkdownImagesSytax)
+    markdownImgSyntax = extractMarkdownImages(markdownText)
+    console.log("markdownImgSyntax",markdownImgSyntax)
 
-    const s3Path = `${article.title}/${content.originalname}`
 
     const createObjectS3Res = await createObjectS3(
-      s3Path,
+      `${article.title}/${content.originalname}`,
       content.buffer,
       content.mimetype
     );
-    console.log("createObjectS3Res=",createObjectS3Res)
 
-    if(createObjectS3Res===null){
-      return retResErrJson(res,500,"Error during content creation")
+    if(createObjectS3Res.isError){
+      return retResErrJson(res,500,createObjectS3Res.message)
     }
 
     article.content = {
       fileName:content.originalname,
-      relativePath: s3Path,
+      relativePath: content.originalname,
       mimeType: content.mimetype
     }
   }
 
   // 2. Handle the image-content (of the markdown)
-  if(files['image-content'] !== undefined && extractedEmbeddedMarkdownImagesSytax !== undefined){
+  if(files['image-content'] !== undefined && markdownImgSyntax !== undefined){
     console.log(chalk.blueBright.bgBlack("Handle markdown image-content"))
 
     for(let i=0; i<files['image-content'].length; i++){
 
-      const img = files['image-content'][i]
-      console.log("img=",img)
+      const imgInput = files['image-content'][i]
+      console.log("imgInput=",imgInput)
 
-      const embeddedImgUrl = decodeURIComponent(extractedEmbeddedMarkdownImagesSytax[img.originalname].url)
+      const embeddedImgUrl = decodeURIComponent(markdownImgSyntax[imgInput.originalname].url)
       
-      const s3Path = `${article.title}/${embeddedImgUrl}`
-      console.log("s3Path=",s3Path)
+      const createObjectS3Res = await createObjectS3(
+        `${article.title}/${embeddedImgUrl}`,
+        imgInput.buffer,
+        imgInput.mimetype
+      );
 
-      const S3_SendRes = await createObjectS3(s3Path,img.buffer,img.mimetype);
-      console.log("S3_SendRes=",S3_SendRes)
-
-      if(S3_SendRes===null){
-        return retResErrJson(res,500,"Error during image content uploads")
+      if(createObjectS3Res.isError){
+        return retResErrJson(res,500,createObjectS3Res.message)
       }
 
       article.imageContent.push({
-        fileName: img.originalname,
-        relativePath:s3Path,
-        mimeType: img.mimetype,
+        fileName: imgInput.originalname,
+        relativePath:embeddedImgUrl,
+        mimeType: imgInput.mimetype,
       })
     }
   }
 
   console.log(chalk.blueBright.bgBlack("preview article.content:"),article.content)
   console.log(chalk.blueBright.bgBlack("preview article.imageContent:"),article.imageContent)
+
   await article.save()
 
-
-  return res.status(201).json({message:"Successfully created content"})
+  return res.status(201).json({message:"Successfully created article content"})
 }

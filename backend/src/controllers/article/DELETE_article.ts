@@ -40,7 +40,6 @@ export const DELETE_article =  async (
   user.articleIdRef.splice(idx,1)
   console.log('Updated user.articleIdRef:', user.articleIdRef);
   
-  await user.save()
 
 
   // Remove article
@@ -54,12 +53,12 @@ export const DELETE_article =  async (
 
   // Delete the related objects on S3
   const S3_deleteFolderRes = await S3_deleteFolder(articleTitle)
-  console.log("S3_deleteFolderRes=",S3_deleteFolderRes)
 
-  if(S3_deleteFolderRes===null){
-    return retResErrJson(res, 500, "Error during deleting S3 objects")
+  if(S3_deleteFolderRes.isError){
+    return retResErrJson(res, 500, S3_deleteFolderRes.message)
   }
 
-
+  await user.save()
+  
   return res.status(204).end()
 }

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { articleModel } from "../../../schema/articleSchema.js";
 import retResErrJson from "../../../utils/retResErrJson.js";
-import createObjectS3 from "../../../utils/createObjectS3.js";
+import createObjectS3 from "../../../utils/S3_createObject.js";
 import S3_deleteObject from "../../../utils/S3_deleteObject.js";
 import chalk from "chalk";
 import extractMarkdownImages from "../../../utils/extractMarkdownImages.js";
@@ -29,16 +29,15 @@ export default async function PUT_articleContent(req: Request, res: Response){
   console.log(chalk.blueBright.bgBlack("Handle markdown content"))
 
   if(article.content!==null){
-    const existingContentS3Path = article.content.relativePath
 
-    const S3_deleteObjectRes = await S3_deleteObject(existingContentS3Path)
+    const S3_deleteObjectRes = await S3_deleteObject(`${article.title}/${article.content.relativePath}`)
 
-    if(S3_deleteObjectRes===null){
-      return retResErrJson(res,500,"Error during deleting old content on S3")
+    if(S3_deleteObjectRes.isError){
+      return retResErrJson(res,500,S3_deleteObjectRes.message)
     }
   }
 
-  let extractedEmbeddedMarkdownImagesSytax;
+  let markdownImgSyntax;
   
   if(files.content !== undefined){
     
@@ -47,25 +46,23 @@ export default async function PUT_articleContent(req: Request, res: Response){
 
     const markdownText = content.buffer.toString('utf-8');
 
-    extractedEmbeddedMarkdownImagesSytax = extractMarkdownImages(markdownText)
-    console.log("extractedEmbeddedMarkdownImagesSytax",extractedEmbeddedMarkdownImagesSytax)
+    markdownImgSyntax = extractMarkdownImages(markdownText)
+    console.log("markdownImgSyntax",markdownImgSyntax)
     
 
-    const newS3Path = `${article.title}/${content.originalname}`
-
     const createObjectS3Res = await createObjectS3(
-      newS3Path,
+      `${article.title}/${content.originalname}`,
       content.buffer,
       content.mimetype
     );
 
-    if(createObjectS3Res===null){
-      return retResErrJson(res,500,"Error during content creation")
+    if(createObjectS3Res.isError){
+      return retResErrJson(res,500,createObjectS3Res.message)
     }
 
     article.content = {
       fileName:content.originalname,
-      relativePath: newS3Path,
+      relativePath: content.originalname,
       mimeType: content.mimetype
     }
   }
@@ -80,40 +77,41 @@ export default async function PUT_articleContent(req: Request, res: Response){
   ){
     const len = article.imageContent.length
     for(let i=0; i<len; i++){
-      const img = article.imageContent[i]
-      // console.log("img=",img)
+      const imgInput = article.imageContent[i]
+      // console.log("imgInput=",imgInput)
 
-      const S3_deleteObjectRes = await S3_deleteObject(img.relativePath)
+      const S3_deleteObjectRes = await S3_deleteObject(`${article.title}/${imgInput.relativePath}`)
     
-      if(S3_deleteObjectRes===null){
-        return retResErrJson(res,500,"Error during deleting S3 object")
+      if(S3_deleteObjectRes.isError){
+        return retResErrJson(res,500,S3_deleteObjectRes.message)
       }
     }
     for(let i=0; i<len; i++) article.imageContent.pop()
   }
 
-  if(files['image-content'] !== undefined && extractedEmbeddedMarkdownImagesSytax !== undefined){
+  if(files['image-content'] !== undefined && markdownImgSyntax !== undefined){
 
     for(let i=0; i<files['image-content'].length; i++){
 
-      const img = files['image-content'][i]
-      // console.log("img=",img)
+      const imgInput = files['image-content'][i]
+      // console.log("imgInput=",imgInput)
 
-      const embeddedImgUrl = decodeURIComponent(extractedEmbeddedMarkdownImagesSytax[img.originalname].url)
+      const embeddedImgUrl = decodeURIComponent(markdownImgSyntax[imgInput.originalname].url)
       
-      const s3Path = `${article.title}/${embeddedImgUrl}`
 
-      const S3_SendRes = await createObjectS3(s3Path,img.buffer,img.mimetype);
-      console.log("S3_SendRes=",S3_SendRes)
-
-      if(S3_SendRes===null){
-        return retResErrJson(res,500,"Error during image content uploads")
+      const createObjectS3Res = await createObjectS3(
+        `${article.title}/${embeddedImgUrl}`,
+        imgInput.buffer,
+        imgInput.mimetype
+      );
+      if(createObjectS3Res.isError){
+        return retResErrJson(res,500,createObjectS3Res.message)
       }
 
       article.imageContent.push({
-        fileName: img.originalname,
-        relativePath:s3Path,
-        mimeType: img.mimetype,
+        fileName: imgInput.originalname,
+        relativePath:embeddedImgUrl,
+        mimeType: imgInput.mimetype,
       })
     }
   }

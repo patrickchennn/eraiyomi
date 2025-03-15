@@ -1,7 +1,7 @@
 import { Request,Response } from "express"
 import { articleModel } from "../../../schema/articleSchema.js"
 import retResErrJson from "../../../utils/retResErrJson.js"
-import getS3SignedUrl from "../../../utils/getS3SignedUrl.js"
+import getS3SignedUrl from "../../../utils/S3_getSignedUrl.js"
 
 /**
  * @desc Get article thumbnail remote URL
@@ -21,11 +21,11 @@ const GET_articleThumbnail = async (req: Request, res:Response) => {
     return retResErrJson(res,400,"Thumbnail not found")
   }
 
-  const remoteUrl = await getS3SignedUrl(article.thumbnail.relativePath)
+  const remoteUrl = await getS3SignedUrl(`${article.title}/${article.thumbnail.relativePath}`)
   console.log("remoteUrl=",remoteUrl)
   
-  if(remoteUrl===null){
-    return retResErrJson(res,500,"Error fetching thumbnail")
+  if(remoteUrl.isError){
+    return retResErrJson(res,500,remoteUrl.message)
   }
     
 

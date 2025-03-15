@@ -1,10 +1,13 @@
 import { HeadObjectCommand, HeadObjectCommandInput, HeadObjectCommandOutput } from "@aws-sdk/client-s3";
 import { AWS_BUCKET_NAME, s3Client } from "../../index.js";
+import s3Logger from "../loggers/s3Logger.js";
 
 /**
- * https://stackoverflow.com/questions/26726862/how-to-determine-if-object-exists-aws-s3-node-js-sdk
- * https://nesin.io/blog/check-if-file-exists-aws-s3
  * @param filePath The file full path to be checked
+ * @see
+ * https://stackoverflow.com/questions/26726862/how-to-determine-if-object-exists-aws-s3-node-js-sdk
+ * 
+ * https://nesin.io/blog/check-if-file-exists-aws-s3
  */
 const S3_isObjectExist = async (filePath: string) => {
   try {
@@ -17,8 +20,13 @@ const S3_isObjectExist = async (filePath: string) => {
 
     // I always get 200 for my testing if the object exists
     const exists = data.$metadata.httpStatusCode === 200;
+    
+    s3Logger.info(`Object: ${filePath} exists`)
+
     return { exists, error: null };
   } catch (error: any) {
+    s3Logger.error(error)
+
     if (error.$metadata?.httpStatusCode === 404) {
       // doesn't exist and permission policy includes s3:ListBucket
       // console.error(error)

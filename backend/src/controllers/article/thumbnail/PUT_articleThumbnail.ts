@@ -5,7 +5,7 @@ import chalk from "chalk"
 
 // import createObjectS3 from "../../utils/createObjectS3.js"
 import S3_isObjectExist from "../../../utils/S3_isObjectExist.js"
-import createObjectS3 from "../../../utils/createObjectS3.js"
+import createObjectS3 from "../../../utils/S3_createObject.js"
 import S3_deleteObject from "../../../utils/S3_deleteObject.js"
 // import S3_deleteObject from "../../utils/S3_deleteObject.js"
 
@@ -33,42 +33,40 @@ const PUT_articleThumbnail =  async (
 
   // IF: the user did wanna change the thumbnail (by providing image...)
   if(file!==undefined){
-    const newThumbnailS3Path = `${article.title}/${file.fieldname}/${file.originalname}`
+    const existingThumbnailS3Path = `${article.title}/${article.thumbnail.relativePath}`
 
     // IF: previous thumbnail already existed -->  delete the previous one first
-    const isObjectExist = await S3_isObjectExist(newThumbnailS3Path)
+    const isObjectExist = await S3_isObjectExist(existingThumbnailS3Path)
 
     if(article.thumbnail !== null && isObjectExist.exists){
-      const existingThumbnailS3Path = article.thumbnail.relativePath
 
       const S3_deleteObjectRes = await S3_deleteObject(existingThumbnailS3Path)
-      console.log("S3_deleteObjectRes=",S3_deleteObjectRes)
-    
-      if(S3_deleteObjectRes===null){
-        return retResErrJson(res,500,"Error during deleting thumbnail image")
+      
+      if(S3_deleteObjectRes.isError){
+        return retResErrJson(res,500,S3_deleteObjectRes.message)
       }
     }
 
 
-    const S3_Res = await createObjectS3(
-      newThumbnailS3Path,
+    const createObjectS3Res = await createObjectS3(
+      `${article.title}/${file.fieldname}/${file.originalname}`,
       file.buffer, 
       file.mimetype
     );
-    console.log("S3_Res=",S3_Res)
 
-    if(S3_Res===null){
-      return retResErrJson(res,500,"Error occured when trying to upload article's thumbnail image into S3")
+    if(createObjectS3Res.isError){
+      return retResErrJson(res,500,createObjectS3Res.message)
     }
 
     article.thumbnail = {
       fileName:file.originalname,
-      relativePath: newThumbnailS3Path,
+      relativePath: `${file.fieldname}/${file.originalname}`,
       mimeType: file.mimetype
     }
   }
 
   console.log(chalk.blueBright.bgBlack("new article.thumbnail data schema: "),article.thumbnail)
+  
   await article.save()
 
   return res.status(201).json({message:"Article's thumbnail successfully edited"})

@@ -13,11 +13,10 @@ const DELETE_articleThumbnail =  async (req: Request, res: Response) => {
     return retResErrJson(res,404,"Article not found")
   }
 
-  const S3_deleteObjectRes = await S3_deleteObject(article.thumbnail.relativePath)
-  console.log("S3_deleteObjectRes=",S3_deleteObjectRes)
-
-  if(S3_deleteObjectRes===null){
-    return retResErrJson(res,500,"Error during deleting thumbnail image")
+  const S3_deleteObjectRes = await S3_deleteObject(`${article.title}/${article.thumbnail.relativePath}`)
+  
+  if(S3_deleteObjectRes.isError){
+    return retResErrJson(res,500,S3_deleteObjectRes.message)
   }
 
   // Set `article.thumbnail` field to be null

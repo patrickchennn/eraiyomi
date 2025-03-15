@@ -2,7 +2,7 @@ import { Request, Response } from "express"
 import { articleModel } from "../../../schema/articleSchema.js"
 import retResErrJson from "../../../utils/retResErrJson.js"
 import chalk from "chalk"
-import createObjectS3 from "../../../utils/createObjectS3.js"
+import createObjectS3 from "../../../utils/S3_createObject.js"
 
 const POST_articleThumbnail =  async (
   req: Request<
@@ -30,21 +30,20 @@ const POST_articleThumbnail =  async (
 
 
   if(file!==undefined){
-    const s3Path = `${article.title}/${file.fieldname}/${file.originalname}`
+    
     const createObjectS3Res = await createObjectS3(
-      s3Path,
+      `${article.title}/${file.fieldname}/${file.originalname}`,
       file.buffer,
       file.mimetype
     );
-    console.log("createObjectS3Res=",createObjectS3Res)
-
-    if(createObjectS3Res===null){
-      return retResErrJson(res,500,"Error during thumbnail creation")
+    
+    if(createObjectS3Res.isError){
+      return retResErrJson(res,500,createObjectS3Res.message)
     }
 
     article.thumbnail = {
       fileName:file.originalname,
-      relativePath: s3Path,
+      relativePath: `${file.fieldname}/${file.originalname}`,
       mimeType: file.mimetype
     }
   }

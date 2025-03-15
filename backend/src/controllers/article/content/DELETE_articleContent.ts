@@ -13,11 +13,10 @@ export default async function DELETE_articleContent(req: Request, res: Response)
     return retResErrJson(res,404,"Article not found")
   }
 
-  const S3_deleteObjectRes = await S3_deleteObject(article.content.relativePath)
-  // console.log("S3_deleteObjectRes=",S3_deleteObjectRes)
+  const S3_deleteObjectRes = await S3_deleteObject(`${article.title}/${article.content.relativePath}`)
 
-  if(S3_deleteObjectRes===null){
-    return retResErrJson(res,500,"Error during deleting S3 object")
+  if(S3_deleteObjectRes.isError){
+    return retResErrJson(res,500,S3_deleteObjectRes.message)
   }
 
   // Set `article.content` field to be null

@@ -1,21 +1,28 @@
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { AWS_BUCKET_NAME, s3Client } from "../../index.js";
-import chalk from "chalk";
+import s3Logger from "../loggers/s3Logger.js";
 
 /**
- * https://chatgpt.com/share/67a9bc0b-5f58-800a-be83-efc98c045394
- * 
- * https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/s3/command/DeleteObjectCommand/
+ * Deletes an object from an S3 bucket.
+ * @param {string} key The key (path) of the object to delete.
+ * @see https://chatgpt.com/c/67a9ba58-a1e8-800a-ae43-e9c362982bde
  */
-const S3_deleteObject = async (key: string): Promise<string | null> => {
+const S3_deleteObject = async (key: string): Promise<{
+  isError: boolean;
+  message: string;
+}> => {
   if (!key) {
-    console.error(chalk.red.bgBlack("[ERR] Invalid key: A valid S3 object key is required."));
-    return null;
+    const msg = "Invalid key: A valid S3 object key is required."
+
+    s3Logger.error(msg);
+    return { isError: true, message: msg };
   }
 
   if (!AWS_BUCKET_NAME) {
-    console.error(chalk.red.bgBlack("[ERR] AWS_BUCKET_NAME is not defined."));
-    return null;
+    const msg = "AWS_BUCKET_NAME is not defined."
+
+    s3Logger.error(msg);
+    return { isError: true, message: msg };
   }
 
   try {
@@ -25,17 +32,19 @@ const S3_deleteObject = async (key: string): Promise<string | null> => {
     });
 
     const response = await s3Client.send(command);
-
     if (response.$metadata?.httpStatusCode === 204) {
-      console.info(chalk.green.bgBlack(`[OK] Successfully deleted object: ${key}`));
-      return `Object '${key}' deleted successfully.`;
+      const msg = `Object '${key}' deleted successfully.`
+      s3Logger.info(msg);
+      return { isError: false, message: msg};
     } else {
-      console.error(chalk.red.bgBlack(`[ERR] Failed to delete object: ${key}`, response));
-      return null;
+      s3Logger.error(`Failed to delete object: ${key}`, response);
+      return { isError: true, message: `Failed to delete object: ${key}.` };
     }
   } catch (error: any) {
-    console.error(chalk.red.bgBlack(`[ERR] Error deleting object from S3: ${error.message}`));
-    return null;
+    const msg = `Error deleting object from S3: ${error.message}`
+
+    s3Logger.error(msg);
+    return { isError: true, message: msg};
   }
 };
 
