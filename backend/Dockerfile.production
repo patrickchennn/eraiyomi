@@ -14,6 +14,7 @@ COPY ./backend/src ./src
 COPY ./backend/.babelrc.json ./
 COPY ./backend/declaration.d.ts ./
 COPY ./backend/index.ts .
+COPY ./backend/minify.js .
 COPY ./backend/package*.json ./ 
 COPY ./backend/tsconfig.prod.json ./
 
@@ -25,6 +26,9 @@ RUN npm run build
 
 # Debug: Ensure dist folder exists
 RUN ls -la ./dist
+
+# Minify the build assets
+RUN npm run minify
 
 # ~~~~~~~~~~Stage 2: Production~~~~~~~~~~
 FROM node:18.20.4-alpine

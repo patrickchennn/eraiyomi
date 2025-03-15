@@ -14,6 +14,7 @@ COPY ./backend/src ./src
 COPY ./backend/.babelrc.json ./
 COPY ./backend/declaration.d.ts ./
 COPY ./backend/index.ts .
+COPY ./backend/minify.js .
 COPY ./backend/package*.json ./ 
 COPY ./backend/tsconfig.prod.json ./
 
@@ -26,6 +27,9 @@ RUN npm run build
 # Debug: Ensure dist folder exists
 RUN ls -la ./dist
 
+# Minify the build assets
+RUN npm run minify
+
 # ~~~~~~~~~~Stage 2: Production~~~~~~~~~~
 FROM node:18.20.4-alpine
 WORKDIR /app/backend
@@ -35,8 +39,8 @@ COPY --from=builder /app/backend/package*.json ./
 
 # Production `node_modules` dependencies
 # Use this for slower build but smaller final image size
-# RUN npm install ---omit=dev
+RUN npm install ---omit=dev
 # Use this for faster build but with a lil bigger final image size
-COPY --from=builder /app/backend/node_modules ./node_modules
+# COPY --from=builder /app/backend/node_modules ./node_modules
 
 CMD ["npm","run", "start-staging"]

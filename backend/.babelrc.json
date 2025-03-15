@@ -1,5 +1,5 @@
 {
-    "sourceMaps": true,
+    "sourceMaps": false,  // Disable source maps
     "presets": [
         ["@babel/preset-env", { 
             "targets": { 
