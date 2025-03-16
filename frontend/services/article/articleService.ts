@@ -16,8 +16,16 @@ export const postArticle = async (
   return apiService<Article>('post', "/article", conf, JSON.stringify(data));
 };
 
-export const getArticle = async (articleId: string) => {
-  return apiService<Article>('get', `/article/${articleId}`);
+export const getArticle = async (
+  articleId: string,
+  reqCache: "default" | "no-store" | "reload" | "no-cache" | "force-cache" | "only-if-cached" = "default"
+) => {
+  const conf: RequestInit = {
+    headers: {
+      'Cache-Control': reqCache
+    }
+  }
+  return apiService<Article>('get', `/article/${articleId}`,conf);
 };
 
 export const getArticles = async (

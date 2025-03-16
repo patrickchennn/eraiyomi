@@ -27,7 +27,7 @@ export default function EditInputThumbnail({
   useEffect(() => {
     console.log("@useEffect fetch thumbnail from server")
 
-    getArticleThumbnail(articleId)
+    getArticleThumbnail(articleId,"no-store")
       .then(resData => {
         if(resData.data!==null) {
           defaultThumbnailRef.current = resData.data

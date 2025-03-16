@@ -27,7 +27,7 @@ function EditMdFileInput({
   useEffect(() => {
     console.log("@useEffect fetch content from server")
 
-    getArticleContent(articleId)
+    getArticleContent(articleId,"no-store")
       .then(resData => {
         if(resData.data!==null) {
           setRawText(resData.data.rawText)

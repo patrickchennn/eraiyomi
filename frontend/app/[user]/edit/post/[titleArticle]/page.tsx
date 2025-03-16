@@ -74,7 +74,7 @@ export default async function Page({params,searchParams}: PageProps) {
     )
   }
   
-  const article = await getArticle(searchParams.id)
+  const article = await getArticle(searchParams.id,"no-store")
   // console.log("article=",article)
 
 

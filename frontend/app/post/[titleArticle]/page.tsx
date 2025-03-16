@@ -18,11 +18,11 @@ import GoogleAnalytics from "@/components/GoogleAnalytics";
 
  
 const getArticleCache = cache(async (id: string) => {
-  return await getArticle(id)
+  return await getArticle(id,"no-store")
 })
 
 const getArticleThumbnailCache = cache(async (id: string) => {
-  return await getArticleThumbnail(id)
+  return await getArticleThumbnail(id,"no-store")
 })
 
 interface PageProps{
@@ -52,22 +52,25 @@ export async function generateMetadata(
     )
   }
 
-  const metadata: Metadata = {}
-  
   const article = articleRes.data
   // console.log("article=",article)
+  // console.log("process.env.NEXT_PUBLIC_SITE_URL=",process.env.NEXT_PUBLIC_SITE_URL)
 
-
-  metadata.title = article.title
-  metadata.description = article.shortDescription
+  const metadata: Metadata = {
+    title: article.title,
+    description: article.shortDescription,
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:8005"),
+  };
 
   const thumbnailRes = await getArticleThumbnailCache(article._id)
 
   if(thumbnailRes.data!==null) {
     metadata.openGraph = {
+      title:article.title,
+      description: article.shortDescription,
       images:[
         {
-          url: thumbnailRes.data && thumbnailRes.data
+          url: thumbnailRes.data
         }
       ]
     }
@@ -99,7 +102,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   const article = articleRes.data
   // console.log("article=",article)
 
-  const articleContentRes = await getArticleContent(searchParams.id)
+  const articleContentRes = await getArticleContent(searchParams.id,"no-store")
 
   if(!articleContentRes.data){
     return (

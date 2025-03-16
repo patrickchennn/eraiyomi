@@ -26,6 +26,7 @@ module.exports = (phase) => {
   if (phase === PHASE_DEVELOPMENT_SERVER) {
     config['env'] = {
       URL_API: "http://localhost:8000/api",
+      NEXT_PUBLIC_SITE_URL:"http://localhost:8005"
     }
   }
 
@@ -33,10 +34,11 @@ module.exports = (phase) => {
   if(process.env.APP_ENV!==undefined && process.env.APP_ENV==="staging"){
     config['env'] = {
       URL_API: "https://staging-api.eraiyomi.com/api",
+      NEXT_PUBLIC_SITE_URL:"https://staging-client.eraiyomi.com"
     }
     config['compiler'] = {
       removeConsole: {
-        exclude: ["error", "info"],
+        exclude: ["error", "info", "warn"],
       }
     }
     config['output'] = "standalone"
@@ -46,10 +48,11 @@ module.exports = (phase) => {
   if(process.env.APP_ENV!==undefined && process.env.APP_ENV==="production"){
     config['env'] = {
       URL_API: "https://api.eraiyomi.com/api",
+      NEXT_PUBLIC_SITE_URL:"https://www.eraiyomi.com"
     }
     config['compiler'] = {
       removeConsole: {
-        exclude: ["error", "info"],
+        exclude: ["error", "info", "warn"],
       }
     }
     config['output'] = "standalone"
