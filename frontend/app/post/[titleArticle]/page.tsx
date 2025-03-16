@@ -12,18 +12,9 @@ import CreateTitle from "@/components/blog/CreateTitle";
 import { getArticleContent } from "@/services/article/articleContentService";
 import { getArticle } from "@/services/article/articleService";
 import { getUser } from "@/services/user/userService";
-import { cache } from "react";
 import { getArticleThumbnail } from "@/services/article/articleThumbnailService";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 
- 
-const getArticleCache = cache(async (id: string) => {
-  return await getArticle(id,"no-store")
-})
-
-const getArticleThumbnailCache = cache(async (id: string) => {
-  return await getArticleThumbnail(id,"no-store")
-})
 
 interface PageProps{
   params: { 
@@ -43,7 +34,7 @@ export async function generateMetadata(
     return { title: "Article Not Found" };
   }
 
-  const articleRes = await getArticleCache(searchParams.id)
+  const articleRes = await getArticle(searchParams.id,"no-store")
   // console.log("articleRes=",articleRes)
 
   if(!articleRes.data){
@@ -62,7 +53,7 @@ export async function generateMetadata(
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:8005"),
   };
 
-  const thumbnailRes = await getArticleThumbnailCache(article._id)
+  const thumbnailRes = await getArticleThumbnail(article._id,"no-store")
 
   if(thumbnailRes.data!==null) {
     metadata.openGraph = {
@@ -90,7 +81,7 @@ export default async function Page({ params, searchParams }: PageProps) {
       <h1>404 Not Found</h1>
     )
   }
-  const articleRes = await getArticleCache(searchParams.id)
+  const articleRes = await getArticle(searchParams.id,"no-store")
   // console.log("articleRes=",articleRes)
 
   if(!articleRes.data){
@@ -118,7 +109,7 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   const user = userRes.data!
 
-  const thumbnailRes = await getArticleThumbnailCache(article._id)
+  const thumbnailRes = await getArticleThumbnail(article._id,"no-store")
 
   
 
