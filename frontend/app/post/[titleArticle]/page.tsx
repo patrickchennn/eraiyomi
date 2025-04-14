@@ -1,5 +1,3 @@
-"use server"
-
 import chalk from "chalk";
 import 'highlight.js/styles/atom-one-dark.css';
 import { Metadata, ResolvingMetadata } from "next";
@@ -34,7 +32,7 @@ export async function generateMetadata(
     return { title: "Article Not Found" };
   }
 
-  const articleRes = await getArticle(searchParams.id,"no-store")
+  const articleRes = await getArticle(searchParams.id,{next: { tags: [searchParams.id] }})
   // console.log("articleRes=",articleRes)
 
   if(!articleRes.data){
@@ -53,7 +51,7 @@ export async function generateMetadata(
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:8005"),
   };
 
-  const thumbnailRes = await getArticleThumbnail(article._id,"no-store")
+  const thumbnailRes = await getArticleThumbnail(article._id, {next: { tags: [searchParams.id] }})
 
   if(thumbnailRes.data!==null) {
     metadata.openGraph = {
@@ -81,7 +79,7 @@ export default async function Page({ params, searchParams }: PageProps) {
       <h1>404 Not Found</h1>
     )
   }
-  const articleRes = await getArticle(searchParams.id,"no-store")
+  const articleRes = await getArticle(searchParams.id,{next: { tags: [searchParams.id] }})
   // console.log("articleRes=",articleRes)
 
   if(!articleRes.data){
@@ -93,7 +91,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   const article = articleRes.data
   // console.log("article=",article)
 
-  const articleContentRes = await getArticleContent(searchParams.id,"no-store")
+  const articleContentRes = await getArticleContent(searchParams.id,{next: { tags: [searchParams.id] }})
 
   if(!articleContentRes.data){
     return (
@@ -109,7 +107,7 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   const user = userRes.data!
 
-  const thumbnailRes = await getArticleThumbnail(article._id,"no-store")
+  const thumbnailRes = await getArticleThumbnail(article._id,{next: { tags: [searchParams.id] }})
 
   
 

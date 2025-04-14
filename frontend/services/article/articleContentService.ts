@@ -2,13 +2,13 @@ import { apiService } from "../apiService";
 
 export const getArticleContent = async (
   articleId: string,
-  reqCache: "default" | "no-store" | "reload" | "no-cache" | "force-cache" | "only-if-cached" = "default"
+  conf: any
 ) => {
-  const conf: RequestInit = {
-    headers: {
-      'Cache-Control': reqCache
-    }
-  }
+  // const conf: RequestInit = {
+  //   headers: {
+  //     'Cache-Control': reqCache
+  //   }
+  // }
   return apiService<{rawHtml: string, rawText: string} | null>('get', `/article/${articleId}/content`,conf);
 };
 

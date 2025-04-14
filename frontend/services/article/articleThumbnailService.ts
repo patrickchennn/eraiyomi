@@ -2,13 +2,8 @@ import { apiService } from "../apiService";
 
 export const getArticleThumbnail = async (
   articleId: string,
-  reqCache: "default" | "no-store" | "reload" | "no-cache" | "force-cache" | "only-if-cached" = "default"
+  conf: any
 ) => {
-  const conf: RequestInit = {
-    headers: {
-      'Cache-Control': reqCache
-    }
-  }
   return apiService<string>('get', `/article/${articleId}/thumbnail`,conf);
 };
 

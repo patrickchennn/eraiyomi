@@ -4,10 +4,10 @@ import isEmpty from "lodash.isempty"
 import isEqual from "lodash.isequal"
 import getCookie from "@/utils/getCookie"
 import { putArticle } from "@/services/article/articleService"
-import { putArticleImgContent } from "@/services/article/articleImageContentService"
 import { deleteArticleThumbnail, putArticleThumbnail } from "@/services/article/articleThumbnailService"
 import { putArticleContent } from "@/services/article/articleContentService"
 import { ArticlePostRequestBody } from "@shared/Article"
+import { customRevalidateTag } from "@/app/actions/triggerRevalidateArticle"
 
 interface SaveBtnProps {
   buttonStyle: string
@@ -161,6 +161,8 @@ export default function SaveBtn({
       alert("Error editing article")
     }else{
       alert("Successfully editing article")
+      // Revalidate entries with a specific tag
+      await customRevalidateTag(articleId)
     }
   }
 

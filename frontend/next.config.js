@@ -30,6 +30,20 @@ module.exports = (phase) => {
     }
   }
 
+  // Staging-local only config
+  if(process.env.APP_ENV!==undefined && process.env.APP_ENV==="staging-local"){
+    config['env'] = {
+      URL_API: "http://localhost:8000/api",
+      NEXT_PUBLIC_SITE_URL:"http://localhost:8005"
+    }
+    config['compiler'] = {
+      removeConsole: {
+        exclude: ["error", "info", "warn"],
+      }
+    }
+    config['output'] = "standalone"
+  }
+
   // Staging only config
   if(process.env.APP_ENV!==undefined && process.env.APP_ENV==="staging"){
     config['env'] = {

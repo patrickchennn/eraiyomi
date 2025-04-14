@@ -18,13 +18,9 @@ export const postArticle = async (
 
 export const getArticle = async (
   articleId: string,
-  reqCache: "default" | "no-store" | "reload" | "no-cache" | "force-cache" | "only-if-cached" = "default"
+  conf: any
 ) => {
-  const conf: RequestInit = {
-    headers: {
-      'Cache-Control': reqCache
-    }
-  }
+
   return apiService<Article>('get', `/article/${articleId}`,conf);
 };
 

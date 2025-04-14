@@ -9,7 +9,6 @@ import getCookie from '@/utils/getCookie';
 import { postArticle } from '@/services/article/articleService';
 import { postArticleContent } from '@/services/article/articleContentService';
 import { postArticleThumbnail } from '@/services/article/articleThumbnailService';
-import { postArticleImgContent } from '@/services/article/articleImageContentService';
 import { ArticlePostRequestBody } from '@shared/Article';
 
 

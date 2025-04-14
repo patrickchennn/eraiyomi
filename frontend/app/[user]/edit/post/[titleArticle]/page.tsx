@@ -1,5 +1,3 @@
-"use server"
-
 import EditArticle from '@/components/user/edit-post/EditArticle';
 import { getArticle } from '@/services/article/articleService';
 import { getUser, postVerifyUser } from '@/services/user/userService';
@@ -74,7 +72,7 @@ export default async function Page({params,searchParams}: PageProps) {
     )
   }
   
-  const article = await getArticle(searchParams.id,"no-store")
+  const article = await getArticle(searchParams.id,{headers:{"Cache-Control":"no-store"}})
   // console.log("article=",article)
 
 

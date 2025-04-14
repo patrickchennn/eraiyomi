@@ -5,9 +5,11 @@
     "check-type": "tsc --noEmit",
     "lint": "next lint",
     "dev": "next dev -p 8005",
-    "build-staging": "npm run check-type && npm run lint && APP_ENV=staging next build",
-    "build-production": "npm run check-type && npm run lint && APP_ENV=production next build",
-    "start": "next start",
+    "prebuild":"rimraf .next && npm run check-type && npm run lint",
+    "build-staging-local": "npm run prebuild && APP_ENV=staging-local next build",
+    "build-staging": "npm run prebuild && APP_ENV=staging next build",
+    "build-production": "npm run prebuild && APP_ENV=production next build",
+    "start": "next start -p 8006",
     "cy:open": "cypress open"
   },
   "dependencies": {
@@ -39,7 +41,8 @@
     "@types/lodash.isequal": "^4.5.8",
     "@types/validator": "^13.11.7",
     "cypress": "^13.6.0",
-    "cypress-file-upload": "^5.0.8"
+    "cypress-file-upload": "^5.0.8",
+    "rimraf": "^6.0.1"
   },
   "engines": {
     "node": "v18.20.4"

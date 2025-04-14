@@ -1,5 +1,3 @@
-"use server"
-
 import { cookies } from "next/headers"
 import AuthenticatedUser from "@/components/user/AuthenticatedUser"
 import DisplayUser from "@/components/user/DisplayUser"
