@@ -42,17 +42,17 @@ Cypress.Commands.add("login",()=>{
   cy.intercept({
     method: 'POST',
     url: '/api/user/login-traditional',
-    hostname: 'localhost',
+    hostname: Cypress.env("API_hostname"),
   }).as('loginTraditional')
 
-  cy.contains('button',"Sign In")
-    .wait(2000)
-    .click()
-    .next().should('be.visible')
-  ;
+  cy.contains('button',"Sign In").click({timeout:2000});
+
+  cy.get("div[data-cy='authentication-modal']").should('be.visible')
 
   cy.get("#login-uName-or-email").type(Cypress.env('u_name'))
+  
   cy.get("#login-pass").type(Cypress.env('password'))
+
   cy.contains('button[type="submit"]',"Sign In")
     .click()
   ;  
@@ -63,34 +63,15 @@ Cypress.Commands.add("login",()=>{
 })
 
 Cypress.Commands.add('uploadFolder', (selector, folderName) => {
-  cy.task('readdirRecursive', `cypress/fixtures/${folderName}`).then((filePaths) => {
+  cy.task<string[]>('readdirRecursive', `cypress/fixtures/${folderName}`).then((filePaths) => {
+    console.log("filePaths=",filePaths)
     const fileList = filePaths.map((filePath: string) => ({
       // Remove `cypress/fixtures/` prefix
       filePath: filePath.replace('cypress/fixtures/', ''),
     }));
     console.log("fileList=",fileList)
 
-    cy.get(selector).selectFile(fileList);
+    cy.get(selector).selectFile(filePaths);
     // cy.get(selector).attachFile(fileList);
   });
 });
-
-// Cypress.Commands.add('uploadFolder', (selector, folderName) => {
-//   cy.task('readdirRecursive', `cypress/fixtures/${folderName}`).then((filePaths) => {
-//     const fileList = filePaths.map((filePath: string) => {
-//       // Remove `cypress/fixtures/` prefix
-//       const fullPath = `cypress/fixtures/${filePath}`
-//       const relativePath = filePath.replace('cypress/fixtures/', '')
-//       return ({
-//         contents: Cypress.Buffer.from(fullPath),
-//         fileName: relativePath,
-//         webkitRelativePath: relativePath
-//       })
-
-//     });
-//     console.log("fileList=",fileList)
-
-//     cy.get(selector).selectFile(fileList);
-//     // cy.get(selector).attachFile(fileList);
-//   });
-// });

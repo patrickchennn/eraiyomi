@@ -5,23 +5,6 @@ import paramiko
 import time
 from rich import print
 
-# Ensure exactly one argument is provided
-if len(sys.argv) != 2:
-    print("[bold red]Usage:[/] deploy.py production|staging")
-    sys.exit(1)
-
-# Set environment
-ENV = sys.argv[1]
-
-if ENV == "production":
-    DOCKER_SERVICES = "server client"
-elif ENV == "staging":
-    DOCKER_SERVICES = "server-staging client-staging"
-else:
-    print(f"[bold red]❌ Invalid environment:[/] {ENV}")
-    print("Usage: deploy.py production|staging")
-    sys.exit(1)
-
 # SSH connection details
 SSH_KEY = "/home/patrick/.ssh/github-actions"
 SSH_USER = "patrick"
@@ -32,8 +15,6 @@ GIT_REPO = "https://github.com/patrickchennn/eraiyomi.git"
 def run_ssh_command(client, command, description):
     """Executes an SSH command with a flushing progress output."""
 
-    # Show in-progress message without a newline
-    # print(f"[cyan][*] {description}...[/]", end="\r", flush=True)
     print(f"[cyan][*] {description}...[/]")
 
     stdin, stdout, stderr = client.exec_command(command)
@@ -42,12 +23,9 @@ def run_ssh_command(client, command, description):
     # Capture output
     stdout_lines = stdout.readlines()
     print(stdout_lines)
-    print(exit_status)
+    # print(exit_status)
 
     stderr_lines = stderr.readlines()
-
-    # Clear previous progress line
-    print(" " * 80, end="\r")
 
     # If the command fails, show the error and exit
     if exit_status != 0:
@@ -60,7 +38,30 @@ def run_ssh_command(client, command, description):
     print(f"[bold green][+] {description}[/]")
 
 def main():
-    """Main function to handle deployment."""
+
+    # Used for checking whether the supplied `argv[]` value is in this set
+    existing_docker_services = {"server", "client", "server-staging","client-staging"}
+
+    # Atleast one argument (1 argc) provided
+    if len(sys.argv) < 2:
+        print(f"Usage: deploy.py {existing_docker_services}")
+        sys.exit(1)
+
+
+    # Exclude the program name
+    DOCKER_SERVICES = sys.argv[1:]
+    # print("DOCKER_SERVICES=",DOCKER_SERVICES)
+
+    for docker_service in DOCKER_SERVICES:
+        if(docker_service not in existing_docker_services):
+            print(f"[bold red]Invalid Docker Service:[/] {docker_service}")
+            print(f"Usage: deploy.py {existing_docker_services}")
+            sys.exit(1)
+
+    DOCKER_SERVICES = " ".join(DOCKER_SERVICES)
+    # print("DOCKER_SERVICES=",DOCKER_SERVICES)
+
+    # Handle deployment
     try:
         print(f"[bold cyan]🔗 Connecting to {SSH_HOST} as {SSH_USER}...[/]")
         ssh = paramiko.SSHClient()
@@ -71,6 +72,7 @@ def main():
             (f"mkdir -p {PROJECT_DIR}", "Ensuring project directory exists"),
             (f"if [ ! -d '{PROJECT_DIR}/.git' ]; then git clone {GIT_REPO} {PROJECT_DIR}; fi", "Checking & Cloning repository if needed"),
             (f"cd {PROJECT_DIR} && git pull", "Updating repository"),
+            (f"cd {PROJECT_DIR} && sudo docker compose build {DOCKER_SERVICES}", f"Building Docker services ({DOCKER_SERVICES})"),
             (f"cd {PROJECT_DIR} && sudo docker compose up -d {DOCKER_SERVICES}", f"Starting Docker services ({DOCKER_SERVICES})"),
         ]
 

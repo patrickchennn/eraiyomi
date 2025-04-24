@@ -19,7 +19,6 @@ Markdown is a lightweight markup language that you can use to add formatting ele
 const marked = require("marked");
 const htmlOutput = marked("# Hello World");
 console.log(htmlOutput);
-
 ```
 
 # Markdown Elements
@@ -79,11 +78,13 @@ print("Hello, Markdown!")
 
 [Visit Marked.js](https://marked.js.org/)
 
-![https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.svg](https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.svg)
+![](https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.svg)
 
-![xyz](The%20Power%20of%20Markdown%201971896d948d80958aabf6e271a451f5/612x384.jpg)
+consectetur adipiscing elit. Donec
 
-xyz
+![a person in white wearing](The%20Power%20of%20Markdown%201971896d948d80958aabf6e271a451f5/person-612x384.jpg)
+
+a person
 
 ## Blockquotes
 
