@@ -8,6 +8,8 @@ import { deleteArticleThumbnail, putArticleThumbnail } from "@/services/article/
 import { putArticleContent } from "@/services/article/articleContentService"
 import { ArticlePostRequestBody } from "@shared/Article"
 import { customRevalidateTag } from "@/app/actions/triggerRevalidateArticle"
+import { extractMarkdownImagesSyntax } from "@/utils/markdown"
+import { ImgContentRefType } from "./EditArticle"
 
 interface SaveBtnProps {
   buttonStyle: string
@@ -15,9 +17,10 @@ interface SaveBtnProps {
   articleId: string
   article: ArticlePostRequestBody
   articleDefaultDataRef: React.MutableRefObject<ArticlePostRequestBody>
+  mdEditorRef: any
+  imgContentRef: React.RefObject<ImgContentRefType>
   thumbnailRef :React.MutableRefObject<HTMLInputElement|null>
   thumbnailActionRef: React.MutableRefObject<"default"|"change"|"delete">
-  mdInputUploadRef: React.MutableRefObject<HTMLInputElement|null>
   contentActionRef: React.MutableRefObject<"default"|"change"|"delete">
 }
 export default function SaveBtn({
@@ -26,13 +29,14 @@ export default function SaveBtn({
   articleId,
   article,
   articleDefaultDataRef,
+  mdEditorRef,
+  imgContentRef,
   thumbnailRef,
   thumbnailActionRef,
-  mdInputUploadRef,
   contentActionRef,
 }: SaveBtnProps){
   const handleSave = async () => {
-    console.log(chalk.blueBright.bgBlack("@handleSave()"))
+    console.log(chalk.blueBright.bgBlack("Function: @handleSave()"))
     
     
     // CLIENT-SIDE-SECURITY-CHECK IF: API key is not provided
@@ -47,10 +51,11 @@ export default function SaveBtn({
     }
 
     let isSingleError = false;
+    console.log("contentActionRef.current=",contentActionRef.current)
+    console.log("imgContentRef.current=",imgContentRef.current)
 
 
-    // 1. Handle data other than thumbnail, content, imageContent
-
+    // ~~~~~~~~~~~~~~~~~~~~1. Handle data other than thumbnail, content, imageContent~~~~~~~~~~~~~~~~~~~~
     // `changedArticle` is used to collectively store article data that is changed
     const changedArticle: {[key: string]:any} = {} 
 
@@ -61,7 +66,6 @@ export default function SaveBtn({
 
       const defaultVal = articleDefaultDataRef.current[key as keyof ArticlePostRequestBody]
       // console.log("defaultVal=",defaultVal)
-
 
       // Skip if we meet these keyword because it will gets handled separately below
       if(key==="thumbnail" || key==="content" || key==="imageContent") continue
@@ -89,10 +93,7 @@ export default function SaveBtn({
       if(articleMetadataRes!==null && articleMetadataRes.data===null) isSingleError = true
     }
     
-
-    
-
-    // 2. Handle the uploaded-type-data: article.thumbnail
+    // ~~~~~~~~~~~~~~~~~~~~2. Handle the uploaded-type-data: article.thumbnail~~~~~~~~~~~~~~~~~~~~
     let thumbnailRes = null
 
     // console.log("thumbnailRef=",thumbnailRef)
@@ -124,38 +125,66 @@ export default function SaveBtn({
 
     if(thumbnailRes!==null && thumbnailRes.data===null) isSingleError = true
 
-
-    // 3. Handle the content and image-content
-    let contentRes = null
-
-    console.log("mdInputUploadRef=",mdInputUploadRef)
-
-    if (contentActionRef.current!=="default") {
+    // ~~~~~~~~~~~~~~~~~~~~3. Handle the content and image-content~~~~~~~~~~~~~~~~~~~~
+    let putArticleContentRes = null
+    
+    if (contentActionRef.current==="change") {
       console.log(chalk.blueBright.bgBlack("Handle the content and image-content"))
+
+      console.log("mdEditorRef=",mdEditorRef)
 
       const contentForm = new FormData()
 
-      // Assuming: `mdInputUploadRef.current` and `mdInputUploadRef.current.files` won't be null 
-      const files = mdInputUploadRef.current!.files!;
+      const extractedMdImgsSyntax = extractMarkdownImagesSyntax(mdEditorRef.current.markdown);
+      console.log("extractedMdImgsSyntax=",extractedMdImgsSyntax)
+    
+      let updatedMdText = mdEditorRef.current.markdown
   
-      const fileList = Array.from(files);
-      console.log("fileList=",fileList)
+      let finImageContent: Array<{}> = []
+      
+      extractedMdImgsSyntax.forEach((currImg) => {  
+        imgContentRef.current!.forEach((imgContent) => {
+          if(currImg.url === imgContent.localPreviewImgSrc){
+            if(imgContent.type==="file"){
+              finImageContent.push({
+                type: "file",
+                localPreviewImgSrc: imgContent.localPreviewImgSrc,
+                s3Url: null,
+                fileName: (imgContent.file as File).name,
+                relativePath: null,
+                mimeType: (imgContent.file as File).type,
+              })
 
-
-      fileList.forEach(file => {
-        if(file.type==="text/markdown"){
-          contentForm.append('content', file); 
-        }else if(file.type==="image/png" || file.type==="image/jpeg"){
-          contentForm.append('image-content', file);
-        }
+              contentForm.append('image-content', imgContent.file as File);
+            }else{
+              if(currImg.url.includes("eraiyomi.s3.ap-southeast-1.amazonaws.com")){
+                finImageContent.push({
+                  type: "aws",
+                  localPreviewImgSrc: null,
+                  s3Url: imgContent.s3Url,
+                  fileName: imgContent.fileName,
+                  relativePath: imgContent.relativePath,
+                  mimeType: imgContent.mimeType,
+                })
+              }
+            }
+          }
+        });
       });
 
+      if(finImageContent.length>0){
+        contentForm.append('image-content', JSON.stringify(finImageContent));
+      }
 
-      contentRes = await putArticleContent(API_key, JWT_token, articleId, contentForm)
+      contentForm.append('content', updatedMdText);
+  
+      console.log("contentForm=",...contentForm)
+
+      putArticleContentRes = await putArticleContent(API_key, JWT_token, articleId, contentForm)
+      console.log("putArticleContentRes=",putArticleContentRes)
+      
+      if(putArticleContentRes!==null && putArticleContentRes.data===null) isSingleError = true
     }
-
-    if(contentRes!==null && contentRes.data===null) isSingleError = true
-
 
     if(isSingleError){
       alert("Error editing article")

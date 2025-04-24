@@ -7,8 +7,8 @@ import hljs from "highlight.js"
 import { markedHighlight } from "marked-highlight"
 import retResErrJson from "../../../utils/retResErrJson.js"
 import getS3SignedUrl from "../../../utils/S3_getSignedUrl.js"
-import getFileName from "../../../utils/getFileName.js"
 import { articleModel } from "../../../schema/articleSchema.js"
+import { replaceMarkdownImageSyntax } from "../../../utils/markdown.js"
 
 // Use marked-highlight as a plugin
 marked.use(
@@ -107,36 +107,27 @@ export const GET_articleContent = async (req: Request, res:Response) => {
   }
 
   // 2. Fetching the image-content assets
-  const imageContentRemoteUrl: {[key: string]: any} = {}
+  const imgContentAttributes = []
   if(!isEmpty(article.imageContent)){
     // Fetch all content image from S3, just the URL
     for(let i=0; i<article.imageContent.length; i++){
       const img = article.imageContent[i];
+
       const remoteUrl = await getS3SignedUrl(`${article.title}/${img.relativePath}`)
-      imageContentRemoteUrl[img.fileName] = remoteUrl.url
+
+      imgContentAttributes.push({
+        ...article.imageContent[i],
+        s3Url:remoteUrl.url,
+      })
+
+      rawText = replaceMarkdownImageSyntax(
+        rawText, 
+        img.relativePath, 
+        remoteUrl.url as string
+      )
     }
   }
-  console.log(chalk.blueBright.bgBlack("After fetching all the image content `imageContentRemoteUrl`:"), imageContentRemoteUrl)
-
-  // Regex to find Markdown image syntax: ![alt](url)
-  rawText = rawText.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, url) => {
-    console.log("match=",match)
-    console.log("alt=",alt)
-    console.log("url=",url)
-
-    let filename = getFileName(url as string)
-    filename = decodeURIComponent(filename)
-
-    let newUrl = imageContentRemoteUrl[filename]
-
-    if(newUrl===undefined) newUrl = url
-
-    console.log("newUrl=",newUrl)
-
-    return `![${alt}](${newUrl})`;
-  });
-  // console.log("rawText=",rawText)
-
+  console.log(chalk.blueBright.bgBlack("After fetching all the image content `imageContentRemoteUrl`:"), imgContentAttributes)
 
   rawHtml = marked(rawText);
   // console.log("rawHtml=",rawHtml)
@@ -145,7 +136,7 @@ export const GET_articleContent = async (req: Request, res:Response) => {
     data:{
       rawHtml,
       rawText,
-      images: imageContentRemoteUrl,
+      images: imgContentAttributes,
     }
   });
 }

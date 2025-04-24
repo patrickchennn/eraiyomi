@@ -13,22 +13,32 @@ interface PageProps{
   searchParams: { id: string };
 }
 export default async function Page({params,searchParams}: PageProps) {
-  console.info(chalk.blueBright.bgBlack(`[INF] Rendering ${params.user}/edit/post/${params.titleArticle}?id=${searchParams.id} Page`))
-
+  console.info(chalk.blueBright.bgBlack(`Page: ${params.user}/edit/post/${params.titleArticle}?id=${searchParams.id}`))
 
   console.log("params=",params)
+
   console.log("searchParams=",searchParams)
 
-  // SECURITY client-side check IF: the user intentionally remove the query `id`
+  // ~~~~~~~~~~~~~~~~~~~~Security check level 1: On article data~~~~~~~~~~~~~~~~~~~~
+  // IF: the user intentionally remove the article's query `id`
   if(!searchParams.id){
     return (
       <h1>404 Not Found</h1>
     )
   }
 
+  const article = await getArticle(searchParams.id,{headers:{"Cache-Control":"no-store"}})
+  // console.log("article=",article)
 
+  if(article.data===null){
+    return (
+      <pre>{JSON.stringify(article, null, 4)}</pre>
+    )
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~Security check level 2: On user authenticity~~~~~~~~~~~~~~~~~~~~
   const user = await getUser({username:params.user})
-  // console.log("user=",user)
+  console.log("user=",user)
 
   // IF: user does not exist --> display 404
   if(!user.data){
@@ -42,7 +52,7 @@ export default async function Page({params,searchParams}: PageProps) {
   const userCredToken = cookieStore.get('userCredToken')
   // console.log("userCredToken=",userCredToken)
 
-  // SECURITY client-side check IF: the user has never logged in before
+  // IF: there is not JWT, I.E. the user has never logged in before
   if(!userCredToken){
     return (
       <h1>401 Unauthorized</h1>
@@ -58,34 +68,21 @@ export default async function Page({params,searchParams}: PageProps) {
     message: "",
     data: null
   }
-  // IF the user has logged in before
+  // IF: there is a JWT
   if(userCredToken){
-    // verify the user credential
+    // verify JWT
     verifiedUser = await postVerifyUser(userCredToken.value)
     // console.log("verifiedUser=",user)
   }
 
-  // IF the credential is not valid --> display non-privileged(non edit user feature) 
+  // IF the JWT is not valid
   if(!verifiedUser.data){
     return (
       <pre>{JSON.stringify(verifiedUser, null, 4)}</pre>
     )
   }
   
-  const article = await getArticle(searchParams.id,{headers:{"Cache-Control":"no-store"}})
-  // console.log("article=",article)
-
-
-  if(article.data===null){
-    return (
-      <pre>{JSON.stringify(article, null, 4)}</pre>
-    )
-  }
-
-  
   return (
-    <div className='p-5 border rounded-xl w-3/4 bg-slate-100 flex flex-col gap-y-5 dark:bg-zinc-900'>
-      <EditArticle initArticle={article.data} />
-    </div>
+    <EditArticle initArticle={article.data} />
   )
 }

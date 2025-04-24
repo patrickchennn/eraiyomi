@@ -3,9 +3,10 @@ import Link from "next/link"
 import DarkToggle from "./DarkToggle"
 import SearchInput from "./SearchInput"
 import Auth from "./auth/Auth"
+import chalk from "chalk"
 
 export default function TopNav(){
-
+  console.log(chalk.bgBlack.blueBright("Component: TopNav"))
   // render
   return (
     <>

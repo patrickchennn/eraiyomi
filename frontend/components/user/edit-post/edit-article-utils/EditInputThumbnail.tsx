@@ -19,33 +19,13 @@ export default function EditInputThumbnail({
   thumbnailRef,
   thumbnailActionRef
 }: EditInputThumbnailProps){
-
   // ~~~~~~~~~~~~~~~~~~~~~~Hooks~~~~~~~~~~~~~~~~~~~~~~
   const [currentThumbnail,setCurrentThumbnail] = useState<string|null>(null)
   const defaultThumbnailRef = useRef<string|null>(null)
-
-  useEffect(() => {
-    console.log("@useEffect fetch thumbnail from server")
-
-    getArticleThumbnail(articleId,"no-store")
-      .then(resData => {
-        if(resData.data!==null) {
-          defaultThumbnailRef.current = resData.data
-          setCurrentThumbnail(resData.data)
-        }else{
-          console.error(resData.message)
-        }
-      })
-    ;
-    
-  }, [])
   
-
-
-
   // ~~~~~~~~~~~~~~~~~~~~~~Methods~~~~~~~~~~~~~~~~~~~~~~
   const handleThumbnail = (e: React.ChangeEvent) => {
-    console.log(chalk.blueBright.bgBlack("@handleThumbnail"))
+    console.log(chalk.blueBright.bgBlack("Function: @handleThumbnail"))
 
     const target = e.target as HTMLInputElement
     // console.log("target=",target)
@@ -67,7 +47,7 @@ export default function EditInputThumbnail({
   }
 
   const handleRemoveImg = () => {
-    console.log(chalk.blueBright.bgBlack("@handleRemoveImg"))
+    console.log(chalk.blueBright.bgBlack("Function: @handleRemoveImg"))
 
     setCurrentThumbnail(null)
     thumbnailRef.current!.files = null
@@ -75,14 +55,24 @@ export default function EditInputThumbnail({
   }
 
   const handleResetDefault = () => {
-    console.log(chalk.blueBright.bgBlack("@handleResetDefault"))
+    console.log(chalk.blueBright.bgBlack("Function: @handleResetDefault"))
 
     thumbnailActionRef.current = "default"
     setCurrentThumbnail(defaultThumbnailRef.current)
   }
 
+  const handleFetchThumbnail = async () => {
+    console.log(chalk.blueBright.bgBlack("Function: @handleFetchThumbnail"))
 
+    const resData = await getArticleThumbnail(articleId,"no-store")
 
+    if(resData.data!==null) {
+      defaultThumbnailRef.current = resData.data
+      setCurrentThumbnail(resData.data)
+    }else{
+      console.error(resData.message)
+    }
+  }
 
   // ~~~~~~~~~~~~~~~~~~~~~~Render~~~~~~~~~~~~~~~~~~~~~~
   return (
@@ -114,11 +104,14 @@ export default function EditInputThumbnail({
       </label>
 
       <div>
+        <button onClick={handleFetchThumbnail} type='button'>
+          Fetch Thumbnail
+        </button>
         <button onClick={handleRemoveImg} className='group' type='button'>
           <BsTrash3Fill className="group-hover:block hidden hover:text-red-500"/>
           <BsTrash3 className="group-hover:hidden"/>
         </button>
-        <button onClick={handleResetDefault} className='' type='button'>Reset</button>
+        <button onClick={handleResetDefault} type='button'>Reset</button>
       </div>
     </div>
   )

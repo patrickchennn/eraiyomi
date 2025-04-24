@@ -1,10 +1,12 @@
-import { useContext } from 'react'
-import { CreateNewPostStateCtx } from '../CreateNewPost'
+import { ArticlePostRequestBody } from '@shared/Article'
+import { Dispatch, SetStateAction } from 'react'
 
 
-export default function TitleInput() {
-  const c = useContext(CreateNewPostStateCtx)!
-  const [articleData,setArticleData] = c.articleDataState
+interface TitleInputProps {
+  articleDataState: [ArticlePostRequestBody, Dispatch<SetStateAction<ArticlePostRequestBody>>]
+} 
+export default function TitleInput({articleDataState}: TitleInputProps) {
+  const [articleData,setArticleData] = articleDataState
 
   return (
     <div>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useThemeState } from "@/hooks/appContext";
+import chalk from "chalk";
 import { BsFillMoonStarsFill, BsSunFill } from "react-icons/bs";
 
 
@@ -8,6 +9,8 @@ import { BsFillMoonStarsFill, BsSunFill } from "react-icons/bs";
 interface DarkToggleProps{
 }
 export default function DarkToggle({}: DarkToggleProps){
+  // console.log(chalk.blueBright.bgBlack("Component: @DarkToggle"))
+
   // hook
   const [theme,setTheme] = useThemeState()
 

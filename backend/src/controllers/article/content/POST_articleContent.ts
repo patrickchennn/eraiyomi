@@ -3,14 +3,17 @@ import { articleModel } from "../../../schema/articleSchema.js"
 import retResErrJson from "../../../utils/retResErrJson.js"
 import createObjectS3 from "../../../utils/S3_createObject.js"
 import chalk from "chalk"
-import extractMarkdownImages from "../../../utils/extractMarkdownImages.js"
+import { nanoid } from "nanoid"
 
+/**
+ * @desc Create an article content (markdown) and its assets. By "content" it means markdown text and "assets" it means such thing like images.
+ * @route POST /api/article/:articleId/content
+ * @access public
+ */
 export default async function POST_articleContent(
   req: Request<{articleId: string}>, 
   res: Response
-
 ){
-
   const {articleId} = req.params
 
   const article = await articleModel.findById(articleId)
@@ -18,30 +21,25 @@ export default async function POST_articleContent(
     return retResErrJson(res,404,"Article not found")
   }
 
+  const {body} = req
+  // console.log("body=",body)
+
   const files = req.files as { [fieldname: string]: Express.Multer.File[] } ?? {};
   console.log("files=",files)
 
-
-  let markdownImgSyntax;
-
-
-  // 1. Handle the markdown content
-  if(files.content !== undefined){
+  // ~~~~~~~~~~~~~~~~~~~~1. Handle the markdown content~~~~~~~~~~~~~~~~~~~~
+  if(Object.hasOwn(body,"content")){
     console.log(chalk.blueBright.bgBlack("Handle markdown content"))
 
-    const content = files.content[0]
+    const {content} = body
     console.log("content",content)
 
-    const markdownText = content.buffer.toString('utf-8');
-
-    markdownImgSyntax = extractMarkdownImages(markdownText)
-    console.log("markdownImgSyntax",markdownImgSyntax)
-
+    const filename = `main-${nanoid(8)}.md`
 
     const createObjectS3Res = await createObjectS3(
-      `${article.title}/${content.originalname}`,
-      content.buffer,
-      content.mimetype
+      `${article.title}/${filename}`,
+      content,
+      "text/markdown"
     );
 
     if(createObjectS3Res.isError){
@@ -49,14 +47,14 @@ export default async function POST_articleContent(
     }
 
     article.content = {
-      fileName:content.originalname,
-      relativePath: content.originalname,
-      mimeType: content.mimetype
+      fileName:filename,
+      relativePath: filename,
+      mimeType: "text/markdown"
     }
   }
 
-  // 2. Handle the image-content (of the markdown)
-  if(files['image-content'] !== undefined && markdownImgSyntax !== undefined){
+  // ~~~~~~~~~~~~~~~~~~~~2. Handle the image-content (of the markdown)~~~~~~~~~~~~~~~~~~~~
+  if(files['image-content'] !== undefined){
     console.log(chalk.blueBright.bgBlack("Handle markdown image-content"))
 
     for(let i=0; i<files['image-content'].length; i++){
@@ -64,7 +62,7 @@ export default async function POST_articleContent(
       const imgInput = files['image-content'][i]
       console.log("imgInput=",imgInput)
 
-      const embeddedImgUrl = decodeURIComponent(markdownImgSyntax[imgInput.originalname].url)
+      const embeddedImgUrl = imgInput.originalname
       
       const createObjectS3Res = await createObjectS3(
         `${article.title}/${embeddedImgUrl}`,

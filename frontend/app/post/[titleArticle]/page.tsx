@@ -70,7 +70,7 @@ export async function generateMetadata(
 
 
 export default async function Page({ params, searchParams }: PageProps) {
-  console.log(chalk.blueBright.bgBlack(`[INF] Rendering /post/${params.titleArticle}?id=${searchParams.id}`))
+  console.log(chalk.blueBright.bgBlack(`Page: /post/${params.titleArticle}?id=${searchParams.id}`))
 
 
   // IF the user intentionally remove the query id

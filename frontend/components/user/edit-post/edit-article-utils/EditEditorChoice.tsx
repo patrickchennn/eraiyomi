@@ -4,19 +4,20 @@ import chalk from 'chalk'
 import EditMdFileInput from './EditMdFileInput'
 import { useState } from 'react'
 import { AiOutlineFileMarkdown } from 'react-icons/ai'
+import { ImgContentRefType } from '../EditArticle'
 
 
 interface EditorChoiceProps {
   articleId: string
-  mdInputUploadRef: React.MutableRefObject<HTMLInputElement | null>
+  mdEditorRef: any
+  imgContentRef: React.MutableRefObject<ImgContentRefType>
   contentActionRef: React.MutableRefObject<"default"|"change"|"delete">
-  rawTextState: [string, React.Dispatch<React.SetStateAction<string>>]
 }
 const EditorChoice = ({
   articleId,
-  mdInputUploadRef,
+  mdEditorRef,
+  imgContentRef,
   contentActionRef,
-  rawTextState,
 }: EditorChoiceProps) => {
 
   const [selectedEditor, setSelectedEditor] = useState<"markdown" | null>(null)
@@ -40,9 +41,9 @@ const EditorChoice = ({
         {selectedEditor === "markdown" && (
           <EditMdFileInput
             articleId={articleId}
-            mdInputUploadRef={mdInputUploadRef}
+            mdEditorRef={mdEditorRef}
+            imgContentRef={imgContentRef}
             contentActionRef={contentActionRef}
-            rawTextState={rawTextState}
           />
         )}
       </div>

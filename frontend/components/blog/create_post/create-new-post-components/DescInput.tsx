@@ -1,9 +1,11 @@
-import { useContext } from 'react'
-import { CreateNewPostStateCtx } from '../CreateNewPost'
+import { ArticlePostRequestBody } from '@shared/Article'
+import { Dispatch, SetStateAction } from 'react'
 
-export default function DescInput() {
-  const c = useContext(CreateNewPostStateCtx)!
-  const [articleData,setArticleData] = c.articleDataState
+interface DescInputProps {
+  articleDataState: [ArticlePostRequestBody, Dispatch<SetStateAction<ArticlePostRequestBody>>]
+} 
+export default function DescInput({articleDataState}: DescInputProps) {
+  const [articleData,setArticleData] = articleDataState
 
   return (
     <div>

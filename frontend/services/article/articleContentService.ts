@@ -9,7 +9,7 @@ export const getArticleContent = async (
   //     'Cache-Control': reqCache
   //   }
   // }
-  return apiService<{rawHtml: string, rawText: string} | null>('get', `/article/${articleId}/content`,conf);
+  return apiService<{rawHtml: string, rawText: string, images: [{fileName: string, relativePath: string, mimeType: string, s3Url: string}]} | null>('get', `/article/${articleId}/content`,conf);
 };
 
 

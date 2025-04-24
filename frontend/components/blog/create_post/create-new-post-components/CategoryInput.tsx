@@ -1,12 +1,14 @@
-import { useContext, useState } from 'react'
+import { ArticlePostRequestBody } from '@shared/Article';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { BsPlus } from 'react-icons/bs';
 import { IoIosClose } from 'react-icons/io';
-import { CreateNewPostStateCtx } from '../CreateNewPost';
 
-export default function CategoryInput() {
+interface CategoryInputProps {
+  articleDataState: [ArticlePostRequestBody, Dispatch<SetStateAction<ArticlePostRequestBody>>]
+} 
+export default function CategoryInput({articleDataState}: CategoryInputProps) {
   // hooks
-  const c = useContext(CreateNewPostStateCtx)!
-  const [articleData,setArticleData] = c.articleDataState
+  const [articleData,setArticleData] = articleDataState
   const [categoryTxt,setCategoryTxt] = useState<string>("")
 
 
@@ -42,7 +44,7 @@ export default function CategoryInput() {
           required
           type="text" 
           id="category" 
-          className='rounded px-2 bg-slate-50 dark:bg-zinc-800 valid:bg-slate-100 focus:bg-white font-bold' 
+          className='rounded px-2 bg-slate-50 dark:bg-zinc-800 valid:bg-slate-100 focus:bg-white' 
           value={categoryTxt}
           onChange={(e)=>setCategoryTxt(e.target.value)}
           data-cy="category-input"

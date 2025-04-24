@@ -1,11 +1,11 @@
 {
   "name": "frontend",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "scripts": {
     "check-type": "tsc --noEmit",
     "lint": "next lint",
     "dev": "next dev -p 8005",
-    "prebuild":"rimraf .next && npm run check-type && npm run lint",
+    "prebuild": "rimraf .next && npm run check-type && npm run lint",
     "build-staging-local": "npm run prebuild && APP_ENV=staging-local next build",
     "build-staging": "npm run prebuild && APP_ENV=staging next build",
     "build-production": "npm run prebuild && APP_ENV=production next build",
@@ -16,7 +16,7 @@
     "@types/node": "20.5.9",
     "@types/react": "^18.2.22",
     "@types/react-dom": "^18.2.10",
-    "@uiw/react-markdown-editor": "^6.1.2",
+    "@uiw/react-md-editor": "^4.0.5",
     "autoprefixer": "10.4.15",
     "chalk": "^5.3.0",
     "eslint": "8.48.0",
@@ -25,6 +25,7 @@
     "lodash.debounce": "^4.0.8",
     "lodash.isempty": "^4.4.0",
     "lodash.isequal": "^4.5.0",
+    "nanoid": "^5.1.5",
     "next": "^13.5.2",
     "postcss": "8.4.29",
     "react": "18.2.0",
@@ -42,7 +43,7 @@
     "@types/validator": "^13.11.7",
     "cypress": "^13.6.0",
     "cypress-file-upload": "^5.0.8",
-    "rimraf": "^6.0.1"
+    "rimraf": "^5.0.5"
   },
   "engines": {
     "node": "v18.20.4"

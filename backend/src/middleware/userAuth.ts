@@ -15,17 +15,22 @@ const userAuth = async (
 
 
   let token = req.headers.authorization
+  console.log("token=",token)
 
   // CHECK: token
   if(!token || !token.startsWith("Bearer")){
     console.error(chalk.red.bgBlack("[middleware]: 401 Not authorized; no token provided\n"))
-    return retResErrJson(res,401,"Not authorized. No token provided")
+    return retResErrJson(res,401,"No token provided")
   }
-  console.log("token=",token)
 
   // remove the "Bearer" string
   token = token.split(' ')[1];
   // console.log("remove 'bearer'=",token)
+
+  if(token === undefined){
+    console.error(chalk.red.bgBlack("[middleware]: 401 Not authorized; no token provided\n"))
+    return retResErrJson(res,401,"No token provided")
+  }
 
 
   // IF: the token string start with char `"` AND end with char `"`, then remove that 

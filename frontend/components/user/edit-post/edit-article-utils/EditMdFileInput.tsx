@@ -1,35 +1,60 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import { BsTrash3 } from "react-icons/bs";
 
-import MarkdownEditor from "@uiw/react-markdown-editor";
 import debounce from "lodash.debounce";
 import chalk from "chalk";
 import { getArticleContent } from "@/services/article/articleContentService";
+import MDEditor, { TextState, TextAreaTextApi, ContextStore } from "@uiw/react-md-editor";
+import { ImgContentRefType } from "../EditArticle";
+import { extractMarkdownImagesSyntax, replaceMarkdownImageSyntax } from "@/utils/markdown";
 
 
 interface MdFileInputInputProps{
   articleId: string
-  mdInputUploadRef: React.MutableRefObject<HTMLInputElement | null>
+  mdEditorRef: any
+  imgContentRef: React.MutableRefObject<ImgContentRefType>
   contentActionRef: React.MutableRefObject<"default"|"change"|"delete">
-  rawTextState: [string, React.Dispatch<React.SetStateAction<string>>]
 }
-function EditMdFileInput({
+export default function EditMdFileInput({
   articleId,
-  mdInputUploadRef,
+  mdEditorRef,
+  imgContentRef,
   contentActionRef,
-  rawTextState
 }: MdFileInputInputProps) {
 
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Hooks~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  const [rawText, setRawText] = rawTextState
+  // ~~~~~~~~~~~~~~~~~~~~Hooks~~~~~~~~~~~~~~~~~~~~
+  const [rawText, setRawText] = useState<string>('');
+  const mdInputUploadRef = useRef<HTMLInputElement>(null)
+  
   useEffect(() => {
-    console.log("@useEffect fetch content from server")
+    console.log(chalk.bgBlack.blueBright("Hook: @useEffect fetch content from server"))
 
     getArticleContent(articleId,{headers:{"Cache-Control":"no-store"}})
       .then(resData => {
         if(resData.data!==null) {
+          console.log("resData.data=",resData.data)
+
+          const imgSrc: ImgContentRefType = []
+
+          resData.data.images.forEach((img) => {
+            imgSrc.push({
+              type:"aws",
+              file: null,
+              localPreviewImgSrc: img.s3Url,
+              s3Url: img.s3Url,
+              fileName: img.fileName,
+              relativePath: img.relativePath,
+              mimeType: img.mimeType,
+            })
+          });
+          console.log("imgSrc=",imgSrc)
+
+          imgContentRef.current = imgSrc
+
+          console.log("imgContentRef.current=", imgContentRef.current)
+
           setRawText(resData.data.rawText)
         }
       })
@@ -38,9 +63,9 @@ function EditMdFileInput({
   }, [])
 
 
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Methods~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  const resetInputFile = () => {
-    console.log(chalk.blueBright.bgBlack('@resetInputFile'));
+  // ~~~~~~~~~~~~~~~~~~~~Methods~~~~~~~~~~~~~~~~~~~~
+  const handleResetMarkdownUploadInputFile = () => {
+    console.log(chalk.blueBright.bgBlack('Function: @handleResetMarkdownUploadInputFile'));
 
     // Check if the file input is not null
     if (mdInputUploadRef.current) {
@@ -50,20 +75,20 @@ function EditMdFileInput({
     contentActionRef.current = "default"
   };
 
-  const handleMarkdownFile = (e: React.ChangeEvent) => {
-    console.log(chalk.blueBright.bgBlack('@handleMarkdownFile'));
+  const handleMarkdownUploadInputFile = (e: React.ChangeEvent) => {
+    console.log(chalk.blueBright.bgBlack('Function: @handleMarkdownUploadInputFile'))
 
     const target = e.target as HTMLInputElement;
     const files = target.files;
 
-    if (!files) return alert("files is null");
+    if (files===null) return;
+
 
     const fileList = Array.from(files);
     console.log("fileList=",fileList)
 
     // Separate markdown files and assets
     const markdownFiles = fileList.filter((file) => file.type === 'text/markdown');
-    console.log("markdownFiles=",markdownFiles)
 
     const assetFiles = fileList.filter((file) => file.type !== 'text/markdown');
     console.log("assetFiles=",assetFiles)
@@ -74,8 +99,6 @@ function EditMdFileInput({
       return;
     }
 
-    contentActionRef.current = "change"
-
     // Handle the first markdown file (assuming you want to process only one for now)
     const mdFile = markdownFiles[0];
     console.log('mdFile=', mdFile);
@@ -83,32 +106,74 @@ function EditMdFileInput({
     // `reader` is about read the markdown file, like actually extract the text
     const reader = new FileReader();
 
-    reader.onload = () => {
-      const content = reader.result as string;
-      console.log('Markdown content:', content);
-
-      setRawText(content)
-    };
-
     reader.readAsText(mdFile);
 
-    // Handle the asset files (if any)
-    if (assetFiles.length > 0) {
-      console.log('Asset files:', assetFiles);
-      // You can process assets and store their references in the state as needed
-    }
-  };
+    reader.onload = () => {
+      console.log("Reading markdown content...");
+      let content = reader.result as string;
+    
+      const extractedMdImgsSyntax = extractMarkdownImagesSyntax(content);
+      console.log("extractedMdImgsSyntax=",extractedMdImgsSyntax)
+    
+      // Now handle the asset files (after content is loaded)
+      if (assetFiles.length > 0) {
+        console.log('Asset files:', assetFiles);
+        const imgSrc: ImgContentRefType = []
+
+        // Process assets and store their references in the state as needed
+        assetFiles.forEach((img: File) => {
+          let localPreviewImgSrc = ""
+          extractedMdImgsSyntax.forEach((embeddedImgSyntax) => {
+            if(embeddedImgSyntax.filename === img.name){
+
+              localPreviewImgSrc = URL.createObjectURL(img)
+
+              content = replaceMarkdownImageSyntax(
+                content, 
+                embeddedImgSyntax.url,
+                localPreviewImgSrc
+              )
+            }
+          });
+
+          imgSrc.push({
+            type:"file",
+            file: img,
+            localPreviewImgSrc,
+            s3Url: null,
+            fileName: img.name,
+            relativePath: null,
+            mimeType: img.type,
+          })
+        });
+        
+        imgContentRef.current = imgSrc
+        console.log("imgContentRef.current=", imgContentRef.current);
+      }
+
+      // Render the input
+      setRawText(content);
+
+      contentActionRef.current = "change"
+    };
+  }
 
   // Update the content in the editor after a delay
-  const debouncedSetContent = debounce(setRawText, 500);
+  const debouncedSetContent = debounce(setRawText, 100);
 
-  const handleEditorChange = (value: string) => {
-    debouncedSetContent(value);
+  const handleMarkdownEditorChange = (
+    value?: string, 
+    event?: React.ChangeEvent<HTMLTextAreaElement>, 
+    state?: ContextStore
+  ) => {
+    console.log(chalk.bgBlack.blueBright("Function: @handleMarkdownEditorChange"))
+    // debouncedSetContent(value);
+    setRawText(value as string)
+
+    contentActionRef.current = "change"
   };
 
-
-
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Render~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // ~~~~~~~~~~~~~~~~~~~~Render~~~~~~~~~~~~~~~~~~~~
   return (
     <>
       <form
@@ -121,23 +186,63 @@ function EditMdFileInput({
           id="markdown-input"
           name="markdown-input"
           accept="text/markdown"
-          onChange={handleMarkdownFile}
+          onChange={handleMarkdownUploadInputFile}
           ref={mdInputUploadRef}
           multiple
+          // @ts-ignore
+          webkitdirectory="true"
         />
-        <button type="button" onClick={resetInputFile}>
+        <button type="button" onClick={handleResetMarkdownUploadInputFile}>
           <BsTrash3 className="inline"/>
         </button>
       </form>
 
       <br />
 
-      <MarkdownEditor
+      <MDEditor
         value={rawText}
-        onChange={handleEditorChange}
+        ref={mdEditorRef}
+        onChange={handleMarkdownEditorChange}
+        height={1200}
+        commandsFilter={(command, isExtra) => {
+          // console.log("command=",command)
+          // console.log("isExtra=",isExtra)
+          if (command.name === "image") {
+            command.execute = (state: TextState, api: TextAreaTextApi) => {
+              
+              const input = document.createElement('input');
+              input.type = 'file';
+              input.accept = 'image/*';
+              input.style.display = 'none';
+
+              
+              input.onchange = (event: any) => {
+                const file = event.target.files[0];
+                if (file) {
+                  const url = URL.createObjectURL(file);
+                  imgContentRef.current.push({
+                    type:"file",
+                    file,
+                    localPreviewImgSrc: url,
+                    s3Url: null,
+                    fileName: file.name,
+                    relativePath: null,
+                    mimeType: file.type,
+                  })
+                  const markdownImageSyntax = `![uploaded-image](${url})\n`;
+                  api.replaceSelection(markdownImageSyntax);
+                }
+              };
+        
+              document.body.appendChild(input);
+              input.click();
+              document.body.removeChild(input);
+        
+            };
+          }
+          return command;
+        }}
       />
     </>
   )
 }
-
-export default EditMdFileInput

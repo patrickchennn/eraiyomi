@@ -6,7 +6,7 @@ The reason it is limited because to implement for global users, I guess, it need
 "use client"
 
 // react
-import {useState, useRef, useEffect, createContext, Dispatch, SetStateAction, RefObject} from 'react'
+import {useState, useRef, useEffect} from 'react'
 
 // custom hook
 import useDidMountEffect from '@/hooks/useDidMountEffect';
@@ -19,46 +19,32 @@ import APIKeyInput from './create-new-post-components/APIKeyInput';
 import EditorChoice from './create-new-post-components/EditorChoice';
 import 'highlight.js/styles/atom-one-dark.css';
 import TitleInput from './create-new-post-components/TitleInput';
+import chalk from 'chalk';
 import { ArticlePostRequestBody } from '@shared/Article';
 
 
-interface CreateNewPostStateCtxType{
-  articleDataState: [ArticlePostRequestBody, Dispatch<SetStateAction<ArticlePostRequestBody>>]
-  rawTextState:[string, Dispatch<SetStateAction<string>>]
-  API_keyState:[string, Dispatch<SetStateAction<string>>]
-  mdInputUploadRef:RefObject<HTMLInputElement>
-  thumbnailRef:RefObject<HTMLInputElement>
-}
-export const CreateNewPostStateCtx = createContext<CreateNewPostStateCtxType|null>(null);
+export type ImgContentRefType = Array<{file:File, localPreviewImgSrc: string}>
 
-
-
-export default function CreateNewPost(){
-  const btnClass = 'border rounded py-1 px-2 bg-zinc-50 dark:bg-zinc-900 shadow-inner text-sm hover:shadow';
-  const inpEditorClass = {
-    main:'rounded px-2 w-full bg-slate-50 dark:bg-zinc-800 valid:bg-slate-100 focus:bg-white font-bold',
-    category:'rounded px-2 bg-slate-50 dark:bg-zinc-800 valid:bg-slate-100 focus:bg-white font-bold',
-  };
-
+export default function CreateNewPost(){ 
+  console.log(chalk.bgBlack.blueBright("Component: @CreateNewPost"))
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~Hooks~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  const previewSectionRef = useRef<HTMLDivElement>(null)
   const editorSectionRef = useRef<HTMLDivElement>(null)
-  const mdInputUploadRef = useRef<HTMLInputElement>(null)
+  const mdEditorRef = useRef<HTMLInputElement>(null)
   const thumbnailRef = useRef<HTMLInputElement>(null)
 
-  const [previewElem,setPreviewElem] = useState<JSX.Element>()
-  const [API_key,set_API_key] = useState<string>("")
-  const [rawText, setRawText] = useState('');
+  const imgContentRef = useRef<ImgContentRefType>([])
 
-  const [articleData, setArticleData] = useState<any>({
+  const [API_key,set_API_key] = useState<string>("")
+
+  const [articleData, setArticleData] = useState<ArticlePostRequestBody>({
     title:"",
     shortDescription: "",
+    status:"published",
     category: [],
     totalWordCounts: 0,
+    contentStructureType:"markdown"
   });
-
-
 
   useEffect(()=>{
     const articleDataLS = window.localStorage.getItem("article-data")
@@ -69,17 +55,14 @@ export default function CreateNewPost(){
     const parsedData = JSON.parse(articleDataLS)
     console.log("parsedData=",parsedData)
 
-    setArticleData(parsedData)
-
+    setArticleData(prev=>({...prev,...parsedData}))
   },[])
-
 
   useDidMountEffect(() => {
     // console.log("articleData=",articleData)
     // console.log("firstTimeRender=",firstTimeRender)
  
-    const { content, thumbnail, ...rest } = articleData;
-    window.localStorage.setItem("article-data",JSON.stringify(rest))
+    window.localStorage.setItem("article-data",JSON.stringify(articleData))
     
   },[
     articleData.title,
@@ -87,46 +70,36 @@ export default function CreateNewPost(){
     articleData.category,
   ])
 
-
-
-
-
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~Render~~~~~~~~~~~~~~~~~~~~~~~~~~~
   return (
-    <CreateNewPostStateCtx.Provider 
-      value={{
-        articleDataState:[articleData,setArticleData],
-        rawTextState: [rawText, setRawText],  
-        API_keyState: [API_key,set_API_key],
-        mdInputUploadRef,
-        thumbnailRef:thumbnailRef
-      }}
-    >
-      <div className='w-full flex items-center flex-col'>
+    <div className='w-full flex items-center flex-col'>
 
-      <div className='my-3 p-5 border dark:border-zinc-900 rounded-xl w-3/4 bg-slate-100 flex flex-col gap-y-5 dark:bg-zinc-950' ref={editorSectionRef}>
+      <div className='my-3 p-5 border dark:border-zinc-900 rounded-xl w-5/6 bg-slate-100 flex flex-col gap-y-5 dark:bg-zinc-950' ref={editorSectionRef}>
         <div className='[&>button]:mx-1'>
-          <PostBtn previewElem={previewElem} className={btnClass} />
+          <PostBtn 
+            articleData={articleData}
+            mdEditorRef={mdEditorRef}
+            API_key={API_key}
+            thumbnailRef={thumbnailRef}
+            imgContentRef={imgContentRef}
+          />
         </div>
         
-        <APIKeyInput />
+        <APIKeyInput apiKeyState={[API_key,set_API_key]}/>
       
-        <TitleInput />
+        <TitleInput articleDataState={[articleData, setArticleData]}/>
 
-        <DescInput />
+        <DescInput articleDataState={[articleData, setArticleData]}/>
 
-        <CategoryInput />
+        <CategoryInput articleDataState={[articleData, setArticleData]}/>
 
-        <ThumbnailInput />
+        <ThumbnailInput thumbnailRef={thumbnailRef}/>
 
-        <EditorChoice />
+        <EditorChoice 
+          mdEditorRef={mdEditorRef}
+          imgContentRef={imgContentRef}
+        />
       </div>
-
-      {/* preview section, grid (container) */}
-      <div data-cy="preview-article-section" className='w-full'>
-        {previewElem && previewElem}
-      </div>
-      </div>
-    </CreateNewPostStateCtx.Provider>
+    </div>
   )
 }

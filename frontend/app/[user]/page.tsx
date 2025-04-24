@@ -14,9 +14,11 @@ interface UserProps{
 export default async function User({params}: UserProps) {
   const userName = params.user
   
-  console.info(chalk.blueBright.bgBlack(`[INF] Rendering /${userName} Page`))
+  console.info(chalk.blueBright.bgBlack(`Page: /${userName}`))
+
   console.log("params=",params)
 
+  // ~~~~~~~~~~~~~~~~~~~~Security check: On user authenticity~~~~~~~~~~~~~~~~~~~~
   const cookieStore = cookies()
 
   const userCredToken = cookieStore.get('userCredToken')
@@ -40,7 +42,7 @@ export default async function User({params}: UserProps) {
   }
   // IF: the user has logged in before
   if(userCredToken){
-    // SECURITY server-side check: verify the user credential in order prevent JWT tampering
+    // verify the user credential in order prevent JWT tampering
     verifiedUser = await postVerifyUser(userCredToken.value)
     console.log("verifiedUser=",verifiedUser)
   }

@@ -1,17 +1,16 @@
-import {useContext, useState} from 'react'
+import {RefObject, useState} from 'react'
 import { AiOutlineFileAdd, AiFillFileAdd } from 'react-icons/ai'
 import Image from 'next/image'
-import { CreateNewPostStateCtx } from '../CreateNewPost'
 import { BsTrash3Fill, BsTrash3 } from 'react-icons/bs'
 import chalk from 'chalk'
 
 
-export default function ThumbnailInput() {
+interface ThumbnailInputProps{
+  thumbnailRef: RefObject<HTMLInputElement>
+}
+export default function ThumbnailInput({thumbnailRef}: ThumbnailInputProps) {
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~Hooks~~~~~~~~~~~~~~~~~~~~~~~~~
-  const c = useContext(CreateNewPostStateCtx)!
-  const thumbnailRef = c.thumbnailRef
-
   const [currentThumbnailSrc,setCurrentThumbnailSrc] = useState<string|null>(null)
   
 

@@ -1,10 +1,11 @@
-import React, { useContext } from 'react'
-import { CreateNewPostStateCtx } from '../CreateNewPost'
+import { Dispatch, SetStateAction } from "react"
 
 
-export default function APIKeyInput() {
-  const c = useContext(CreateNewPostStateCtx)!
-  const [API_key,set_API_key] = c.API_keyState
+interface APIKeyInputProps{
+  apiKeyState:[string, Dispatch<SetStateAction<string>>]
+}
+export default function APIKeyInput({apiKeyState}: APIKeyInputProps) {
+  const [API_key,set_API_key] = apiKeyState
   
   return (
     <div>

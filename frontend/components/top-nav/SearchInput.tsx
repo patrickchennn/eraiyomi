@@ -13,7 +13,7 @@ import {ImSearch} from "react-icons/im"
 interface SearchInputProps{
 }
 export default function SearchInput({}: SearchInputProps){
-  console.log(chalk.blueBright.bgBlack("[INF] Rendering @SearchInput component"))
+  console.log(chalk.blueBright.bgBlack("Component: @SearchInput"))
 
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~Hooks~~~~~~~~~~~~~~~~~~~~~~~

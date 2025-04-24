@@ -29,7 +29,7 @@ import chalk from 'chalk'
 const AWS_ACCESSKEYID = process.env.AWS_ACCESSKEYID
 const AWS_SECRETACCESSKEY = process.env.AWS_SECRETACCESSKEY
 export const AWS_BUCKET_NAME = process.env.AWS_BUCKET_NAME
-const AWS_REGION = process.env.AWS_REGION
+export const AWS_REGION = process.env.AWS_REGION
 
 // console.log("AWS_ACCESSKEYID=",AWS_ACCESSKEYID)
 // console.log("AWS_SECRETACCESSKEY=",AWS_SECRETACCESSKEY)
