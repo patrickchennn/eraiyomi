@@ -17,6 +17,8 @@ function extractMarkdownImagesSyntax(rawText: string) {
   while ((match = imageRegex.exec(rawText)) !== null) {
     const alt = match[1];
     const url = match[2];
+    // Original Error: Object is possibly 'undefined'.ts(2532)
+    // @ts-ignore
     const filename = decodeURIComponent(url.split('/').pop().split('?')[0]); // Extract filename
 
     matches.push({ alt, url, filename });
